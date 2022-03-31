@@ -4,6 +4,8 @@ namespace Script {
 
   let viewport: ƒ.Viewport;
   let pacman: ƒ.Node;
+  let direction: ƒ.Vector3 = ƒ.Vector3.ZERO();
+  let speed: number = 1 / 60;
   document.addEventListener("interactiveViewportStarted", <EventListener>start);
 
   function start(_event: CustomEvent): void {
@@ -20,8 +22,26 @@ namespace Script {
 
   function update(_event: Event): void {
     // ƒ.Physics.simulate();  // if physics is included and used
+    let posPacman: ƒ.Vector3 = pacman.mtxLocal.translation;
+    let nearestGridPoint: ƒ.Vector2 = new ƒ.Vector2(Math.round(posPacman.x), Math.round(posPacman.y));
+    let nearGridPoint: boolean = posPacman.toVector2().equals(nearestGridPoint, 2 * speed);
 
-    pacman.mtxLocal.translate(new ƒ.Vector3(1, 1, 0));
+    if (nearGridPoint) {
+      let directionOld: ƒ.Vector3 = direction.clone;
+      if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D]))
+        direction.set(1, 0, 0);
+      if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A]))
+        direction.set(-1, 0, 0);
+      if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W]))
+        direction.set(0, 1, 0);
+      if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S]))
+        direction.set(0, -1, 0);
+
+      if (!direction.equals(directionOld))
+        pacman.mtxLocal.translation = nearestGridPoint.toVector3();
+    }
+
+    pacman.mtxLocal.translate(ƒ.Vector3.SCALE(direction, speed));
     viewport.draw();
     ƒ.AudioManager.default.update();
   }
