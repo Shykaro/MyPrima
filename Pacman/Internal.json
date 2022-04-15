@@ -39,11 +39,47 @@
       "latitudes": 8
     }
   },
+  "Audio|2022-03-31T12:46:38.472Z|99496": {
+    "ƒ.Audio": {
+      "url": "Sound\\pacman_beginning.wav",
+      "idResource": "Audio|2022-03-31T12:46:38.472Z|99496",
+      "name": "IntroMusic",
+      "type": "Audio"
+    }
+  },
+  "Audio|2022-03-31T12:47:33.990Z|51379": {
+    "ƒ.Audio": {
+      "url": "Sound\\pacman_chomp.wav",
+      "idResource": "Audio|2022-03-31T12:47:33.990Z|51379",
+      "name": "WakaSound",
+      "type": "Audio"
+    }
+  },
   "Graph|2022-03-17T14:08:06.227Z|66368": {
     "ƒ.Graph": {
       "name": "Game",
       "active": true,
-      "components": {},
+      "components": {
+        "ComponentLight": [
+          {
+            "ƒ.ComponentLight": {
+              "pivot": {
+                "translation": "[2, 2, 8]",
+                "rotation": "[0, 180, 0]",
+                "scaling": "[5, 5, 100]"
+              },
+              "light": {
+                "ƒ.LightSpot": {
+                  "color": "[1, 1, 1, 1]"
+                }
+              },
+              "Component": {
+                "active": true
+              }
+            }
+          }
+        ]
+      },
       "children": [
         {
           "ƒ.Node": {
@@ -90,6 +126,25 @@
                       "translation": "[0, 0, 0]",
                       "rotation": "[0, 0, 0]",
                       "scaling": "[1, 1, 1]"
+                    },
+                    "Component": {
+                      "active": true
+                    }
+                  }
+                }
+              ],
+              "ComponentLight": [
+                {
+                  "ƒ.ComponentLight": {
+                    "pivot": {
+                      "translation": "[0, 0, 1]",
+                      "rotation": "[0, 120, 0]",
+                      "scaling": "[5, 5, 5]"
+                    },
+                    "light": {
+                      "ƒ.LightPoint": {
+                        "color": "[1, 1, 1, 1]"
+                      }
                     },
                     "Component": {
                       "active": true
@@ -1062,7 +1117,7 @@
                   "ƒ.ComponentAudio": {
                     "active": true,
                     "idResource": "Audio|2022-03-31T12:46:38.472Z|99496",
-                    "playing": true,
+                    "playing": false,
                     "loop": false,
                     "volume": 1
                   }
@@ -1318,6 +1373,34 @@
       "type": "Graph"
     }
   },
+  "Material|2022-04-09T16:54:21.957Z|34909": {
+    "ƒ.Material": {
+      "name": "ShaderGouraud",
+      "idResource": "Material|2022-04-09T16:54:21.957Z|34909",
+      "shader": "ShaderGouraud",
+      "coat": {
+        "ƒ.CoatRemissive": {
+          "color": "[1, 1, 1, 1]",
+          "diffuse": 1,
+          "specular": 0
+        }
+      }
+    }
+  },
+  "Material|2022-04-09T18:59:55.440Z|75805": {
+    "ƒ.Material": {
+      "name": "ShaderFlat",
+      "idResource": "Material|2022-04-09T18:59:55.440Z|75805",
+      "shader": "ShaderFlat",
+      "coat": {
+        "ƒ.CoatRemissive": {
+          "color": "[1, 1, 1, 1]",
+          "diffuse": 1,
+          "specular": 0
+        }
+      }
+    }
+  },
   "Graph|2022-03-28T17:46:30.116Z|19332": {
     "ƒ.Graph": {
       "name": "Wall",
@@ -1352,7 +1435,7 @@
               "Component": {
                 "active": true
               },
-              "idMaterial": "Material|2022-03-17T14:07:58.164Z|38987"
+              "idMaterial": "Material|2022-04-09T16:54:21.957Z|34909"
             }
           }
         ]
@@ -1360,22 +1443,6 @@
       "children": [],
       "idResource": "Graph|2022-03-28T17:46:30.116Z|19332",
       "type": "Graph"
-    }
-  },
-  "Audio|2022-03-31T12:46:38.472Z|99496": {
-    "ƒ.Audio": {
-      "url": "Sound\\pacman_beginning.wav",
-      "idResource": "Audio|2022-03-31T12:46:38.472Z|99496",
-      "name": "IntroMusic",
-      "type": "Audio"
-    }
-  },
-  "Audio|2022-03-31T12:47:33.990Z|51379": {
-    "ƒ.Audio": {
-      "url": "Sound\\pacman_chomp.wav",
-      "idResource": "Audio|2022-03-31T12:47:33.990Z|51379",
-      "name": "WakaSound",
-      "type": "Audio"
     }
   }
 }
