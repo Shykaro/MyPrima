@@ -32,3 +32,11 @@ declare namespace Script {
         private move;
     }
 }
+declare namespace Script {
+    import ƒ = FudgeCore;
+    class Tree extends ƒ.Node {
+        static takenPositions: ƒ.Vector3[];
+        constructor(_name: string, _position: ƒ.Vector3);
+        private addGraph;
+    }
+}
