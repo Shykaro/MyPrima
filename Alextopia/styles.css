@@ -1,0 +1,100 @@
+html,
+body {
+  padding: 0px;
+  margin: 0px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+dialog {
+  text-align: center;
+}
+
+canvas.fullscreen {
+  width: 100vw;
+  height: 100vh;
+}
+
+#game-over {
+  z-index: 1000;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: white;
+  height: 100vh;
+  width: 0;
+  overflow: hidden;
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  font-size: 10rem;
+  font-weight: bold;
+}
+#restart {
+  cursor: pointer;
+  font-size: 2rem;
+  text-align: center;
+  font-weight: normal;
+}
+
+#vui {
+  background-color: transparent;
+  bottom: 10px;
+  padding: 10px;
+  position: absolute;
+  visibility: visible;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode", Geneva,
+    Verdana, sans-serif;
+  font-size: 10px;
+}
+
+.--boxleftdown {
+  background-color: aliceblue;
+}
+
+.--element {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+  background-color: aliceblue;
+}
+
+.element span {
+  width: 50px;
+}
+
+input[type="text"] {
+  border: 0px;
+  background-color: transparent;
+  outline: none;
+}
+
+input[type="range"] {
+  overflow: hidden;
+  -webkit-appearance: none;
+  background-color: #5a5a5a;
+  width: calc(100% - 60px);
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 15px;
+  -webkit-appearance: none;
+  margin-top: -1px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  width: 0px;
+  -webkit-appearance: none;
+  height: 0px;
+  background: #5a5a5a;
+  box-shadow: -120px 0 0 120px #048836;
+}
+
+#overlay {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  transition: box-shadow 5s ease-in;
+}
