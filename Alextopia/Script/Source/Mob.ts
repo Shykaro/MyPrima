@@ -5,6 +5,7 @@ namespace Script {
   export class Mob extends ƒ.Node {
     private movement: ƒ.Vector3 = new ƒ.Vector3(0, -1 / 600, 0);
     private lastPath: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
+    
 
     constructor(_name: string) {
       super(_name);
@@ -37,33 +38,62 @@ namespace Script {
       this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
     }
 
+
+    //Bevor das hier aufgerufen wird MUSS der Lokale vektor gespeichert werden, da man von diesem aus die Position wechselt.
     public move(_paths: ƒ.Node[]): void {
 
       
+        //Press Key for move into direction once
       if (
         ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D])
       ) {
-        console.log("trying to move right") //Adjust this to max out for one field
-        this.mtxLocal.translateY(1);
+         //Adjust this to max out for one field
+        if (iMoveX == 0 && !finishedMobPlacement){
+          iMoveX = 1;
+        mobs[currentUnitNumber].mtxLocal.translateX(1);
+        console.log("trying to move right");
+
+      }
       }
   
       if (
         ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S])
       ) {
-        this.mtxLocal.translateX(-1);
+        if (iMoveYMinus == 0 && !finishedMobPlacement){
+          iMoveYMinus = 1;
+          mobs[currentUnitNumber].mtxLocal.translateY(-1);
+        }
       }
   
       if (
         ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A])
       )  {
-        this.mtxLocal.translateY(-1);
+        if (iMoveXMinus == 0 && !finishedMobPlacement){
+          iMoveXMinus = 1;
+          mobs[currentUnitNumber].mtxLocal.translateX(-1);
+      }
       }
   
       if (
         ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W])
       ) {
-        this.mtxLocal.translateX(1);
+        if (iMoveY == 0 && !finishedMobPlacement){
+          iMoveY = 1;
+          mobs[currentUnitNumber].mtxLocal.translateY(1); //do mobs[x] for the according unit in the rooster. mobs[2].mtxLocal... for 3rd created unit
       }
+    }
+
+      if ( //After pressing space or enter the unit is placed and cant be moved anymore -> jump to next mob
+        ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ENTER, ƒ.KEYBOARD_CODE.SPACE])
+      ) {
+          //finishedMobPlacement = true;
+          if (iLimitSpaceToOne == 0){
+            iLimitSpaceToOne  = 1;
+            currentUnitNumber++; //JETZT NOCH iMOVES WIEDER ZURÜCKSETZEN
+        }
+      }
+
+      
 /*
       if (
         (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&

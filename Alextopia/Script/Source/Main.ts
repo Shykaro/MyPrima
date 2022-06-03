@@ -12,14 +12,22 @@ namespace Script {
   export let viewport: ƒ.Viewport;
   let sounds: ƒ.ComponentAudio[];
   let pacman: ƒ.Node;
-  let water: ƒ.Node[];
-  let paths: ƒ.Node[];
-  export let mobs: Mob[] = [];
-  let currentplayer: number = 1;
-  let i = 0;
+  let water: ƒ.Node[];    //Blocks that cant be set foot on with normal units
+  let paths: ƒ.Node[];    //Building/Land are, every unit can walk on these
 
-  export let movingDirection: string = "y";
-  export let movement: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
+  export let mobs: Mob[] = [];   //Array for all created mobs/units
+  let currentplayer: number = 1; //distinguishes between player 1 and 2
+  let i = 0;
+  export let currentUnitNumber : number = 0; //taken in account to cycle through the units to move them, used in Mob.move function
+  export let iMoveY: number = 0;             //Necessary global variables to limit user to one move per time.
+  export let iMoveYMinus: number = 0; 
+  export let iMoveX: number = 0; 
+  export let iMoveXMinus: number = 0; 
+  export let iLimitSpaceToOne: number = 0; //does the same as iMove, just only for the Space Enter Mob/Unit switch.
+  export let finishedMobPlacement: Boolean = false; //If false, says youre able to move the unit, true says its done.
+
+  export let movingDirection: string = "y";   //outdated?
+  export let movement: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0); //outdated?
 
   function init(_event: Event): void {
     dialog = document.querySelector("dialog");
@@ -100,11 +108,20 @@ namespace Script {
       function addMob() {
       i++
       console.log("Mob"+i)
+      
       const mob = new Mob("Mob" + i);
-      mob.mtxLocal.translate(new ƒ.Vector3(7, 1, 0));
+      mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
       graph.addChild(mob);
+      
 
-      mobs.push(mob, mob, mob, mob, mob, mob,);
+      
+
+      mobs.push(mob);
+
+      //Anzahl der Mobs generated im Array
+      console.log(mobs)
+
+      
   }
 
 
@@ -121,6 +138,11 @@ namespace Script {
 
     movePacman();
     mobs.map((g) => g.move(paths));
+
+    //mobs.move(paths);
+    //mobs[2].move(paths);
+
+    
 
     if (checkIfMove()) {
       if (!sounds[1].isPlaying && !movement.equals(new ƒ.Vector3(0, 0, 0))) {

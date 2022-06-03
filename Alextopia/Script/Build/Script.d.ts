@@ -11,6 +11,13 @@ declare namespace Script {
     import ƒ = FudgeCore;
     let viewport: ƒ.Viewport;
     let mobs: Mob[];
+    let currentUnitNumber: number;
+    let iMoveY: number;
+    let iMoveYMinus: number;
+    let iMoveX: number;
+    let iMoveXMinus: number;
+    let iLimitSpaceToOne: number;
+    let finishedMobPlacement: Boolean;
     let movingDirection: string;
     let movement: ƒ.Vector3;
     function checkIfMove(_direction?: string): boolean;

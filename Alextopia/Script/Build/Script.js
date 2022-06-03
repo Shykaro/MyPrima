@@ -45,13 +45,20 @@ var Script;
     document.addEventListener("interactiveViewportStarted", start);
     let sounds;
     let pacman;
-    let water;
-    let paths;
-    Script.mobs = [];
-    let currentplayer = 1;
+    let water; //Blocks that cant be set foot on with normal units
+    let paths; //Building/Land are, every unit can walk on these
+    Script.mobs = []; //Array for all created mobs/units
+    let currentplayer = 1; //distinguishes between player 1 and 2
     let i = 0;
-    Script.movingDirection = "y";
-    Script.movement = new ƒ.Vector3(0, 0, 0);
+    Script.currentUnitNumber = 0; //taken in account to cycle through the units to move them, used in Mob.move function
+    Script.iMoveY = 0; //Necessary global variables to limit user to one move per time.
+    Script.iMoveYMinus = 0;
+    Script.iMoveX = 0;
+    Script.iMoveXMinus = 0;
+    Script.iLimitSpaceToOne = 0; //does the same as iMove, just only for the Space Enter Mob/Unit switch.
+    Script.finishedMobPlacement = false; //If false, says youre able to move the unit, true says its done.
+    Script.movingDirection = "y"; //outdated?
+    Script.movement = new ƒ.Vector3(0, 0, 0); //outdated?
     function init(_event) {
         dialog = document.querySelector("dialog");
         dialog.querySelector("h1").textContent = document.title;
@@ -115,9 +122,11 @@ var Script;
             i++;
             console.log("Mob" + i);
             const mob = new Script.Mob("Mob" + i);
-            mob.mtxLocal.translate(new ƒ.Vector3(7, 1, 0));
+            mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
             graph.addChild(mob);
-            Script.mobs.push(mob, mob, mob, mob, mob, mob);
+            Script.mobs.push(mob);
+            //Anzahl der Mobs generated im Array
+            console.log(Script.mobs);
         }
         //Admin Menu End ------------------------------------------------------------------
         Script.setSprite(pacman);
@@ -128,6 +137,8 @@ var Script;
         // ƒ.Physics.simulate();  // if physics is included and used
         movePacman();
         Script.mobs.map((g) => g.move(paths));
+        //mobs.move(paths);
+        //mobs[2].move(paths);
         if (checkIfMove()) {
             if (!sounds[1].isPlaying && !Script.movement.equals(new ƒ.Vector3(0, 0, 0))) {
                 sounds[1].play(true);
@@ -283,19 +294,42 @@ var Script;
             this.addChild(sprite);
             this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
         }
+        //Bevor das hier aufgerufen wird MUSS der Lokale vektor gespeichert werden, da man von diesem aus die Position wechselt.
         move(_paths) {
+            //Press Key for move into direction once
             if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D])) {
-                console.log("trying to move right"); //Adjust this to max out for one field
-                this.mtxLocal.translateY(1);
+                //Adjust this to max out for one field
+                if (Script.iMoveX == 0 && !Script.finishedMobPlacement) {
+                    Script.iMoveX = 1;
+                    Script.mobs[Script.currentUnitNumber].mtxLocal.translateX(1);
+                    console.log("trying to move right");
+                }
             }
             if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S])) {
-                this.mtxLocal.translateX(-1);
+                if (Script.iMoveYMinus == 0 && !Script.finishedMobPlacement) {
+                    Script.iMoveYMinus = 1;
+                    Script.mobs[Script.currentUnitNumber].mtxLocal.translateY(-1);
+                }
             }
             if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A])) {
-                this.mtxLocal.translateY(-1);
+                if (Script.iMoveXMinus == 0 && !Script.finishedMobPlacement) {
+                    Script.iMoveXMinus = 1;
+                    Script.mobs[Script.currentUnitNumber].mtxLocal.translateX(-1);
+                }
             }
             if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W])) {
-                this.mtxLocal.translateX(1);
+                if (Script.iMoveY == 0 && !Script.finishedMobPlacement) {
+                    Script.iMoveY = 1;
+                    Script.mobs[Script.currentUnitNumber].mtxLocal.translateY(1); //do mobs[x] for the according unit in the rooster. mobs[2].mtxLocal... for 3rd created unit
+                }
+            }
+            if ( //After pressing space or enter the unit is placed and cant be moved anymore -> jump to next mob
+            ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ENTER, ƒ.KEYBOARD_CODE.SPACE])) {
+                //finishedMobPlacement = true;
+                if (Script.iLimitSpaceToOne == 0) {
+                    Script.iLimitSpaceToOne = 1;
+                    Script.currentUnitNumber++; //JETZT NOCH iMOVES WIEDER ZURÜCKSETZEN
+                }
             }
             /*
                   if (
