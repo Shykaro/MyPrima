@@ -38,31 +38,7 @@ namespace Script {
       this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
     }
 
-    public changeUnit(): void { //Is used to track current unit and change values accordingly -> NOT ANYMORE
-
-
-        document.addEventListener('keydown', (event) => {
-          var name = event.key;
-      
-          if(name === 'd' || name === 'ArrowRight'){
-            mobs[currentUnitNumber].mtxLocal.translateX(1);
-            console.log("trying to move right");
-          }
-          if(name === 'a' || name === 'ArrowLeft'){
-            mobs[currentUnitNumber].mtxLocal.translateX(-1);
-            console.log("trying to move Left");
-          }
-          if(name === 'w' || name === 'ArrowUp'){
-            mobs[currentUnitNumber].mtxLocal.translateY(1);
-            console.log("trying to move up");
-          }
-          if(name === 's' || name === 'ArrowDown'){
-            mobs[currentUnitNumber].mtxLocal.translateY(-1);
-            console.log("trying to move down");
-          }
-      
-        })
-    }
+    
 
 
     //Bevor das hier aufgerufen wird MUSS der Lokale vektor gespeichert werden, da man von diesem aus die Position wechselt.

@@ -12,8 +12,8 @@ namespace Script {
   export let viewport: ƒ.Viewport;
   let sounds: ƒ.ComponentAudio[];
   let pacman: ƒ.Node;
-  let water: ƒ.Node[];    //Blocks that cant be set foot on with normal units
-  let paths: ƒ.Node[];    //Building/Land are, every unit can walk on these
+  let water: ƒ.Node[];    //Blocks that cant be set foot on with normal units - Beinhaltet jeden Wasserblock in einem Array gespeichert
+  let paths: ƒ.Node[];    //Building/Land are, every unit can walk on these - beinhaltet jeden begehbaren block in einem Array gespeichert
 
   export let mobs: Mob[] = [];   //Array for all created mobs/units
   let currentplayer: number = 1; //distinguishes between player 1 and 2
@@ -90,6 +90,9 @@ namespace Script {
       addInteractable(path);
     }
 
+    console.log(paths);
+    console.log(water);
+
 
     //Admin  Menu --------------------------------------------------------------------
     document.getElementById("plusmob").addEventListener("click", (event) => {
@@ -113,7 +116,7 @@ namespace Script {
 
     changeUnit(); //Funktion zum bewegen einer Unit in Main.ts
 
-    
+
     setSprite(pacman);
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
@@ -142,6 +145,11 @@ namespace Script {
     //checkIfGameOver();
 
     viewport.draw();
+  }
+
+
+  function currentPlayerSwapHandle(): void { //Handles player 1 and 2.
+
   }
 
   function movePacman(): void {
@@ -230,35 +238,6 @@ namespace Script {
     return true;
   }
 
-  /* Not needed atm, is jsut for collision
-  function checkIfGameOver(): void {
-    for (const mob of mobs) {
-      const isEvenPacman =
-        (Math.round(pacman.mtxLocal.translation.y) + Math.round(pacman.mtxLocal.translation.x)) %
-          2 ===
-        0;
-
-      const isEvenMob =
-        (Math.round(mob.mtxLocal.translation.y) + Math.round(mob.mtxLocal.translation.x)) %
-          2 ===
-        0;
-
-      if (
-        isEvenPacman !== isEvenMob &&
-        pacman.mtxLocal.translation.equals(Mob.mtxLocal.translation, 0.8)
-      ) {
-        document.getElementById("game-over").style.width = "100vw";
-        ƒ.Loop.removeEventListener(ƒ.EVENT.LOOP_FRAME, update);
-
-        sounds[1].play(false);
-        sounds[2].play(true);
-
-        document.getElementById("restart").addEventListener("click", function (_event: Event) {
-          window.location.reload();
-        });
-      }
-    }
-  }*/
 
   function addInteractable(_path: ƒ.Node): void {
     //random interactable auf der Map platzieren
@@ -290,33 +269,115 @@ namespace Script {
     }
   }
 
-  function changeUnit(): void { //Is used to track current unit and change values accordingly -> NOT ANYMORE
 
+  function changeUnit(): void { //Is used to track current unit and change values accordingly -> NOT ANYMORE
+    //let localVector: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
+    //let localVector: ƒ.Matrix4x4 = mobs[currentUnitNumber].mtxLocal;
 
     document.addEventListener('keydown', (event) => {
       var name = event.key;
 
       if (name === 'd' || name === 'ArrowRight') {
+        if (checkIfMoveMob("x")) {
         mobs[currentUnitNumber].mtxLocal.translateX(1);
         console.log("trying to move right");
+        }
       }
       if (name === 'a' || name === 'ArrowLeft') {
+        if (checkIfMoveMob("-x")) {
         mobs[currentUnitNumber].mtxLocal.translateX(-1);
         console.log("trying to move Left");
+        }
       }
       if (name === 'w' || name === 'ArrowUp') {
+        if (checkIfMoveMob("y")) {
         mobs[currentUnitNumber].mtxLocal.translateY(1);
         console.log("trying to move up");
+        }
       }
       if (name === 's' || name === 'ArrowDown') {
+        if (checkIfMoveMob("-y")) {
         mobs[currentUnitNumber].mtxLocal.translateY(-1);
         console.log("trying to move down");
+        }
+      }
+      if (name === 'Space' || name === 'Enter') {
+        currentUnitNumber++;
+        console.log("Logged position, going to next unit");
       }
 
     })
   }
 
+  export function checkIfMoveMob(_direction?: string): boolean {
+    const y: number = mobs[currentUnitNumber].mtxLocal.translation.y;
+    const x: number = mobs[currentUnitNumber].mtxLocal.translation.x;
+    let newPosition: ƒ.Vector3;
+
+    switch (_direction ?? movingDirection) {
+      case "x":
+        newPosition = new ƒ.Vector3(x + 1, y, 0);
+        break;
+      case "-x":
+        newPosition = new ƒ.Vector3(x - 1, y, 0);
+        break;
+      case "y":
+        newPosition = new ƒ.Vector3(x, y + 1, 0);
+        break;
+      case "-y":
+        newPosition = new ƒ.Vector3(x, y - 1, 0);
+        break;
+
+      default:
+        break;
+    }
+
+    const wall: ƒ.Node = water.find((w) => w.mtxLocal.translation.equals(newPosition, 0.022));
+
+    if (wall) {
+      sounds[1].play(false);
+      return false;
+    }
+
+    const path: ƒ.Node = paths.find((p) => p.mtxLocal.translation.equals(newPosition, 1));
+
+    if (!path) {
+      sounds[1].play(false);
+      return false;
+    }
+
+    return true;
+  }
 
 
+/* Not needed atm, is jsut for collision
+  function checkIfGameOver(): void {
+    for (const mob of mobs) {
+      const isEvenPacman =
+        (Math.round(pacman.mtxLocal.translation.y) + Math.round(pacman.mtxLocal.translation.x)) %
+          2 ===
+        0;
+
+      const isEvenMob =
+        (Math.round(mob.mtxLocal.translation.y) + Math.round(mob.mtxLocal.translation.x)) %
+          2 ===
+        0;
+
+      if (
+        isEvenPacman !== isEvenMob &&
+        pacman.mtxLocal.translation.equals(Mob.mtxLocal.translation, 0.8)
+      ) {
+        document.getElementById("game-over").style.width = "100vw";
+        ƒ.Loop.removeEventListener(ƒ.EVENT.LOOP_FRAME, update);
+
+        sounds[1].play(false);
+        sounds[2].play(true);
+
+        document.getElementById("restart").addEventListener("click", function (_event: Event) {
+          window.location.reload();
+        });
+      }
+    }
+  }*/
 
 }

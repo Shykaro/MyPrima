@@ -21,6 +21,7 @@ declare namespace Script {
     let movingDirection: string;
     let movement: ƒ.Vector3;
     function checkIfMove(_direction?: string): boolean;
+    function checkIfMoveMob(_direction?: string): boolean;
 }
 declare namespace Script {
     import ƒ = FudgeCore;
@@ -28,7 +29,6 @@ declare namespace Script {
         private movement;
         private lastPath;
         constructor(_name: string);
-        changeUnit(): void;
         move(): void;
     }
 }

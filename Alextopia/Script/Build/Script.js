@@ -45,8 +45,8 @@ var Script;
     document.addEventListener("interactiveViewportStarted", start);
     let sounds;
     let pacman;
-    let water; //Blocks that cant be set foot on with normal units
-    let paths; //Building/Land are, every unit can walk on these
+    let water; //Blocks that cant be set foot on with normal units - Beinhaltet jeden Wasserblock in einem Array gespeichert
+    let paths; //Building/Land are, every unit can walk on these - beinhaltet jeden begehbaren block in einem Array gespeichert
     Script.mobs = []; //Array for all created mobs/units
     let currentplayer = 1; //distinguishes between player 1 and 2
     let i = 0;
@@ -107,6 +107,8 @@ var Script;
         for (const path of paths) { //Herausfinden was das is
             addInteractable(path);
         }
+        console.log(paths);
+        console.log(water);
         //Admin  Menu --------------------------------------------------------------------
         document.getElementById("plusmob").addEventListener("click", (event) => {
             //function addMob() {
@@ -140,6 +142,8 @@ var Script;
         }
         //checkIfGameOver();
         Script.viewport.draw();
+    }
+    function currentPlayerSwapHandle() {
     }
     function movePacman() {
         if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D]) &&
@@ -208,35 +212,6 @@ var Script;
         return true;
     }
     Script.checkIfMove = checkIfMove;
-    /* Not needed atm, is jsut for collision
-    function checkIfGameOver(): void {
-      for (const mob of mobs) {
-        const isEvenPacman =
-          (Math.round(pacman.mtxLocal.translation.y) + Math.round(pacman.mtxLocal.translation.x)) %
-            2 ===
-          0;
-  
-        const isEvenMob =
-          (Math.round(mob.mtxLocal.translation.y) + Math.round(mob.mtxLocal.translation.x)) %
-            2 ===
-          0;
-  
-        if (
-          isEvenPacman !== isEvenMob &&
-          pacman.mtxLocal.translation.equals(Mob.mtxLocal.translation, 0.8)
-        ) {
-          document.getElementById("game-over").style.width = "100vw";
-          ƒ.Loop.removeEventListener(ƒ.EVENT.LOOP_FRAME, update);
-  
-          sounds[1].play(false);
-          sounds[2].play(true);
-  
-          document.getElementById("restart").addEventListener("click", function (_event: Event) {
-            window.location.reload();
-          });
-        }
-      }
-    }*/
     function addInteractable(_path) {
         //random interactable auf der Map platzieren
         const mtrPill = new ƒ.Material("Pill", ƒ.ShaderLit, new ƒ.CoatColored(ƒ.Color.CSS("#f5ce42")));
@@ -258,26 +233,102 @@ var Script;
         }
     }
     function changeUnit() {
+        //let localVector: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
+        //let localVector: ƒ.Matrix4x4 = mobs[currentUnitNumber].mtxLocal;
         document.addEventListener('keydown', (event) => {
             var name = event.key;
             if (name === 'd' || name === 'ArrowRight') {
-                Script.mobs[Script.currentUnitNumber].mtxLocal.translateX(1);
-                console.log("trying to move right");
+                if (checkIfMoveMob("x")) {
+                    Script.mobs[Script.currentUnitNumber].mtxLocal.translateX(1);
+                    console.log("trying to move right");
+                }
             }
             if (name === 'a' || name === 'ArrowLeft') {
-                Script.mobs[Script.currentUnitNumber].mtxLocal.translateX(-1);
-                console.log("trying to move Left");
+                if (checkIfMoveMob("-x")) {
+                    Script.mobs[Script.currentUnitNumber].mtxLocal.translateX(-1);
+                    console.log("trying to move Left");
+                }
             }
             if (name === 'w' || name === 'ArrowUp') {
-                Script.mobs[Script.currentUnitNumber].mtxLocal.translateY(1);
-                console.log("trying to move up");
+                if (checkIfMoveMob("y")) {
+                    Script.mobs[Script.currentUnitNumber].mtxLocal.translateY(1);
+                    console.log("trying to move up");
+                }
             }
             if (name === 's' || name === 'ArrowDown') {
-                Script.mobs[Script.currentUnitNumber].mtxLocal.translateY(-1);
-                console.log("trying to move down");
+                if (checkIfMoveMob("-y")) {
+                    Script.mobs[Script.currentUnitNumber].mtxLocal.translateY(-1);
+                    console.log("trying to move down");
+                }
+            }
+            if (name === 'Space' || name === 'Enter') {
+                Script.currentUnitNumber++;
+                console.log("Logged position, going to next unit");
             }
         });
     }
+    function checkIfMoveMob(_direction) {
+        const y = Script.mobs[Script.currentUnitNumber].mtxLocal.translation.y;
+        const x = Script.mobs[Script.currentUnitNumber].mtxLocal.translation.x;
+        let newPosition;
+        switch (_direction ?? Script.movingDirection) {
+            case "x":
+                newPosition = new ƒ.Vector3(x + 1, y, 0);
+                break;
+            case "-x":
+                newPosition = new ƒ.Vector3(x - 1, y, 0);
+                break;
+            case "y":
+                newPosition = new ƒ.Vector3(x, y + 1, 0);
+                break;
+            case "-y":
+                newPosition = new ƒ.Vector3(x, y - 1, 0);
+                break;
+            default:
+                break;
+        }
+        const wall = water.find((w) => w.mtxLocal.translation.equals(newPosition, 0.022));
+        if (wall) {
+            sounds[1].play(false);
+            return false;
+        }
+        const path = paths.find((p) => p.mtxLocal.translation.equals(newPosition, 1));
+        if (!path) {
+            sounds[1].play(false);
+            return false;
+        }
+        return true;
+    }
+    Script.checkIfMoveMob = checkIfMoveMob;
+    /* Not needed atm, is jsut for collision
+      function checkIfGameOver(): void {
+        for (const mob of mobs) {
+          const isEvenPacman =
+            (Math.round(pacman.mtxLocal.translation.y) + Math.round(pacman.mtxLocal.translation.x)) %
+              2 ===
+            0;
+    
+          const isEvenMob =
+            (Math.round(mob.mtxLocal.translation.y) + Math.round(mob.mtxLocal.translation.x)) %
+              2 ===
+            0;
+    
+          if (
+            isEvenPacman !== isEvenMob &&
+            pacman.mtxLocal.translation.equals(Mob.mtxLocal.translation, 0.8)
+          ) {
+            document.getElementById("game-over").style.width = "100vw";
+            ƒ.Loop.removeEventListener(ƒ.EVENT.LOOP_FRAME, update);
+    
+            sounds[1].play(false);
+            sounds[2].play(true);
+    
+            document.getElementById("restart").addEventListener("click", function (_event: Event) {
+              window.location.reload();
+            });
+          }
+        }
+      }*/
 })(Script || (Script = {}));
 var Script;
 (function (Script) {
@@ -306,27 +357,6 @@ var Script;
             sprite.framerate = 10;
             this.addChild(sprite);
             this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
-        }
-        changeUnit() {
-            document.addEventListener('keydown', (event) => {
-                var name = event.key;
-                if (name === 'd' || name === 'ArrowRight') {
-                    Script.mobs[Script.currentUnitNumber].mtxLocal.translateX(1);
-                    console.log("trying to move right");
-                }
-                if (name === 'a' || name === 'ArrowLeft') {
-                    Script.mobs[Script.currentUnitNumber].mtxLocal.translateX(-1);
-                    console.log("trying to move Left");
-                }
-                if (name === 'w' || name === 'ArrowUp') {
-                    Script.mobs[Script.currentUnitNumber].mtxLocal.translateY(1);
-                    console.log("trying to move up");
-                }
-                if (name === 's' || name === 'ArrowDown') {
-                    Script.mobs[Script.currentUnitNumber].mtxLocal.translateY(-1);
-                    console.log("trying to move down");
-                }
-            });
         }
         //Bevor das hier aufgerufen wird MUSS der Lokale vektor gespeichert werden, da man von diesem aus die Position wechselt.
         move() {
