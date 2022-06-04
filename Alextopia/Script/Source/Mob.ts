@@ -38,22 +38,47 @@ namespace Script {
       this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
     }
 
+    public changeUnit(): void { //Is used to track current unit and change values accordingly -> NOT ANYMORE
+
+
+        document.addEventListener('keydown', (event) => {
+          var name = event.key;
+      
+          if(name === 'd' || name === 'ArrowRight'){
+            mobs[currentUnitNumber].mtxLocal.translateX(1);
+            console.log("trying to move right");
+          }
+          if(name === 'a' || name === 'ArrowLeft'){
+            mobs[currentUnitNumber].mtxLocal.translateX(-1);
+            console.log("trying to move Left");
+          }
+          if(name === 'w' || name === 'ArrowUp'){
+            mobs[currentUnitNumber].mtxLocal.translateY(1);
+            console.log("trying to move up");
+          }
+          if(name === 's' || name === 'ArrowDown'){
+            mobs[currentUnitNumber].mtxLocal.translateY(-1);
+            console.log("trying to move down");
+          }
+      
+        })
+    }
+
 
     //Bevor das hier aufgerufen wird MUSS der Lokale vektor gespeichert werden, da man von diesem aus die Position wechselt.
-    public move(_paths: ƒ.Node[]): void {
-
+    public move(): void { //move(_paths: ƒ.Node[]) WIRD IN UPDATE MEHRFACH DUERHAFT AUFGERUFEN
       
         //Press Key for move into direction once
-      if (
-        ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D])
+      /*if (
+        ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D,])
       ) {
          //Adjust this to max out for one field
-        if (iMoveX == 0 && !finishedMobPlacement){
-          iMoveX = 1;
-        mobs[currentUnitNumber].mtxLocal.translateX(1);
-        console.log("trying to move right");
+        //if (iMoveX == 0 && !finishedMobPlacement){
+          //iMoveX = 1;
+        //mobs[currentUnitNumber].mtxLocal.translateX(1);
+        //console.log("trying to move right");
 
-      }
+      //}
       }
   
       if (
@@ -88,11 +113,18 @@ namespace Script {
       ) {
           //finishedMobPlacement = true;
           if (iLimitSpaceToOne == 0){
-            iLimitSpaceToOne  = 1;
-            currentUnitNumber++; //JETZT NOCH iMOVES WIEDER ZURÜCKSETZEN
+            iLimitSpaceToOne = 1;
+            currentUnitNumber++; 
+            iMoveX = 0;           //Setze imoves zurück damit neue unit wieder verschoben werden kann
+            iMoveXMinus = 0;
+            iMoveY = 0;
+            iMoveYMinus = 0;
+            if(currentUnitNumber){ //useless, yet.
+
+            }
         }
       }
-
+*/
       
 /*
       if (

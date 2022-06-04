@@ -28,7 +28,8 @@ declare namespace Script {
         private movement;
         private lastPath;
         constructor(_name: string);
-        move(_paths: ƒ.Node[]): void;
+        changeUnit(): void;
+        move(): void;
     }
 }
 declare namespace Script {

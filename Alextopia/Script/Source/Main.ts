@@ -18,11 +18,11 @@ namespace Script {
   export let mobs: Mob[] = [];   //Array for all created mobs/units
   let currentplayer: number = 1; //distinguishes between player 1 and 2
   let i = 0;
-  export let currentUnitNumber : number = 0; //taken in account to cycle through the units to move them, used in Mob.move function
+  export let currentUnitNumber: number = 0; //taken in account to cycle through the units to move them, used in Mob.move function
   export let iMoveY: number = 0;             //Necessary global variables to limit user to one move per time.
-  export let iMoveYMinus: number = 0; 
-  export let iMoveX: number = 0; 
-  export let iMoveXMinus: number = 0; 
+  export let iMoveYMinus: number = 0;
+  export let iMoveX: number = 0;
+  export let iMoveXMinus: number = 0;
   export let iLimitSpaceToOne: number = 0; //does the same as iMove, just only for the Space Enter Mob/Unit switch.
   export let finishedMobPlacement: Boolean = false; //If false, says youre able to move the unit, true says its done.
 
@@ -72,7 +72,7 @@ namespace Script {
     );
   }
 
-  function start(_event: CustomEvent): void {
+  function start(_event: CustomEvent): void { //Was beim Start initialisiert werden soll
     viewport = _event.detail;
     viewport.camera.mtxPivot.translate(new ƒ.Vector3(3, 2, 15));
     viewport.camera.mtxPivot.rotateY(180);
@@ -90,42 +90,29 @@ namespace Script {
       addInteractable(path);
     }
 
-  
-
-    /*const mob1 = new Mob("Mob1");
-    const mob2 = new Mob("Mob2");
-
-    mob1.mtxLocal.translate(new ƒ.Vector3(4, 1, 0));
-    mob2.mtxLocal.translate(new ƒ.Vector3(3, 5, 0));
-
-    //mobs.push(mob1, mob2);
-    graph.addChild(mob1);
-    graph.addChild(mob2);*/
 
     //Admin  Menu --------------------------------------------------------------------
-      document.getElementById("plusmob").addEventListener("click", addMob);
-
-      function addMob() {
+    document.getElementById("plusmob").addEventListener("click", (event) => {
+      //function addMob() {
       i++
-      console.log("Mob"+i)
-      
+      console.log("Mob" + i)
+
       const mob = new Mob("Mob" + i);
       mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
       graph.addChild(mob);
-      
-
-      
 
       mobs.push(mob);
 
       //Anzahl der Mobs generated im Array
-      console.log(mobs)
-
-      
-  }
+      console.log(mobs) //CHANGE THIS GLEICH SOFORT});
 
 
-  //Admin Menu End ------------------------------------------------------------------
+    })
+    //Admin Menu End ------------------------------------------------------------------
+
+
+    changeUnit(); //Funktion zum bewegen einer Unit in Main.ts
+
     
     setSprite(pacman);
 
@@ -137,12 +124,12 @@ namespace Script {
     // ƒ.Physics.simulate();  // if physics is included and used
 
     movePacman();
-    mobs.map((g) => g.move(paths));
+    mobs.map((g) => g.move()); //g.move(paths));
 
     //mobs.move(paths);
     //mobs[2].move(paths);
 
-    
+
 
     if (checkIfMove()) {
       if (!sounds[1].isPlaying && !movement.equals(new ƒ.Vector3(0, 0, 0))) {
@@ -303,5 +290,33 @@ namespace Script {
     }
   }
 
-  
+  function changeUnit(): void { //Is used to track current unit and change values accordingly -> NOT ANYMORE
+
+
+    document.addEventListener('keydown', (event) => {
+      var name = event.key;
+
+      if (name === 'd' || name === 'ArrowRight') {
+        mobs[currentUnitNumber].mtxLocal.translateX(1);
+        console.log("trying to move right");
+      }
+      if (name === 'a' || name === 'ArrowLeft') {
+        mobs[currentUnitNumber].mtxLocal.translateX(-1);
+        console.log("trying to move Left");
+      }
+      if (name === 'w' || name === 'ArrowUp') {
+        mobs[currentUnitNumber].mtxLocal.translateY(1);
+        console.log("trying to move up");
+      }
+      if (name === 's' || name === 'ArrowDown') {
+        mobs[currentUnitNumber].mtxLocal.translateY(-1);
+        console.log("trying to move down");
+      }
+
+    })
+  }
+
+
+
+
 }

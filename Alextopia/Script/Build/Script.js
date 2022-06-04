@@ -107,18 +107,9 @@ var Script;
         for (const path of paths) { //Herausfinden was das is
             addInteractable(path);
         }
-        /*const mob1 = new Mob("Mob1");
-        const mob2 = new Mob("Mob2");
-    
-        mob1.mtxLocal.translate(new ƒ.Vector3(4, 1, 0));
-        mob2.mtxLocal.translate(new ƒ.Vector3(3, 5, 0));
-    
-        //mobs.push(mob1, mob2);
-        graph.addChild(mob1);
-        graph.addChild(mob2);*/
         //Admin  Menu --------------------------------------------------------------------
-        document.getElementById("plusmob").addEventListener("click", addMob);
-        function addMob() {
+        document.getElementById("plusmob").addEventListener("click", (event) => {
+            //function addMob() {
             i++;
             console.log("Mob" + i);
             const mob = new Script.Mob("Mob" + i);
@@ -126,9 +117,10 @@ var Script;
             graph.addChild(mob);
             Script.mobs.push(mob);
             //Anzahl der Mobs generated im Array
-            console.log(Script.mobs);
-        }
+            console.log(Script.mobs); //CHANGE THIS GLEICH SOFORT});
+        });
         //Admin Menu End ------------------------------------------------------------------
+        changeUnit(); //Funktion zum bewegen einer Unit in Main.ts
         Script.setSprite(pacman);
         ƒ.Loop.addEventListener("loopFrame" /* ƒ.EVENT.LOOP_FRAME */, update);
         ƒ.Loop.start(); // start the game loop to continuously draw the viewport, update the audiosystem and drive the physics i/a
@@ -136,7 +128,7 @@ var Script;
     function update(_event) {
         // ƒ.Physics.simulate();  // if physics is included and used
         movePacman();
-        Script.mobs.map((g) => g.move(paths));
+        Script.mobs.map((g) => g.move()); //g.move(paths));
         //mobs.move(paths);
         //mobs[2].move(paths);
         if (checkIfMove()) {
@@ -265,6 +257,27 @@ var Script;
             }
         }
     }
+    function changeUnit() {
+        document.addEventListener('keydown', (event) => {
+            var name = event.key;
+            if (name === 'd' || name === 'ArrowRight') {
+                Script.mobs[Script.currentUnitNumber].mtxLocal.translateX(1);
+                console.log("trying to move right");
+            }
+            if (name === 'a' || name === 'ArrowLeft') {
+                Script.mobs[Script.currentUnitNumber].mtxLocal.translateX(-1);
+                console.log("trying to move Left");
+            }
+            if (name === 'w' || name === 'ArrowUp') {
+                Script.mobs[Script.currentUnitNumber].mtxLocal.translateY(1);
+                console.log("trying to move up");
+            }
+            if (name === 's' || name === 'ArrowDown') {
+                Script.mobs[Script.currentUnitNumber].mtxLocal.translateY(-1);
+                console.log("trying to move down");
+            }
+        });
+    }
 })(Script || (Script = {}));
 var Script;
 (function (Script) {
@@ -294,43 +307,86 @@ var Script;
             this.addChild(sprite);
             this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
         }
-        //Bevor das hier aufgerufen wird MUSS der Lokale vektor gespeichert werden, da man von diesem aus die Position wechselt.
-        move(_paths) {
-            //Press Key for move into direction once
-            if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D])) {
-                //Adjust this to max out for one field
-                if (Script.iMoveX == 0 && !Script.finishedMobPlacement) {
-                    Script.iMoveX = 1;
+        changeUnit() {
+            document.addEventListener('keydown', (event) => {
+                var name = event.key;
+                if (name === 'd' || name === 'ArrowRight') {
                     Script.mobs[Script.currentUnitNumber].mtxLocal.translateX(1);
                     console.log("trying to move right");
                 }
-            }
-            if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S])) {
-                if (Script.iMoveYMinus == 0 && !Script.finishedMobPlacement) {
-                    Script.iMoveYMinus = 1;
-                    Script.mobs[Script.currentUnitNumber].mtxLocal.translateY(-1);
-                }
-            }
-            if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A])) {
-                if (Script.iMoveXMinus == 0 && !Script.finishedMobPlacement) {
-                    Script.iMoveXMinus = 1;
+                if (name === 'a' || name === 'ArrowLeft') {
                     Script.mobs[Script.currentUnitNumber].mtxLocal.translateX(-1);
+                    console.log("trying to move Left");
                 }
-            }
-            if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W])) {
-                if (Script.iMoveY == 0 && !Script.finishedMobPlacement) {
-                    Script.iMoveY = 1;
-                    Script.mobs[Script.currentUnitNumber].mtxLocal.translateY(1); //do mobs[x] for the according unit in the rooster. mobs[2].mtxLocal... for 3rd created unit
+                if (name === 'w' || name === 'ArrowUp') {
+                    Script.mobs[Script.currentUnitNumber].mtxLocal.translateY(1);
+                    console.log("trying to move up");
                 }
+                if (name === 's' || name === 'ArrowDown') {
+                    Script.mobs[Script.currentUnitNumber].mtxLocal.translateY(-1);
+                    console.log("trying to move down");
+                }
+            });
+        }
+        //Bevor das hier aufgerufen wird MUSS der Lokale vektor gespeichert werden, da man von diesem aus die Position wechselt.
+        move() {
+            //Press Key for move into direction once
+            /*if (
+              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D,])
+            ) {
+               //Adjust this to max out for one field
+              //if (iMoveX == 0 && !finishedMobPlacement){
+                //iMoveX = 1;
+              //mobs[currentUnitNumber].mtxLocal.translateX(1);
+              //console.log("trying to move right");
+      
+            //}
             }
+        
+            if (
+              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S])
+            ) {
+              if (iMoveYMinus == 0 && !finishedMobPlacement){
+                iMoveYMinus = 1;
+                mobs[currentUnitNumber].mtxLocal.translateY(-1);
+              }
+            }
+        
+            if (
+              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A])
+            )  {
+              if (iMoveXMinus == 0 && !finishedMobPlacement){
+                iMoveXMinus = 1;
+                mobs[currentUnitNumber].mtxLocal.translateX(-1);
+            }
+            }
+        
+            if (
+              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W])
+            ) {
+              if (iMoveY == 0 && !finishedMobPlacement){
+                iMoveY = 1;
+                mobs[currentUnitNumber].mtxLocal.translateY(1); //do mobs[x] for the according unit in the rooster. mobs[2].mtxLocal... for 3rd created unit
+            }
+          }
+      
             if ( //After pressing space or enter the unit is placed and cant be moved anymore -> jump to next mob
-            ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ENTER, ƒ.KEYBOARD_CODE.SPACE])) {
+              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ENTER, ƒ.KEYBOARD_CODE.SPACE])
+            ) {
                 //finishedMobPlacement = true;
-                if (Script.iLimitSpaceToOne == 0) {
-                    Script.iLimitSpaceToOne = 1;
-                    Script.currentUnitNumber++; //JETZT NOCH iMOVES WIEDER ZURÜCKSETZEN
-                }
+                if (iLimitSpaceToOne == 0){
+                  iLimitSpaceToOne = 1;
+                  currentUnitNumber++;
+                  iMoveX = 0;           //Setze imoves zurück damit neue unit wieder verschoben werden kann
+                  iMoveXMinus = 0;
+                  iMoveY = 0;
+                  iMoveYMinus = 0;
+                  if(currentUnitNumber){ //useless, yet.
+      
+                  }
+              }
             }
+      */
             /*
                   if (
                     (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
