@@ -3,8 +3,8 @@ namespace Script {
   import ƒAid = FudgeAid;
 
   export class Mob extends ƒ.Node {
-    private movement: ƒ.Vector3 = new ƒ.Vector3(0, -1 / 600, 0);
-    private lastPath: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
+    //private movement: ƒ.Vector3 = new ƒ.Vector3(0, -1 / 600, 0);
+    //private lastPath: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
     
 
     constructor(_name: string) {
@@ -12,7 +12,7 @@ namespace Script {
 
       const mesh: ƒ.MeshSphere = new ƒ.MeshSphere();
       const material: ƒ.Material = new ƒ.Material(
-        "MaterialGhost",
+        "MaterialMob",
         ƒ.ShaderLit,
         new ƒ.CoatColored()
       );
@@ -31,8 +31,8 @@ namespace Script {
       sprite.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
       sprite.setAnimation(<ƒAid.SpriteSheetAnimation>animations["mob"]);
       sprite.setFrameDirection(1);
-      sprite.mtxLocal.translateZ(0.5);
-      sprite.framerate = 10;
+      sprite.mtxLocal.translateZ(0.1);
+      sprite.framerate = 5;
 
       this.addChild(sprite);
       this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);

@@ -20,14 +20,11 @@ declare namespace Script {
     let finishedMobPlacement: Boolean;
     let movingDirection: string;
     let movement: ƒ.Vector3;
-    function checkIfMove(_direction?: string): boolean;
     function checkIfMoveMob(_direction?: string): boolean;
 }
 declare namespace Script {
     import ƒ = FudgeCore;
     class Mob extends ƒ.Node {
-        private movement;
-        private lastPath;
         constructor(_name: string);
         move(): void;
     }
@@ -37,5 +34,5 @@ declare namespace Script {
     let animations: ƒAid.SpriteSheetAnimations;
     function loadSprites(): Promise<void>;
     function setSprite(_node: ƒ.Node): void;
-    function rotateSprite(_direction: string): void;
+    function setSpritePaths(_node: ƒ.Node): void;
 }

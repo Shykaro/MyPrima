@@ -10,8 +10,8 @@ namespace Script {
   document.addEventListener("interactiveViewportStarted", <EventListener>start);
 
   export let viewport: ƒ.Viewport;
-  let sounds: ƒ.ComponentAudio[];
-  let pacman: ƒ.Node;
+  let sounds: ƒ.ComponentAudio[]; //outdated? i need it for later
+  let pacman: ƒ.Node;             //outdated? yes
   let water: ƒ.Node[];    //Blocks that cant be set foot on with normal units - Beinhaltet jeden Wasserblock in einem Array gespeichert
   let paths: ƒ.Node[];    //Building/Land are, every unit can walk on these - beinhaltet jeden begehbaren block in einem Array gespeichert
 
@@ -19,15 +19,38 @@ namespace Script {
   let currentplayer: number = 1; //distinguishes between player 1 and 2
   let i = 0;
   export let currentUnitNumber: number = 0; //taken in account to cycle through the units to move them, used in Mob.move function
-  export let iMoveY: number = 0;             //Necessary global variables to limit user to one move per time.
-  export let iMoveYMinus: number = 0;
-  export let iMoveX: number = 0;
-  export let iMoveXMinus: number = 0;
+  export let iMoveY: number = 0;            //Necessary global variables to limit user to one move per time. ALLE OBSOLET.
+  export let iMoveYMinus: number = 0;       //outdated? yes
+  export let iMoveX: number = 0;            //outdated? yes
+  export let iMoveXMinus: number = 0;       //outdated? yes
   export let iLimitSpaceToOne: number = 0; //does the same as iMove, just only for the Space Enter Mob/Unit switch.
   export let finishedMobPlacement: Boolean = false; //If false, says youre able to move the unit, true says its done.
 
-  export let movingDirection: string = "y";   //outdated?
-  export let movement: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0); //outdated?
+  export let movingDirection: string = "y"; 
+
+  export let movement: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0); //outdated? yes
+
+
+
+  //------------ TO-DO'S -------------------------------------------------------------------
+  // Start on Unit to unit intercation ?? How do they interact, do they have HP or other Stats? -> Do another spawn RANDOM button for enemy units, let every unit move by one and automatically change side when everyone moved/interacted.
+  // ein fking UI <-- Important, less complexity, machen sobald ich kb auf programming aber Zeit habe.
+  // Handle Player swap -> currentPlayerSwapHandle()
+  // Unit should only be able to walk 1 field from starting position, maybe test with random spawnfields for Unit +1 button.
+  // Start implementing different rounds in a players turn -> unit moving -> unit producing -> playerswap
+  // 
+  //
+  //
+  // ++ DONE but maybe needs rework ++ Graphics, like terrain and Units
+  //------------ TO-DO'S End ---------------------------------------------------------------
+
+  //------------ Notizen -------------------------------------------------------------------
+  // Do random maps as external data save and load.
+  //
+  //
+  //
+  //------------ Notizen End ---------------------------------------------------------------
+
 
   function init(_event: Event): void {
     dialog = document.querySelector("dialog");
@@ -82,7 +105,7 @@ namespace Script {
     ƒ.AudioManager.default.listenTo(graph);
 
     sounds = graph.getChildrenByName("Sound")[0].getComponents(ƒ.ComponentAudio);
-    pacman = graph.getChildrenByName("Pacman")[0];
+    //pacman = graph.getChildrenByName("Pacman")[0];
     water = graph.getChildrenByName("Grid")[0].getChild(1).getChildren();
     paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
 
@@ -117,7 +140,16 @@ namespace Script {
     changeUnit(); //Funktion zum bewegen einer Unit in Main.ts
 
 
-    setSprite(pacman);
+    //setSprite(pacman);
+
+    water.forEach(function (item, index) { //Loop for all water tiles
+      setSprite(water[index]);
+    });
+
+    paths.forEach(function (item, index) { //Loop for all water tiles
+      setSpritePaths(paths[index]);
+    });
+    
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     ƒ.Loop.start(); // start the game loop to continuously draw the viewport, update the audiosystem and drive the physics i/a
@@ -126,7 +158,7 @@ namespace Script {
   function update(_event: Event): void {
     // ƒ.Physics.simulate();  // if physics is included and used
 
-    movePacman();
+    //movePacman();
     mobs.map((g) => g.move()); //g.move(paths));
 
     //mobs.move(paths);
@@ -134,13 +166,13 @@ namespace Script {
 
 
 
-    if (checkIfMove()) {
+    /*if (checkIfMove()) {
       if (!sounds[1].isPlaying && !movement.equals(new ƒ.Vector3(0, 0, 0))) {
         sounds[1].play(true);
       }
-      useInteractable();
+      useInteractable(); 
       pacman.mtxLocal.translate(movement);
-    }
+    }*/
 
     //checkIfGameOver();
 
@@ -152,14 +184,135 @@ namespace Script {
 
   }
 
-  function movePacman(): void {
+  
+
+  // ------------- Moving Mob abteil ---------------------------------------------------
+  function changeUnit(): void { //Is used to track current unit and change values accordingly -> NOT ANYMORE
+    //let localVector: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
+    //let localVector: ƒ.Matrix4x4 = mobs[currentUnitNumber].mtxLocal;
+
+    document.addEventListener('keydown', (event) => {
+      var name = event.key;
+
+      if (name === 'd' || name === 'ArrowRight') {
+        if (checkIfMoveMob("x")) {
+        mobs[currentUnitNumber].mtxLocal.translateX(1);
+        console.log("trying to move right");
+        }
+      }
+      if (name === 'a' || name === 'ArrowLeft') {
+        if (checkIfMoveMob("-x")) {
+        mobs[currentUnitNumber].mtxLocal.translateX(-1);
+        console.log("trying to move Left");
+        }
+      }
+      if (name === 'w' || name === 'ArrowUp') {
+        if (checkIfMoveMob("y")) {
+        mobs[currentUnitNumber].mtxLocal.translateY(1);
+        console.log("trying to move up");
+        }
+      }
+      if (name === 's' || name === 'ArrowDown') {
+        if (checkIfMoveMob("-y")) {
+        mobs[currentUnitNumber].mtxLocal.translateY(-1);
+        console.log("trying to move down");
+        }
+      }
+      if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
+        currentUnitNumber++;
+        console.log("Logged position, going to next unit");
+      }
+
+    })
+  }
+
+  export function checkIfMoveMob(_direction?: string): boolean { //checks which directions the CURRENTUNITNUMBER can go, called in changeUnit()
+    const y: number = mobs[currentUnitNumber].mtxLocal.translation.y;
+    const x: number = mobs[currentUnitNumber].mtxLocal.translation.x;
+    let newPosition: ƒ.Vector3;
+
+    switch (_direction ?? movingDirection) {
+      case "x":
+        newPosition = new ƒ.Vector3(x + 1, y, 0);
+        break;
+      case "-x":
+        newPosition = new ƒ.Vector3(x - 1, y, 0);
+        break;
+      case "y":
+        newPosition = new ƒ.Vector3(x, y + 1, 0);
+        break;
+      case "-y":
+        newPosition = new ƒ.Vector3(x, y - 1, 0);
+        break;
+
+      default:
+        break;
+    }
+
+    const wall: ƒ.Node = water.find((w) => w.mtxLocal.translation.equals(newPosition, 0));
+
+    if (wall) {
+      //sounds[1].play(false);
+      return false;
+    }
+
+    const path: ƒ.Node = paths.find((p) => p.mtxLocal.translation.equals(newPosition, 0));
+
+    if (!path) {
+      //sounds[1].play(false);
+      return false;
+    }
+
+    return true;
+  }
+  // ------------- Moving Mob abteil END ---------------------------------------------------
+
+
+    //Momentan noch uninteressant aber wichtig für interactable city later.
+    function addInteractable(_path: ƒ.Node): void {
+      //random interactable auf der Map platzieren
+      const mtrCity: ƒ.Material = new ƒ.Material(
+        "City",
+        ƒ.ShaderLit,
+        new ƒ.CoatColored(ƒ.Color.CSS("#f5ce42"))
+      );
+  
+      const cityNode = new ƒ.Node("City");
+      cityNode.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
+      cityNode.addComponent(new ƒ.ComponentMaterial(mtrCity));
+      cityNode.addComponent(new ƒ.ComponentTransform());
+      cityNode.mtxLocal.scale(new ƒ.Vector3(0.3, 0.3, 0.3));
+  
+      //paths[34].addChild(cityNode); //Why doesnt this work?
+      paths[42].addChild(cityNode); // an Path 43 ist nun ein Interactable City gepflanz, no clue was ich damit anfange. -> Feindliche city einnehmbar indem Truppe draufgesetzt wird.
+    }
+  
+    function useInteractable() { //Search function and how its used before.
+      //Spielerfigur == position von interactable, soll dann hochzählen
+      const path = paths.find((p) => p.mtxLocal.translation.equals(pacman.mtxLocal.translation, 0.2)); //Pacman ersetzen.
+  
+      if (path) {
+        const city: ƒ.Node = path.getChild(0);
+  
+        if (city) {
+          path.removeChild(city);
+        }
+      }
+    }
+
+
+
+
+// Not needed atm, is just for collection
+
+/*function movePacman(): void {
     if (
       ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D]) &&
       (pacman.mtxLocal.translation.y + 0.025) % 1 < 0.05
     ) {
       if (checkIfMove("x")) {
         movement.set(1 / 60, 0, 0);
-        rotateSprite("x");
+        //rotateSprite("x");
         movingDirection = "x";
       }
     }
@@ -170,7 +323,7 @@ namespace Script {
     ) {
       if (checkIfMove("-y")) {
         movement.set(0, -1 / 60, 0);
-        rotateSprite("-y");
+        //rotateSprite("-y");
         movingDirection = "-y";
       }
     }
@@ -181,7 +334,7 @@ namespace Script {
     ) {
       if (checkIfMove("-x")) {
         movement.set(-1 / 60, 0, 0);
-        rotateSprite("-x");
+        //rotateSprite("-x");
         movingDirection = "-x";
       }
     }
@@ -192,12 +345,13 @@ namespace Script {
     ) {
       if (checkIfMove("y")) {
         movement.set(0, 1 / 60, 0);
-        rotateSprite("y");
+        //rotateSprite("y");
         movingDirection = "y";
       }
     }
-  }
+  }*/
 
+/*
   export function checkIfMove(_direction?: string): boolean {
     const y: number = pacman.mtxLocal.translation.y;
     const x: number = pacman.mtxLocal.translation.x;
@@ -236,121 +390,9 @@ namespace Script {
     }
 
     return true;
-  }
+  }*/
 
-
-  function addInteractable(_path: ƒ.Node): void {
-    //random interactable auf der Map platzieren
-    const mtrPill: ƒ.Material = new ƒ.Material(
-      "Pill",
-      ƒ.ShaderLit,
-      new ƒ.CoatColored(ƒ.Color.CSS("#f5ce42"))
-    );
-
-    const pillNode = new ƒ.Node("Pill");
-    pillNode.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
-    pillNode.addComponent(new ƒ.ComponentMaterial(mtrPill));
-    pillNode.addComponent(new ƒ.ComponentTransform());
-    pillNode.mtxLocal.scale(new ƒ.Vector3(0.3, 0.3, 0.3));
-
-    _path.addChild(pillNode);
-  }
-
-  function useInteractable() {
-    //Spielerfigur == position von interactablle, soll dann hochzählen
-    const path = paths.find((p) => p.mtxLocal.translation.equals(pacman.mtxLocal.translation, 0.2));
-
-    if (path) {
-      const pill: ƒ.Node = path.getChild(0);
-
-      if (pill) {
-        path.removeChild(pill);
-      }
-    }
-  }
-
-
-  function changeUnit(): void { //Is used to track current unit and change values accordingly -> NOT ANYMORE
-    //let localVector: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
-    //let localVector: ƒ.Matrix4x4 = mobs[currentUnitNumber].mtxLocal;
-
-    document.addEventListener('keydown', (event) => {
-      var name = event.key;
-
-      if (name === 'd' || name === 'ArrowRight') {
-        if (checkIfMoveMob("x")) {
-        mobs[currentUnitNumber].mtxLocal.translateX(1);
-        console.log("trying to move right");
-        }
-      }
-      if (name === 'a' || name === 'ArrowLeft') {
-        if (checkIfMoveMob("-x")) {
-        mobs[currentUnitNumber].mtxLocal.translateX(-1);
-        console.log("trying to move Left");
-        }
-      }
-      if (name === 'w' || name === 'ArrowUp') {
-        if (checkIfMoveMob("y")) {
-        mobs[currentUnitNumber].mtxLocal.translateY(1);
-        console.log("trying to move up");
-        }
-      }
-      if (name === 's' || name === 'ArrowDown') {
-        if (checkIfMoveMob("-y")) {
-        mobs[currentUnitNumber].mtxLocal.translateY(-1);
-        console.log("trying to move down");
-        }
-      }
-      if (name === 'Space' || name === 'Enter') {
-        currentUnitNumber++;
-        console.log("Logged position, going to next unit");
-      }
-
-    })
-  }
-
-  export function checkIfMoveMob(_direction?: string): boolean {
-    const y: number = mobs[currentUnitNumber].mtxLocal.translation.y;
-    const x: number = mobs[currentUnitNumber].mtxLocal.translation.x;
-    let newPosition: ƒ.Vector3;
-
-    switch (_direction ?? movingDirection) {
-      case "x":
-        newPosition = new ƒ.Vector3(x + 1, y, 0);
-        break;
-      case "-x":
-        newPosition = new ƒ.Vector3(x - 1, y, 0);
-        break;
-      case "y":
-        newPosition = new ƒ.Vector3(x, y + 1, 0);
-        break;
-      case "-y":
-        newPosition = new ƒ.Vector3(x, y - 1, 0);
-        break;
-
-      default:
-        break;
-    }
-
-    const wall: ƒ.Node = water.find((w) => w.mtxLocal.translation.equals(newPosition, 0.022));
-
-    if (wall) {
-      sounds[1].play(false);
-      return false;
-    }
-
-    const path: ƒ.Node = paths.find((p) => p.mtxLocal.translation.equals(newPosition, 1));
-
-    if (!path) {
-      sounds[1].play(false);
-      return false;
-    }
-
-    return true;
-  }
-
-
-/* Not needed atm, is jsut for collision
+  /*
   function checkIfGameOver(): void {
     for (const mob of mobs) {
       const isEvenPacman =
