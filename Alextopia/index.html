@@ -1,27 +1,30 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
-    <title>Alextopia</title>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="styles.css" />
+  <title>Alextopia</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="styles.css" />
 
-    <!--Editor settings of this project-->
-    <meta type="settings" autoview="Graph|2022-03-17T14:08:08.737Z|08207" project="{'name':'Alextopia','includeAutoViewScript':false,'graphAutoView':'Graph|2022-03-17T14:08:08.737Z|08207'}" panels="[{'type':'PanelProject','state':{}},{'type':'PanelGraph','state':{'graph':'Graph|2022-03-17T14:08:08.737Z|08207'}}]" />
+  <!--Editor settings of this project-->
+  <meta type="settings" autoview="Graph|2022-03-17T14:08:08.737Z|08207"
+    project="{'name':'Alextopia','includeAutoViewScript':false,'graphAutoView':'Graph|2022-03-17T14:08:08.737Z|08207'}"
+    panels="[{'type':'PanelProject','state':{}},{'type':'PanelGraph','state':{'graph':'Graph|2022-03-17T14:08:08.737Z|08207'}}]" />
 
-    <!--Activate the following line to include the FUDGE-version of Oimo-Physics. You may want to download a local copy to work offline and be independent from future changes!-->
-    <!--<script type="text/javascript" src="../../../Physics/OimoPhysics.js"></script>-->
+  <!--Activate the following line to include the FUDGE-version of Oimo-Physics. You may want to download a local copy to work offline and be independent from future changes!-->
+  <!--<script type="text/javascript" src="../../../Physics/OimoPhysics.js"></script>-->
 
-    <!--Load FUDGE. You may want to download local copies to work offline and be independent from future changes! Developers working on FUDGE itself may want to create symlinks-->
-    <script type="text/javascript" src="https://jirkadelloro.github.io/FUDGE/Core/Build/FudgeCore.js"></script>
-    <script type="text/javascript" src="https://jirkadelloro.github.io/FUDGE/Aid/Build/FudgeAid.js"></script>
+  <!--Load FUDGE. You may want to download local copies to work offline and be independent from future changes! Developers working on FUDGE itself may want to create symlinks-->
+  <script type="text/javascript" src="https://jirkadelloro.github.io/FUDGE/Core/Build/FudgeCore.js"></script>
+  <script type="text/javascript" src="https://jirkadelloro.github.io/FUDGE/Aid/Build/FudgeAid.js"></script>
 
-    <!--Link internal resources. The editor only loads the first, but at runtime, multiple files can contribute-->
-    <link type="resources" src="Internal.json" />
+  <!--Link internal resources. The editor only loads the first, but at runtime, multiple files can contribute-->
+  <link type="resources" src="Internal.json" />
 
-    <!--Load custom scripts-->
-    <script type="text/javascript" src="Script/Build/Script.js" editor="true"></script>
+  <!--Load custom scripts-->
+  <script type="text/javascript" src="Script/Build/Script.js" editor="true"></script>
 
-    <!-- <script name="autoView">
+  <!-- <script name="autoView">
       (function (_graphId) {
         /**
          * AutoView-Script
@@ -88,37 +91,38 @@
         document.head.querySelector("meta[autoView]").getAttribute("autoView")
       );
     </script> -->
-  </head>
-  <body>
-    <!--Dialog shown at startup only-->
-    <dialog>
-      <h1>Title (will be replaced by autoView)</h1>
-      <p>Welcome to the world</p>
-      <p>of strategic tile warfare</p>
-    </dialog>
-    <div id="game-over">
-      <div>
-        <div>Game Over</div>
-        <div id="restart">Neu starten</div>
-      </div>
-    </div>
-    <!--Canvas for FUDGE to render to-->
-    <canvas class="fullscreen"> </canvas>
+</head>
 
-    <div id="overlay">
-</div>
-<!-- class="--sequenztiming --element --menuteil --id" -->
-    <div id="vui">
-      <div class="--boxleftdown">
-      <div class="--permanent --element --currentplayer" >
+<body>
+  <!--Dialog shown at startup only-->
+  <dialog>
+    <h1>Title (will be replaced by autoView)</h1>
+    <p>Welcome to the world</p>
+    <p>of strategic tile warfare</p>
+  </dialog>
+  <div id="game-over">
+    <div>
+      <div>Game Over</div>
+      <div id="restart">Neu starten</div>
+    </div>
+  </div>
+  <!--Canvas for FUDGE to render to-->
+  <canvas class="fullscreen"> </canvas>
+
+  <div id="overlay">
+  </div>
+  <!-- class="--sequenztiming --element --menuteil --id" -->
+  <div id="vui">
+    <div class="--boxleftdown">
+      <div class="--permanent --element --currentplayer">
         <span>Current Player:</span>
-        <input type="text" key="pages" value="1" disabled="" id="currentPlayer"/>
+        <input type="text" key="pages" value="1" disabled="" id="currentPlayer" />
       </div>
       <div class="--permanent --element --currentplayer">
         <span>Phase: </span>
         <input type="text" key="pages" value="Please choose your troop" disabled="" />
       </div>
-      
+
       <div class="--firstvisible --element --player">
         <span>Platzhalter firstvisible</span>
         <input type="text" key="pages" value="0" disabled="" />
@@ -127,9 +131,95 @@
         <span>Platzhalter secondvisible</span>
         <input type="text" key="pages" value="0" disabled="" />
       </div>
-      </div>
+    </div>
 
-      <div class="--boxtopmid">
+    <div class="--boxleft --troopinfo">
+      <div class="--troopborder">
+        <div class="--unitfield --1">
+          <span>1:</span>
+          <div class="--unit --1">
+            <img id="--1img1" src="Assets/Unit1.png" alt="">
+            <img id="--1img2" src="Assets/Unit1p2.png" alt="">
+            <img id="--1img3" src="Assets/Unit2.png" alt="">
+            <img id="--1img4" src="Assets/Unit2p2.png" alt="">
+          </div>
+        </div>
+        <div class="--unitfield --2">
+          <span>2:</span>
+          <div class="--unit --2">
+            <img id="--2img1" src="Assets/Unit1.png" alt="">
+            <img id="--2img2" src="Assets/Unit1p2.png" alt="">
+            <img id="--2img3" src="Assets/Unit2.png" alt="">
+            <img id="--2img4" src="Assets/Unit2p2.png" alt="">
+          </div>
+        </div>
+        <div class="--unitfield --3">
+          <span>3:</span>
+          <div class="--unit --3">
+            <img id="--3img1" src="Assets/Unit1.png" alt="">
+            <img id="--3img2" src="Assets/Unit1p2.png" alt="">
+            <img id="--3img3" src="Assets/Unit2.png" alt="">
+            <img id="--3img4" src="Assets/Unit2p2.png" alt="">
+          </div>
+        </div>
+        <div class="--unitfield --4">
+          <span>4:</span>
+          <div class="--unit --4">
+            <img id="--4img1" src="Assets/Unit1.png" alt="">
+            <img id="--4img2" src="Assets/Unit1p2.png" alt="">
+            <img id="--4img3" src="Assets/Unit2.png" alt="">
+            <img id="--4img4" src="Assets/Unit2p2.png" alt="">
+          </div>
+        </div>
+        <div class="--unitfield --5">
+          <span>5:</span>
+          <div class="--unit --5">
+            <img id="--5img1" src="Assets/Unit1.png" alt="">
+            <img id="--5img2" src="Assets/Unit1p2.png" alt="">
+            <img id="--5img3" src="Assets/Unit2.png" alt="">
+            <img id="--5img4" src="Assets/Unit2p2.png" alt="">
+          </div>
+        </div>
+        <div class="--unitfield --6">
+          <span>6:</span>
+          <div class="--unit --6">
+            <img id="--6img1" src="Assets/Unit1.png" alt="">
+            <img id="--6img2" src="Assets/Unit1p2.png" alt="">
+            <img id="--6img3" src="Assets/Unit2.png" alt="">
+            <img id="--6img4" src="Assets/Unit2p2.png" alt="">
+          </div>
+        </div>
+        <div class="--unitfield --7">
+          <span>7:</span>
+          <div class="--unit --7">
+            <img id="--7img1" src="Assets/Unit1.png" alt="">
+            <img id="--7img2" src="Assets/Unit1p2.png" alt="">
+            <img id="--7img3" src="Assets/Unit2.png" alt="">
+            <img id="--7img4" src="Assets/Unit2p2.png" alt="">
+          </div>
+        </div>
+        <div class="--unitfield --8">
+          <span>8:</span>
+          <div class="--unit --8">
+            <img id="--8img1" src="Assets/Unit1.png" alt="">
+            <img id="--8img2" src="Assets/Unit1p2.png" alt="">
+            <img id="--8img3" src="Assets/Unit2.png" alt="">
+            <img id="--8img4" src="Assets/Unit2p2.png" alt="">
+          </div>
+        </div>
+        <div class="--unitfield --9">
+          <span>9:</span>
+          <div class="--unit --9">
+            <img id="--9img1" src="Assets/Unit1.png" alt="">
+            <img id="--9img2" src="Assets/Unit1p2.png" alt="">
+            <img id="--9img3" src="Assets/Unit2.png" alt="">
+            <img id="--9img4" src="Assets/Unit2p2.png" alt="">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="--boxtopmid">
       <div class="--adminmenu">
         <div class="--permanent --element --adminmenu --plusmob" id="plusmob">
           <span>Add Mob:</span>
@@ -162,11 +252,12 @@
       </div>
     </div>
 
-    </div>
+  </div>
 
 
 
 
 
 </body>
+
 </html>

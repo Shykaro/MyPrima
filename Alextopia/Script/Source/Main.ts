@@ -47,7 +47,7 @@ namespace Script {
   // Handle Player swap -> currentPlayerSwapHandle()
   // Unit should only be able to walk 1 field from starting position, maybe test with random spawnfields for Unit +1 button.
   // Start implementing different rounds in a players turn -> unit moving -> unit producing -> playerswap
-  // 
+  // Add Gold mechanic
   //
   //
   // ++ DONE but maybe needs rework ++ Graphics, like terrain and Units
@@ -55,7 +55,8 @@ namespace Script {
 
   //------------ Notizen -------------------------------------------------------------------
   // Do random maps as external data save and load.
-  //
+  // Money Balancing überlegen -> stadt upgradable?
+  // Ui Zeigt leben der Einheiten wenn diese nicht onehit sterben sollten.
   //
   //
   //------------ Notizen End ---------------------------------------------------------------
@@ -125,6 +126,14 @@ namespace Script {
     console.log(paths);
     console.log(water);
 
+    //alle Ui units auf display none machen, damit ich sie nicht einzeln aufzählen muss.
+    for(let i = 1; i < 10; i++){ //goes through all 9 possible Units
+      for(let ii = 1; ii < 5; ii++){ //goes through all 4 possible unit variations
+        //console.log("--" + i + "img" + ii)
+        document.getElementById("--" + i + "img" + ii).style.display = 'none';
+      }
+    };
+
 
     //Admin  Menu --------------------------------------------------------------------
     document.getElementById("plusmob").addEventListener("click", (event) => {
@@ -137,6 +146,15 @@ namespace Script {
       graph.addChild(mob);
 
       mobs.push(mob);
+
+      for(let iCounter = 0; iCounter < i+1; iCounter++){ //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+        if(iCounter === i){
+          document.getElementById("--" + i + "img1").style.display = null;
+          //console.log("--" + i + "img1")
+        };
+      };
+
+      //document.getElementById("image_X").style.display='none';
 
       //Anzahl der Mobs generated im Array
       console.log(mobs) //CHANGE THIS GLEICH SOFORT});
@@ -155,6 +173,13 @@ namespace Script {
 
       mobs.push(mob2);
 
+      for(let iCounter = 0; iCounter < i+1; iCounter++){ //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+        if(iCounter === i){
+          document.getElementById("--" + i + "img3").style.display = null;
+          //console.log("--" + i + "img3")
+        };
+      };
+
       //Anzahl der Mobs generated im Array
       console.log(mobs2) //CHANGE THIS GLEICH SOFORT});
 
@@ -170,6 +195,13 @@ namespace Script {
       graph.addChild(mobP2);
 
       mobsP2.push(mobP2);
+
+      for(let iCounter = 0; iCounter < i+1; iCounter++){ //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+        if(iCounter === i){
+          document.getElementById("--" + i + "img2").style.display = null;
+          //console.log("--" + i + "img1")
+        };
+      };
 
       //Anzahl der Mobs generated im Array
       console.log(mobsP2) //CHANGE THIS GLEICH SOFORT});
@@ -187,6 +219,13 @@ namespace Script {
       graph.addChild(mob2P2);
 
       mobsP2.push(mob2P2);
+
+      for(let iCounter = 0; iCounter < i+1; iCounter++){ //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+        if(iCounter === i){
+          document.getElementById("--" + i + "img4").style.display = null;
+          //console.log("--" + i + "img1")
+        };
+      };
 
       //Anzahl der Mobs generated im Array
       console.log(mobs2P2) //CHANGE THIS GLEICH SOFORT});
@@ -216,14 +255,11 @@ namespace Script {
 
     //changeUnitP2(); //Funktion zum bewegen einer Unit in Main.ts für PLAYER 2
 
-
-    //setSprite(pacman);
-
     water.forEach(function (item, index) { //Loop for all water tiles
       setSprite(water[index]);
     });
 
-    paths.forEach(function (item, index) { //Loop for all water tiles
+    paths.forEach(function (item, index) { //Loop for all paths tiles
       setSpritePaths(paths[index]);
     });
     
@@ -235,15 +271,10 @@ namespace Script {
   function update(_event: Event): void {
     // ƒ.Physics.simulate();  // if physics is included and used
 
-    //movePacman();
     mobs.map((g) => g.move()); //g.move(paths));
     mobs2.map((g) => g.move()); //g.move(paths));
     mobsP2.map((g) => g.move()); //g.move(paths));
     mobs2P2.map((g) => g.move()); //g.move(paths));
-
-    //mobs.move(paths);
-    //mobs[2].move(paths);
-
 
 
     /*if (checkIfMove()) {
@@ -308,6 +339,7 @@ namespace Script {
         if((currentUnitNumber + 1) === mobs.length){
           console.log("RETURNINGP1");
           currentplayer = 2;
+          currentUnitNumber = 0;
           return;
         }
         else{
@@ -350,6 +382,7 @@ namespace Script {
         if((currentUnitNumberP2 + 1) === mobsP2.length){
           console.log("RETURNINGP2");
           currentplayer = 1;
+          currentUnitNumberP2 = 0;
           return;
         }
         else{
@@ -460,8 +493,8 @@ namespace Script {
       } */
   
     export function checkIfMoveMobP2(_direction?: string): boolean { //checks which directions the CURRENTUNITNUMBER can go, called in changeUnit()
-      const y: number = mobsP2[currentUnitNumber].mtxLocal.translation.y;
-      const x: number = mobsP2[currentUnitNumber].mtxLocal.translation.x;
+      const y: number = mobsP2[currentUnitNumberP2].mtxLocal.translation.y;
+      const x: number = mobsP2[currentUnitNumberP2].mtxLocal.translation.x;
       let newPosition: ƒ.Vector3;
   
       switch (_direction ?? movingDirection) {

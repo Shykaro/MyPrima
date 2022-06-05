@@ -62,6 +62,40 @@ canvas.fullscreen {
   background-color: aliceblue;
 }
 
+.--boxleft{
+  top: 0px;
+  bottom: 0px;
+  margin-top: auto;
+  margin-bottom: auto;
+  height: 300px;
+  position: absolute;
+  background-color: transparent;
+}
+
+.--troopborder{
+  background-color: aliceblue;
+  font-size: 24px;
+}
+
+.--unit{
+  border-style: double;  
+  border-radius: 7px;
+  border-color: #048836;
+  display: inline; /* mit -block um an die größe der Span anzupassen*/
+  height: 32px;
+  width: 32px;
+  background-color: aliceblue;
+}
+/*
+.--unit img{
+  display: none;
+}
+
+Code for a specific unit tile in UI to be adressed
+.--unit.--1 #--1{ lmao css is fking insane 
+  display: none;
+}*/
+
 .--element {
   display: flex;
   align-items: center;

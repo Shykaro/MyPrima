@@ -70,14 +70,15 @@ var Script;
     // Handle Player swap -> currentPlayerSwapHandle()
     // Unit should only be able to walk 1 field from starting position, maybe test with random spawnfields for Unit +1 button.
     // Start implementing different rounds in a players turn -> unit moving -> unit producing -> playerswap
-    // 
+    // Add Gold mechanic
     //
     //
     // ++ DONE but maybe needs rework ++ Graphics, like terrain and Units
     //------------ TO-DO'S End ---------------------------------------------------------------
     //------------ Notizen -------------------------------------------------------------------
     // Do random maps as external data save and load.
-    //
+    // Money Balancing überlegen -> stadt upgradable?
+    // Ui Zeigt leben der Einheiten wenn diese nicht onehit sterben sollten.
     //
     //
     //------------ Notizen End ---------------------------------------------------------------
@@ -131,6 +132,14 @@ var Script;
         }
         console.log(paths);
         console.log(water);
+        //alle Ui units auf display none machen, damit ich sie nicht einzeln aufzählen muss.
+        for (let i = 1; i < 10; i++) { //goes through all 9 possible Units
+            for (let ii = 1; ii < 5; ii++) { //goes through all 4 possible unit variations
+                //console.log("--" + i + "img" + ii)
+                document.getElementById("--" + i + "img" + ii).style.display = 'none';
+            }
+        }
+        ;
         //Admin  Menu --------------------------------------------------------------------
         document.getElementById("plusmob").addEventListener("click", (event) => {
             //function addMob() {
@@ -140,6 +149,15 @@ var Script;
             mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
             graph.addChild(mob);
             Script.mobs.push(mob);
+            for (let iCounter = 0; iCounter < i + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+                if (iCounter === i) {
+                    document.getElementById("--" + i + "img1").style.display = null;
+                    //console.log("--" + i + "img1")
+                }
+                ;
+            }
+            ;
+            //document.getElementById("image_X").style.display='none';
             //Anzahl der Mobs generated im Array
             console.log(Script.mobs); //CHANGE THIS GLEICH SOFORT});
         });
@@ -151,6 +169,14 @@ var Script;
             mob2.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
             graph.addChild(mob2);
             Script.mobs.push(mob2);
+            for (let iCounter = 0; iCounter < i + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+                if (iCounter === i) {
+                    document.getElementById("--" + i + "img3").style.display = null;
+                    //console.log("--" + i + "img3")
+                }
+                ;
+            }
+            ;
             //Anzahl der Mobs generated im Array
             console.log(Script.mobs2); //CHANGE THIS GLEICH SOFORT});
         });
@@ -162,6 +188,14 @@ var Script;
             mobP2.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
             graph.addChild(mobP2);
             Script.mobsP2.push(mobP2);
+            for (let iCounter = 0; iCounter < i + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+                if (iCounter === i) {
+                    document.getElementById("--" + i + "img2").style.display = null;
+                    //console.log("--" + i + "img1")
+                }
+                ;
+            }
+            ;
             //Anzahl der Mobs generated im Array
             console.log(Script.mobsP2); //CHANGE THIS GLEICH SOFORT});
         });
@@ -173,6 +207,14 @@ var Script;
             mob2P2.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
             graph.addChild(mob2P2);
             Script.mobsP2.push(mob2P2);
+            for (let iCounter = 0; iCounter < i + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+                if (iCounter === i) {
+                    document.getElementById("--" + i + "img4").style.display = null;
+                    //console.log("--" + i + "img1")
+                }
+                ;
+            }
+            ;
             //Anzahl der Mobs generated im Array
             console.log(Script.mobs2P2); //CHANGE THIS GLEICH SOFORT});
         });
@@ -191,7 +233,6 @@ var Script;
         //If ( spieler 1 dont do changeunitP2)
         changeUnit(); //Funktion zum bewegen einer Unit in Main.ts
         //changeUnitP2(); //Funktion zum bewegen einer Unit in Main.ts für PLAYER 2
-        //setSprite(pacman);
         water.forEach(function (item, index) {
             Script.setSprite(water[index]);
         });
@@ -203,13 +244,10 @@ var Script;
     }
     function update(_event) {
         // ƒ.Physics.simulate();  // if physics is included and used
-        //movePacman();
         Script.mobs.map((g) => g.move()); //g.move(paths));
         Script.mobs2.map((g) => g.move()); //g.move(paths));
         Script.mobsP2.map((g) => g.move()); //g.move(paths));
         Script.mobs2P2.map((g) => g.move()); //g.move(paths));
-        //mobs.move(paths);
-        //mobs[2].move(paths);
         /*if (checkIfMove()) {
           if (!sounds[1].isPlaying && !movement.equals(new ƒ.Vector3(0, 0, 0))) {
             sounds[1].play(true);
@@ -259,6 +297,7 @@ var Script;
                     if ((Script.currentUnitNumber + 1) === Script.mobs.length) {
                         console.log("RETURNINGP1");
                         currentplayer = 2;
+                        Script.currentUnitNumber = 0;
                         return;
                     }
                     else {
@@ -297,6 +336,7 @@ var Script;
                     if ((Script.currentUnitNumberP2 + 1) === Script.mobsP2.length) {
                         console.log("RETURNINGP2");
                         currentplayer = 1;
+                        Script.currentUnitNumberP2 = 0;
                         return;
                     }
                     else {
@@ -394,8 +434,8 @@ var Script;
         })
       } */
     function checkIfMoveMobP2(_direction) {
-        const y = Script.mobsP2[Script.currentUnitNumber].mtxLocal.translation.y;
-        const x = Script.mobsP2[Script.currentUnitNumber].mtxLocal.translation.x;
+        const y = Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translation.y;
+        const x = Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translation.x;
         let newPosition;
         switch (_direction ?? Script.movingDirection) {
             case "x":
