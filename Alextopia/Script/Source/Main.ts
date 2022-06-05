@@ -35,7 +35,7 @@ namespace Script {
   export let iLimitSpaceToOne: number = 0; //does the same as iMove, just only for the Space Enter Mob/Unit switch.
   export let finishedMobPlacement: Boolean = false; //If false, says youre able to move the unit, true says its done.
 
-  export let movingDirection: string = "y"; 
+  export let movingDirection: string = "y";
 
   export let movement: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0); //outdated? yes
 
@@ -48,7 +48,7 @@ namespace Script {
   // Unit should only be able to walk 1 field from starting position, maybe test with random spawnfields for Unit +1 button.
   // Start implementing different rounds in a players turn -> unit moving -> unit producing -> playerswap
   // Add Gold mechanic
-  //
+  // Random Map generator
   //
   // ++ DONE but maybe needs rework ++ Graphics, like terrain and Units
   //------------ TO-DO'S End ---------------------------------------------------------------
@@ -127,8 +127,8 @@ namespace Script {
     console.log(water);
 
     //alle Ui units auf display none machen, damit ich sie nicht einzeln aufzählen muss.
-    for(let i = 1; i < 10; i++){ //goes through all 9 possible Units
-      for(let ii = 1; ii < 5; ii++){ //goes through all 4 possible unit variations
+    for (let i = 1; i < 10; i++) { //goes through all 9 possible Units
+      for (let ii = 1; ii < 5; ii++) { //goes through all 4 possible unit variations
         //console.log("--" + i + "img" + ii)
         document.getElementById("--" + i + "img" + ii).style.display = 'none';
       }
@@ -138,22 +138,31 @@ namespace Script {
     //Admin  Menu --------------------------------------------------------------------
     document.getElementById("plusmob").addEventListener("click", (event) => {
       //function addMob() {
-      i++
-      console.log("Mob" + i)
+      if ((mobs.length + mobs2.length) != 9) {
+        i++
+        console.log("Mob" + i)
 
-      const mob = new Mob("Mob" + i);
-      mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
-      graph.addChild(mob);
+        const mob = new Mob("Mob" + i);
+        mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+        graph.addChild(mob);
 
-      mobs.push(mob);
+        mobs.push(mob);
 
-      for(let iCounter = 0; iCounter < i+1; iCounter++){ //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
-        if(iCounter === i){
-          document.getElementById("--" + i + "img1").style.display = null;
-          //console.log("--" + i + "img1")
+
+        /*for(let iCounter = 0; iCounter < i+1; iCounter++){ //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+          if(iCounter === i){
+            document.getElementById("--" + i + "img1").style.display = null;
+            //console.log("--" + i + "img1")
+          };
+        };*/
+
+        for (let iCounter = 0; iCounter < mobs.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+          if (iCounter === mobs.length) {
+            document.getElementById("--" + mobs.length + "img1").style.display = null;
+            //console.log("--" + i + "img1")
+          };
         };
-      };
-
+      }
       //document.getElementById("image_X").style.display='none';
 
       //Anzahl der Mobs generated im Array
@@ -164,21 +173,26 @@ namespace Script {
 
     document.getElementById("plusmob2").addEventListener("click", (event) => {
       //function addMob() {
-      i++
-      console.log("Mob2" + i)
 
-      const mob2 = new Mob2("Mob2" + i);
-      mob2.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
-      graph.addChild(mob2);
+      if ((mobs.length + mobs2.length) != 9) {
+        i++
+        console.log("Mob2" + i)
 
-      mobs.push(mob2);
 
-      for(let iCounter = 0; iCounter < i+1; iCounter++){ //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
-        if(iCounter === i){
-          document.getElementById("--" + i + "img3").style.display = null;
-          //console.log("--" + i + "img3")
+        const mob2 = new Mob2("Mob2" + i);
+        mob2.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+        graph.addChild(mob2);
+
+        mobs.push(mob2);
+
+
+        for (let iCounter = 0; iCounter < mobs.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+          if (iCounter === mobs.length) {
+            document.getElementById("--" + mobs.length + "img3").style.display = null;
+            //console.log("--" + i + "img3")
+          };
         };
-      };
+      }
 
       //Anzahl der Mobs generated im Array
       console.log(mobs2) //CHANGE THIS GLEICH SOFORT});
@@ -187,22 +201,24 @@ namespace Script {
     })
     document.getElementById("plusmobP2").addEventListener("click", (event) => {
       //function addMob() {
-      i++
-      console.log("MobP2" + i)
+      if ((mobsP2.length + mobs2P2.length) != 9) {
+        i++
+        console.log("MobP2" + i)
 
-      const mobP2 = new MobP2("MobP2" + i);
-      mobP2.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
-      graph.addChild(mobP2);
+        const mobP2 = new MobP2("MobP2" + i);
+        mobP2.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+        graph.addChild(mobP2);
 
-      mobsP2.push(mobP2);
+        mobsP2.push(mobP2);
 
-      for(let iCounter = 0; iCounter < i+1; iCounter++){ //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
-        if(iCounter === i){
-          document.getElementById("--" + i + "img2").style.display = null;
-          //console.log("--" + i + "img1")
+
+        for (let iCounter = 0; iCounter < mobsP2.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+          if (iCounter === mobsP2.length) {
+            document.getElementById("--" + mobsP2.length + "img2").style.display = null;
+            //console.log("--" + i + "img1")
+          };
         };
-      };
-
+      }
       //Anzahl der Mobs generated im Array
       console.log(mobsP2) //CHANGE THIS GLEICH SOFORT});
 
@@ -211,21 +227,24 @@ namespace Script {
 
     document.getElementById("plusmob2P2").addEventListener("click", (event) => {
       //function addMob() {
-      i++
-      console.log("Mob2P2" + i)
+      if ((mobsP2.length + mobs2P2.length) != 9) {
+        i++
+        console.log("Mob2P2" + i)
 
-      const mob2P2 = new Mob2P2("Mob2P2" + i);
-      mob2P2.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
-      graph.addChild(mob2P2);
+        const mob2P2 = new Mob2P2("Mob2P2" + i);
+        mob2P2.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+        graph.addChild(mob2P2);
 
-      mobsP2.push(mob2P2);
+        mobsP2.push(mob2P2);
 
-      for(let iCounter = 0; iCounter < i+1; iCounter++){ //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
-        if(iCounter === i){
-          document.getElementById("--" + i + "img4").style.display = null;
-          //console.log("--" + i + "img1")
+
+        for (let iCounter = 0; iCounter < mobsP2.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+          if (iCounter === mobsP2.length) {
+            document.getElementById("--" + mobsP2.length + "img4").style.display = null;
+            //console.log("--" + i + "img1")
+          };
         };
-      };
+      }
 
       //Anzahl der Mobs generated im Array
       console.log(mobs2P2) //CHANGE THIS GLEICH SOFORT});
@@ -234,16 +253,16 @@ namespace Script {
     })
     document.getElementById("changePlayer").addEventListener("click", (event) => {
       //function addMob() {
-      if(currentplayer === 1){
+      if (currentplayer === 1) {
         currentplayer = 2;
       }
-      else{
+      else {
         currentplayer = 1;
       }
 
 
       console.log("Current turn player is now: " + currentplayer) //CHANGE THIS GLEICH SOFORT});
-      
+
       document.getElementById("currentPlayer").setAttribute('value', currentplayer.toString())
 
     })
@@ -262,7 +281,7 @@ namespace Script {
     paths.forEach(function (item, index) { //Loop for all paths tiles
       setSpritePaths(paths[index]);
     });
-    
+
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     ƒ.Loop.start(); // start the game loop to continuously draw the viewport, update the audiosystem and drive the physics i/a
@@ -291,12 +310,6 @@ namespace Script {
   }
 
 
-  function currentPlayerSwapHandle(): void { //Handles player 1 and 2.
-
-  }
-
-  
-
   // ------------- Moving Mob abteil PLAYER 1 ---------------------------------------------------
   function changeUnit(): void { //Is used to track current unit and change values accordingly -> NOT ANYMORE
     //let localVector: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
@@ -304,98 +317,106 @@ namespace Script {
 
     //console.log("Ist das die Länge vom Array?: " + mobs.length)
 
-    
+
     document.addEventListener('keydown', (event) => {
-      if(currentplayer === 1){
-      var name = event.key;
+      if (currentplayer === 1) {
+        var name = event.key;
 
-      console.log("Ist das die Länge vom Array?: " + mobs.length)
+        console.log("Ist das die Länge vom Array?: " + mobs.length)
 
-      if (name === 'd' || name === 'ArrowRight') {
-        if (checkIfMoveMob("x")) {
-        mobs[currentUnitNumber].mtxLocal.translateX(1);
-        console.log("trying to move right");
+        if (name === 'd' || name === 'ArrowRight') {
+          if (checkIfMoveMob("x")) {
+            mobs[currentUnitNumber].mtxLocal.translateX(1);
+            console.log("trying to move right");
+          }
         }
-      }
-      if (name === 'a' || name === 'ArrowLeft') {
-        if (checkIfMoveMob("-x")) {
-        mobs[currentUnitNumber].mtxLocal.translateX(-1);
-        console.log("trying to move Left");
+        if (name === 'a' || name === 'ArrowLeft') {
+          if (checkIfMoveMob("-x")) {
+            mobs[currentUnitNumber].mtxLocal.translateX(-1);
+            console.log("trying to move Left");
+          }
         }
-      }
-      if (name === 'w' || name === 'ArrowUp') {
-        if (checkIfMoveMob("y")) {
-        mobs[currentUnitNumber].mtxLocal.translateY(1);
-        console.log("trying to move up");
+        if (name === 'w' || name === 'ArrowUp') {
+          if (checkIfMoveMob("y")) {
+            mobs[currentUnitNumber].mtxLocal.translateY(1);
+            console.log("trying to move up");
+          }
         }
-      }
-      if (name === 's' || name === 'ArrowDown') {
-        if (checkIfMoveMob("-y")) {
-        mobs[currentUnitNumber].mtxLocal.translateY(-1);
-        console.log("trying to move down");
+        if (name === 's' || name === 'ArrowDown') {
+          if (checkIfMoveMob("-y")) {
+            mobs[currentUnitNumber].mtxLocal.translateY(-1);
+            console.log("trying to move down");
+          }
         }
-      }
-      if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
-        if((currentUnitNumber + 1) === mobs.length){
-          console.log("RETURNINGP1");
-          currentplayer = 2;
-          currentUnitNumber = 0;
-          return;
-        }
-        else{
-          currentUnitNumber++;
-        }
-        
-        console.log("Logged position, going to next unit");
-      }
-    
-    }
-    
-    if(currentplayer === 2){
-      var name = event.key;
+        if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
+          if ((currentUnitNumber + 1) === mobs.length) {
+            console.log("RETURNINGP1");
+            currentplayer = 2;
+            currentUnitNumber = 0;
 
-      if (name === 'd' || name === 'ArrowRight') {
-        if (checkIfMoveMobP2("x")) {
-        mobsP2[currentUnitNumberP2].mtxLocal.translateX(1);
-        console.log("trying to move right");
-        }
-      }
-      if (name === 'a' || name === 'ArrowLeft') {
-        if (checkIfMoveMobP2("-x")) {
-        mobsP2[currentUnitNumberP2].mtxLocal.translateX(-1);
-        console.log("trying to move Left");
-        }
-      }
-      if (name === 'w' || name === 'ArrowUp') {
-        if (checkIfMoveMobP2("y")) {
-        mobsP2[currentUnitNumberP2].mtxLocal.translateY(1);
-        console.log("trying to move up");
-        }
-      }
-      if (name === 's' || name === 'ArrowDown') {
-        if (checkIfMoveMobP2("-y")) {
-        mobsP2[currentUnitNumberP2].mtxLocal.translateY(-1);
-        console.log("trying to move down");
-        }
-      }
-      if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
-        if((currentUnitNumberP2 + 1) === mobsP2.length){
-          console.log("RETURNINGP2");
-          currentplayer = 1;
-          currentUnitNumberP2 = 0;
-          return;
-        }
-        else{
-          currentUnitNumberP2++;
-        }
-      
+            handleUiPlayerswap();
+            console.log(currentplayer);
+            //TURN ENDE (Not actually wenn danach noch city stuff kommt) für player 1 -> moved all pieces ####################################################################
+            return;
+          }
+          else {
+            currentUnitNumber++;
+          }
+
           console.log("Logged position, going to next unit");
         }
-      
+
       }
-      
-  
-  })
+
+      if (currentplayer === 2) {
+        var name = event.key;
+
+        if (name === 'd' || name === 'ArrowRight') {
+          if (checkIfMoveMobP2("x")) {
+            mobsP2[currentUnitNumberP2].mtxLocal.translateX(1);
+            console.log("trying to move right");
+          }
+        }
+        if (name === 'a' || name === 'ArrowLeft') {
+          if (checkIfMoveMobP2("-x")) {
+            mobsP2[currentUnitNumberP2].mtxLocal.translateX(-1);
+            console.log("trying to move Left");
+          }
+        }
+        if (name === 'w' || name === 'ArrowUp') {
+          if (checkIfMoveMobP2("y")) {
+            mobsP2[currentUnitNumberP2].mtxLocal.translateY(1);
+            console.log("trying to move up");
+          }
+        }
+        if (name === 's' || name === 'ArrowDown') {
+          if (checkIfMoveMobP2("-y")) {
+            mobsP2[currentUnitNumberP2].mtxLocal.translateY(-1);
+            console.log("trying to move down");
+          }
+        }
+        if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
+          if ((currentUnitNumberP2 + 1) === mobsP2.length) {
+            console.log("RETURNINGP2");
+            currentplayer = 1;
+            currentUnitNumberP2 = 0;
+            handleUiPlayerswap();
+            console.log(currentplayer);
+
+            //TURN ENDE (Not actually wenn danach noch city stuff kommt) für player 2 -> moved all pieces #################################################################################
+            return;
+          }
+          else {
+            currentUnitNumberP2++;
+          }
+
+          console.log("Logged position, going to next unit");
+        }
+
+      }
+
+
+    })
   }
 
   export function checkIfMoveMob(_direction?: string): boolean { //checks which directions the CURRENTUNITNUMBER can go, called in changeUnit()
@@ -437,190 +458,91 @@ namespace Script {
 
     return true;
   }
+
+
+  function handleUiPlayerswap(): void { //Handles player 1 and 2 UI changes when swapping.
+
+    if (currentplayer === 1) {
+      //alle Ui units auf display none machen, damit ich sie nicht einzeln aufzählen muss.
+      for (let i = 1; i < 10; i++) { //goes through all 9 possible Units and makes turnplayer troops invisible
+        document.getElementById("--unitdiv" + i + "P2").style.display = 'none';
+      }
+      for (let i = 1; i < 10; i++) { //goes through all 9 possible Units and makes turnplayer troops visible
+        document.getElementById("--unitdiv" + i).style.display = null;
+      }
+    }
+
+    else {
+      //alle Ui units auf display none machen, damit ich sie nicht einzeln aufzählen muss.
+      for (let i = 1; i < 10; i++) { //goes through all 9 possible Units and makes turnplayer troops invisible
+        document.getElementById("--unitdiv" + i).style.display = 'none';
+      }
+      for (let i = 1; i < 10; i++) { //goes through all 9 possible Units and makes turnplayer troops visible
+        document.getElementById("--unitdiv" + i + "P2").style.display = null;
+      }
+    };
+  }
+
+
+
   // ------------- Moving Mob abteil END PLAYER 1 ---------------------------------------------------
 
-    // ------------- Moving Mob abteil PLAYER 2 --------------------------------------------------- IS INTEGRATED IN changeUnit von P1 !!!!!!!!!!!!!!!!!!! #######################################
-    /*function changeUnitP2(): void { //Is used to track current unit and change values accordingly -> NOT ANYMORE
-      //let localVector: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
-      //let localVector: ƒ.Matrix4x4 = mobs[currentUnitNumber].mtxLocal;
-  
+  // ------------- Moving Mob abteil PLAYER 2 --------------------------------------------------- IS INTEGRATED IN changeUnit von P1 !!!!!!!!!!!!!!!!!!! #######################################
+  /*function changeUnitP2(): void { //Is used to track current unit and change values accordingly -> NOT ANYMORE
+    //let localVector: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
+    //let localVector: ƒ.Matrix4x4 = mobs[currentUnitNumber].mtxLocal;
+ 
+    
+    
+    document.addEventListener('keydown', (event) => {
+
+      if(currentplayer === 2){
+      var name = event.key;
+ 
+      if (name === 'd' || name === 'ArrowRight') {
+        if (checkIfMoveMobP2("x")) {
+        mobsP2[currentUnitNumberP2].mtxLocal.translateX(1);
+        console.log("trying to move right");
+        }
+      }
+      if (name === 'a' || name === 'ArrowLeft') {
+        if (checkIfMoveMobP2("-x")) {
+        mobsP2[currentUnitNumberP2].mtxLocal.translateX(-1);
+        console.log("trying to move Left");
+        }
+      }
+      if (name === 'w' || name === 'ArrowUp') {
+        if (checkIfMoveMobP2("y")) {
+        mobsP2[currentUnitNumberP2].mtxLocal.translateY(1);
+        console.log("trying to move up");
+        }
+      }
+      if (name === 's' || name === 'ArrowDown') {
+        if (checkIfMoveMobP2("-y")) {
+        mobsP2[currentUnitNumberP2].mtxLocal.translateY(-1);
+        console.log("trying to move down");
+        }
+      }
+      if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
+        if((currentUnitNumberP2 + 1) === mobsP2.length){
+          console.log("RETURNINGP2");
+          currentplayer = 1;
+          return;
+        }
+        else{
+          currentUnitNumberP2++;
+        }
       
+          console.log("Logged position, going to next unit");
+        }
       
-      document.addEventListener('keydown', (event) => {
-
-        if(currentplayer === 2){
-        var name = event.key;
-  
-        if (name === 'd' || name === 'ArrowRight') {
-          if (checkIfMoveMobP2("x")) {
-          mobsP2[currentUnitNumberP2].mtxLocal.translateX(1);
-          console.log("trying to move right");
-          }
-        }
-        if (name === 'a' || name === 'ArrowLeft') {
-          if (checkIfMoveMobP2("-x")) {
-          mobsP2[currentUnitNumberP2].mtxLocal.translateX(-1);
-          console.log("trying to move Left");
-          }
-        }
-        if (name === 'w' || name === 'ArrowUp') {
-          if (checkIfMoveMobP2("y")) {
-          mobsP2[currentUnitNumberP2].mtxLocal.translateY(1);
-          console.log("trying to move up");
-          }
-        }
-        if (name === 's' || name === 'ArrowDown') {
-          if (checkIfMoveMobP2("-y")) {
-          mobsP2[currentUnitNumberP2].mtxLocal.translateY(-1);
-          console.log("trying to move down");
-          }
-        }
-        if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
-          if((currentUnitNumberP2 + 1) === mobsP2.length){
-            console.log("RETURNINGP2");
-            currentplayer = 1;
-            return;
-          }
-          else{
-            currentUnitNumberP2++;
-          }
-        
-            console.log("Logged position, going to next unit");
-          }
-        
-        }
-        })
-      } */
-  
-    export function checkIfMoveMobP2(_direction?: string): boolean { //checks which directions the CURRENTUNITNUMBER can go, called in changeUnit()
-      const y: number = mobsP2[currentUnitNumberP2].mtxLocal.translation.y;
-      const x: number = mobsP2[currentUnitNumberP2].mtxLocal.translation.x;
-      let newPosition: ƒ.Vector3;
-  
-      switch (_direction ?? movingDirection) {
-        case "x":
-          newPosition = new ƒ.Vector3(x + 1, y, 0);
-          break;
-        case "-x":
-          newPosition = new ƒ.Vector3(x - 1, y, 0);
-          break;
-        case "y":
-          newPosition = new ƒ.Vector3(x, y + 1, 0);
-          break;
-        case "-y":
-          newPosition = new ƒ.Vector3(x, y - 1, 0);
-          break;
-  
-        default:
-          break;
       }
-  
-      const wall: ƒ.Node = water.find((w) => w.mtxLocal.translation.equals(newPosition, 0));
-  
-      if (wall) {
-        //sounds[1].play(false);
-        return false;
-      }
-  
-      const path: ƒ.Node = paths.find((p) => p.mtxLocal.translation.equals(newPosition, 0));
-  
-      if (!path) {
-        //sounds[1].play(false);
-        return false;
-      }
-  
-      return true;
-    }
-    // ------------- Moving Mob abteil END PLAYER 2 ---------------------------------------------------
+      })
+    } */
 
-
-    //Momentan noch uninteressant aber wichtig für interactable city later.
-    function addInteractable(_path: ƒ.Node): void {
-      //random interactable auf der Map platzieren
-      const mtrCity: ƒ.Material = new ƒ.Material(
-        "City",
-        ƒ.ShaderLit,
-        new ƒ.CoatColored(ƒ.Color.CSS("#f5ce42"))
-      );
-  
-      const cityNode = new ƒ.Node("City");
-      cityNode.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
-      cityNode.addComponent(new ƒ.ComponentMaterial(mtrCity));
-      cityNode.addComponent(new ƒ.ComponentTransform());
-      cityNode.mtxLocal.scale(new ƒ.Vector3(0.3, 0.3, 0.3));
-  
-      //paths[34].addChild(cityNode); //Why doesnt this work?
-      paths[42].addChild(cityNode); // an Path 43 ist nun ein Interactable City gepflanz, no clue was ich damit anfange. -> Feindliche city einnehmbar indem Truppe draufgesetzt wird.
-    }
-  
-    function useInteractable() { //Search function and how its used before.
-      //Spielerfigur == position von interactable, soll dann hochzählen
-      const path = paths.find((p) => p.mtxLocal.translation.equals(pacman.mtxLocal.translation, 0.2)); //Pacman ersetzen.
-  
-      if (path) {
-        const city: ƒ.Node = path.getChild(0);
-  
-        if (city) {
-          path.removeChild(city);
-        }
-      }
-    }
-
-
-
-
-// Not needed atm, is just for collection
-
-/*function movePacman(): void {
-    if (
-      ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D]) &&
-      (pacman.mtxLocal.translation.y + 0.025) % 1 < 0.05
-    ) {
-      if (checkIfMove("x")) {
-        movement.set(1 / 60, 0, 0);
-        //rotateSprite("x");
-        movingDirection = "x";
-      }
-    }
-
-    if (
-      ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S]) &&
-      (pacman.mtxLocal.translation.x + 0.025) % 1 < 0.05
-    ) {
-      if (checkIfMove("-y")) {
-        movement.set(0, -1 / 60, 0);
-        //rotateSprite("-y");
-        movingDirection = "-y";
-      }
-    }
-
-    if (
-      ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A]) &&
-      (pacman.mtxLocal.translation.y + 0.025) % 1 < 0.05
-    ) {
-      if (checkIfMove("-x")) {
-        movement.set(-1 / 60, 0, 0);
-        //rotateSprite("-x");
-        movingDirection = "-x";
-      }
-    }
-
-    if (
-      ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W]) &&
-      (pacman.mtxLocal.translation.x + 0.025) % 1 < 0.05
-    ) {
-      if (checkIfMove("y")) {
-        movement.set(0, 1 / 60, 0);
-        //rotateSprite("y");
-        movingDirection = "y";
-      }
-    }
-  }*/
-
-/*
-  export function checkIfMove(_direction?: string): boolean {
-    const y: number = pacman.mtxLocal.translation.y;
-    const x: number = pacman.mtxLocal.translation.x;
+  export function checkIfMoveMobP2(_direction?: string): boolean { //checks which directions the CURRENTUNITNUMBER can go, called in changeUnit()
+    const y: number = mobsP2[currentUnitNumberP2].mtxLocal.translation.y;
+    const x: number = mobsP2[currentUnitNumberP2].mtxLocal.translation.x;
     let newPosition: ƒ.Vector3;
 
     switch (_direction ?? movingDirection) {
@@ -641,22 +563,148 @@ namespace Script {
         break;
     }
 
-    const wall: ƒ.Node = water.find((w) => w.mtxLocal.translation.equals(newPosition, 0.022));
+    const wall: ƒ.Node = water.find((w) => w.mtxLocal.translation.equals(newPosition, 0));
 
     if (wall) {
-      sounds[1].play(false);
+      //sounds[1].play(false);
       return false;
     }
 
-    const path: ƒ.Node = paths.find((p) => p.mtxLocal.translation.equals(newPosition, 1));
+    const path: ƒ.Node = paths.find((p) => p.mtxLocal.translation.equals(newPosition, 0));
 
     if (!path) {
-      sounds[1].play(false);
+      //sounds[1].play(false);
       return false;
     }
 
     return true;
-  }*/
+  }
+  // ------------- Moving Mob abteil END PLAYER 2 ---------------------------------------------------
+
+
+  //Momentan noch uninteressant aber wichtig für interactable city later.
+  function addInteractable(_path: ƒ.Node): void {
+    //random interactable auf der Map platzieren
+    const mtrCity: ƒ.Material = new ƒ.Material(
+      "City",
+      ƒ.ShaderLit,
+      new ƒ.CoatColored(ƒ.Color.CSS("#f5ce42"))
+    );
+
+    const cityNode = new ƒ.Node("City");
+    cityNode.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
+    cityNode.addComponent(new ƒ.ComponentMaterial(mtrCity));
+    cityNode.addComponent(new ƒ.ComponentTransform());
+    cityNode.mtxLocal.scale(new ƒ.Vector3(0.3, 0.3, 0.3));
+
+    //paths[34].addChild(cityNode); //Why doesnt this work?
+    paths[42].addChild(cityNode); // an Path 43 ist nun ein Interactable City gepflanz, no clue was ich damit anfange. -> Feindliche city einnehmbar indem Truppe draufgesetzt wird.
+  }
+
+  function useInteractable() { //Search function and how its used before.
+    //Spielerfigur == position von interactable, soll dann hochzählen
+    const path = paths.find((p) => p.mtxLocal.translation.equals(pacman.mtxLocal.translation, 0.2)); //Pacman ersetzen.
+
+    if (path) {
+      const city: ƒ.Node = path.getChild(0);
+
+      if (city) {
+        path.removeChild(city);
+      }
+    }
+  }
+
+
+
+
+  // Not needed atm, is just for collection
+
+  /*function movePacman(): void {
+      if (
+        ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D]) &&
+        (pacman.mtxLocal.translation.y + 0.025) % 1 < 0.05
+      ) {
+        if (checkIfMove("x")) {
+          movement.set(1 / 60, 0, 0);
+          //rotateSprite("x");
+          movingDirection = "x";
+        }
+      }
+  
+      if (
+        ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S]) &&
+        (pacman.mtxLocal.translation.x + 0.025) % 1 < 0.05
+      ) {
+        if (checkIfMove("-y")) {
+          movement.set(0, -1 / 60, 0);
+          //rotateSprite("-y");
+          movingDirection = "-y";
+        }
+      }
+  
+      if (
+        ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A]) &&
+        (pacman.mtxLocal.translation.y + 0.025) % 1 < 0.05
+      ) {
+        if (checkIfMove("-x")) {
+          movement.set(-1 / 60, 0, 0);
+          //rotateSprite("-x");
+          movingDirection = "-x";
+        }
+      }
+  
+      if (
+        ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W]) &&
+        (pacman.mtxLocal.translation.x + 0.025) % 1 < 0.05
+      ) {
+        if (checkIfMove("y")) {
+          movement.set(0, 1 / 60, 0);
+          //rotateSprite("y");
+          movingDirection = "y";
+        }
+      }
+    }*/
+
+  /*
+    export function checkIfMove(_direction?: string): boolean {
+      const y: number = pacman.mtxLocal.translation.y;
+      const x: number = pacman.mtxLocal.translation.x;
+      let newPosition: ƒ.Vector3;
+  
+      switch (_direction ?? movingDirection) {
+        case "x":
+          newPosition = new ƒ.Vector3(x + 1, y, 0);
+          break;
+        case "-x":
+          newPosition = new ƒ.Vector3(x - 1, y, 0);
+          break;
+        case "y":
+          newPosition = new ƒ.Vector3(x, y + 1, 0);
+          break;
+        case "-y":
+          newPosition = new ƒ.Vector3(x, y - 1, 0);
+          break;
+  
+        default:
+          break;
+      }
+  
+      const wall: ƒ.Node = water.find((w) => w.mtxLocal.translation.equals(newPosition, 0.022));
+  
+      if (wall) {
+        sounds[1].play(false);
+        return false;
+      }
+  
+      const path: ƒ.Node = paths.find((p) => p.mtxLocal.translation.equals(newPosition, 1));
+  
+      if (!path) {
+        sounds[1].play(false);
+        return false;
+      }
+  
+      return true;
+    }*/
 
   /*
   function checkIfGameOver(): void {
