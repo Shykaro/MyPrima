@@ -16,9 +16,17 @@ namespace Script {
   let paths: ƒ.Node[];    //Building/Land are, every unit can walk on these - beinhaltet jeden begehbaren block in einem Array gespeichert
 
   export let mobs: Mob[] = [];   //Array for all created mobs/units
+  export let mobs2: Mob2[] = [];   //Array for all created mobs/units
+
+  export let mobsP2: MobP2[] = [];   //Array for all created mobs/units
+  export let mobs2P2: Mob2P2[] = [];   //Array for all created mobs/units
+
+
+
   let currentplayer: number = 1; //distinguishes between player 1 and 2
   let i = 0;
   export let currentUnitNumber: number = 0; //taken in account to cycle through the units to move them, used in Mob.move function
+  export let currentUnitNumberP2: number = 0; //taken in account to cycle through the units to move them, used in Mob.move function
   export let iMoveY: number = 0;            //Necessary global variables to limit user to one move per time. ALLE OBSOLET.
   export let iMoveYMinus: number = 0;       //outdated? yes
   export let iMoveX: number = 0;            //outdated? yes
@@ -134,10 +142,78 @@ namespace Script {
 
 
     })
+
+    document.getElementById("plusmob2").addEventListener("click", (event) => {
+      //function addMob() {
+      i++
+      console.log("Mob2" + i)
+
+      const mob2 = new Mob2("Mob2" + i);
+      mob2.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+      graph.addChild(mob2);
+
+      mobs.push(mob2);
+
+      //Anzahl der Mobs generated im Array
+      console.log(mobs2) //CHANGE THIS GLEICH SOFORT});
+
+
+    })
+    document.getElementById("plusmobP2").addEventListener("click", (event) => {
+      //function addMob() {
+      i++
+      console.log("MobP2" + i)
+
+      const mobP2 = new MobP2("MobP2" + i);
+      mobP2.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+      graph.addChild(mobP2);
+
+      mobsP2.push(mobP2);
+
+      //Anzahl der Mobs generated im Array
+      console.log(mobsP2) //CHANGE THIS GLEICH SOFORT});
+
+
+    })
+
+    document.getElementById("plusmob2P2").addEventListener("click", (event) => {
+      //function addMob() {
+      i++
+      console.log("Mob2P2" + i)
+
+      const mob2P2 = new Mob2P2("Mob2P2" + i);
+      mob2P2.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+      graph.addChild(mob2P2);
+
+      mobsP2.push(mob2P2);
+
+      //Anzahl der Mobs generated im Array
+      console.log(mobs2P2) //CHANGE THIS GLEICH SOFORT});
+
+
+    })
+    document.getElementById("changePlayer").addEventListener("click", (event) => {
+      //function addMob() {
+      if(currentplayer === 1){
+        currentplayer = 2;
+      }
+      else{
+        currentplayer = 1;
+      }
+
+
+      console.log("Current turn player is now: " + currentplayer) //CHANGE THIS GLEICH SOFORT});
+      
+      document.getElementById("currentPlayer").setAttribute('value', currentplayer.toString())
+
+    })
     //Admin Menu End ------------------------------------------------------------------
 
 
+    //If ( spieler 1 dont do changeunitP2)
     changeUnit(); //Funktion zum bewegen einer Unit in Main.ts
+
+    //changeUnitP2(); //Funktion zum bewegen einer Unit in Main.ts für PLAYER 2
 
 
     //setSprite(pacman);
@@ -160,6 +236,9 @@ namespace Script {
 
     //movePacman();
     mobs.map((g) => g.move()); //g.move(paths));
+    mobs2.map((g) => g.move()); //g.move(paths));
+    mobsP2.map((g) => g.move()); //g.move(paths));
+    mobs2P2.map((g) => g.move()); //g.move(paths));
 
     //mobs.move(paths);
     //mobs[2].move(paths);
@@ -186,13 +265,19 @@ namespace Script {
 
   
 
-  // ------------- Moving Mob abteil ---------------------------------------------------
+  // ------------- Moving Mob abteil PLAYER 1 ---------------------------------------------------
   function changeUnit(): void { //Is used to track current unit and change values accordingly -> NOT ANYMORE
     //let localVector: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
     //let localVector: ƒ.Matrix4x4 = mobs[currentUnitNumber].mtxLocal;
 
+    //console.log("Ist das die Länge vom Array?: " + mobs.length)
+
+    
     document.addEventListener('keydown', (event) => {
+      if(currentplayer === 1){
       var name = event.key;
+
+      console.log("Ist das die Länge vom Array?: " + mobs.length)
 
       if (name === 'd' || name === 'ArrowRight') {
         if (checkIfMoveMob("x")) {
@@ -219,11 +304,64 @@ namespace Script {
         }
       }
       if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
-        currentUnitNumber++;
+        if((currentUnitNumber + 1) === mobs.length){
+          console.log("RETURNINGP1");
+          currentplayer = 2;
+          return;
+        }
+        else{
+          currentUnitNumber++;
+        }
+        
         console.log("Logged position, going to next unit");
       }
+    
+    }
+    
+    if(currentplayer === 2){
+      var name = event.key;
 
-    })
+      if (name === 'd' || name === 'ArrowRight') {
+        if (checkIfMoveMobP2("x")) {
+        mobsP2[currentUnitNumberP2].mtxLocal.translateX(1);
+        console.log("trying to move right");
+        }
+      }
+      if (name === 'a' || name === 'ArrowLeft') {
+        if (checkIfMoveMobP2("-x")) {
+        mobsP2[currentUnitNumberP2].mtxLocal.translateX(-1);
+        console.log("trying to move Left");
+        }
+      }
+      if (name === 'w' || name === 'ArrowUp') {
+        if (checkIfMoveMobP2("y")) {
+        mobsP2[currentUnitNumberP2].mtxLocal.translateY(1);
+        console.log("trying to move up");
+        }
+      }
+      if (name === 's' || name === 'ArrowDown') {
+        if (checkIfMoveMobP2("-y")) {
+        mobsP2[currentUnitNumberP2].mtxLocal.translateY(-1);
+        console.log("trying to move down");
+        }
+      }
+      if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
+        if((currentUnitNumberP2 + 1) === mobsP2.length){
+          console.log("RETURNINGP2");
+          currentplayer = 1;
+          return;
+        }
+        else{
+          currentUnitNumberP2++;
+        }
+      
+          console.log("Logged position, going to next unit");
+        }
+      
+      }
+      
+  
+  })
   }
 
   export function checkIfMoveMob(_direction?: string): boolean { //checks which directions the CURRENTUNITNUMBER can go, called in changeUnit()
@@ -265,7 +403,101 @@ namespace Script {
 
     return true;
   }
-  // ------------- Moving Mob abteil END ---------------------------------------------------
+  // ------------- Moving Mob abteil END PLAYER 1 ---------------------------------------------------
+
+    // ------------- Moving Mob abteil PLAYER 2 ---------------------------------------------------
+    function changeUnitP2(): void { //Is used to track current unit and change values accordingly -> NOT ANYMORE
+      //let localVector: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
+      //let localVector: ƒ.Matrix4x4 = mobs[currentUnitNumber].mtxLocal;
+  
+      
+      
+      document.addEventListener('keydown', (event) => {
+
+        if(currentplayer === 2){
+        var name = event.key;
+  
+        if (name === 'd' || name === 'ArrowRight') {
+          if (checkIfMoveMobP2("x")) {
+          mobsP2[currentUnitNumberP2].mtxLocal.translateX(1);
+          console.log("trying to move right");
+          }
+        }
+        if (name === 'a' || name === 'ArrowLeft') {
+          if (checkIfMoveMobP2("-x")) {
+          mobsP2[currentUnitNumberP2].mtxLocal.translateX(-1);
+          console.log("trying to move Left");
+          }
+        }
+        if (name === 'w' || name === 'ArrowUp') {
+          if (checkIfMoveMobP2("y")) {
+          mobsP2[currentUnitNumberP2].mtxLocal.translateY(1);
+          console.log("trying to move up");
+          }
+        }
+        if (name === 's' || name === 'ArrowDown') {
+          if (checkIfMoveMobP2("-y")) {
+          mobsP2[currentUnitNumberP2].mtxLocal.translateY(-1);
+          console.log("trying to move down");
+          }
+        }
+        if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
+          if((currentUnitNumberP2 + 1) === mobsP2.length){
+            console.log("RETURNINGP2");
+            currentplayer = 1;
+            return;
+          }
+          else{
+            currentUnitNumberP2++;
+          }
+        
+            console.log("Logged position, going to next unit");
+          }
+        
+        }
+        })
+      }
+  
+    export function checkIfMoveMobP2(_direction?: string): boolean { //checks which directions the CURRENTUNITNUMBER can go, called in changeUnit()
+      const y: number = mobsP2[currentUnitNumber].mtxLocal.translation.y;
+      const x: number = mobsP2[currentUnitNumber].mtxLocal.translation.x;
+      let newPosition: ƒ.Vector3;
+  
+      switch (_direction ?? movingDirection) {
+        case "x":
+          newPosition = new ƒ.Vector3(x + 1, y, 0);
+          break;
+        case "-x":
+          newPosition = new ƒ.Vector3(x - 1, y, 0);
+          break;
+        case "y":
+          newPosition = new ƒ.Vector3(x, y + 1, 0);
+          break;
+        case "-y":
+          newPosition = new ƒ.Vector3(x, y - 1, 0);
+          break;
+  
+        default:
+          break;
+      }
+  
+      const wall: ƒ.Node = water.find((w) => w.mtxLocal.translation.equals(newPosition, 0));
+  
+      if (wall) {
+        //sounds[1].play(false);
+        return false;
+      }
+  
+      const path: ƒ.Node = paths.find((p) => p.mtxLocal.translation.equals(newPosition, 0));
+  
+      if (!path) {
+        //sounds[1].play(false);
+        return false;
+      }
+  
+      return true;
+    }
+    // ------------- Moving Mob abteil END PLAYER 2 ---------------------------------------------------
 
 
     //Momentan noch uninteressant aber wichtig für interactable city later.

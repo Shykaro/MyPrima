@@ -48,9 +48,13 @@ var Script;
     let water; //Blocks that cant be set foot on with normal units - Beinhaltet jeden Wasserblock in einem Array gespeichert
     let paths; //Building/Land are, every unit can walk on these - beinhaltet jeden begehbaren block in einem Array gespeichert
     Script.mobs = []; //Array for all created mobs/units
+    Script.mobs2 = []; //Array for all created mobs/units
+    Script.mobsP2 = []; //Array for all created mobs/units
+    Script.mobs2P2 = []; //Array for all created mobs/units
     let currentplayer = 1; //distinguishes between player 1 and 2
     let i = 0;
     Script.currentUnitNumber = 0; //taken in account to cycle through the units to move them, used in Mob.move function
+    Script.currentUnitNumberP2 = 0; //taken in account to cycle through the units to move them, used in Mob.move function
     Script.iMoveY = 0; //Necessary global variables to limit user to one move per time. ALLE OBSOLET.
     Script.iMoveYMinus = 0; //outdated? yes
     Script.iMoveX = 0; //outdated? yes
@@ -138,8 +142,54 @@ var Script;
             //Anzahl der Mobs generated im Array
             console.log(Script.mobs); //CHANGE THIS GLEICH SOFORT});
         });
+        document.getElementById("plusmob2").addEventListener("click", (event) => {
+            //function addMob() {
+            i++;
+            console.log("Mob2" + i);
+            const mob2 = new Script.Mob2("Mob2" + i);
+            mob2.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+            graph.addChild(mob2);
+            Script.mobs.push(mob2);
+            //Anzahl der Mobs generated im Array
+            console.log(Script.mobs2); //CHANGE THIS GLEICH SOFORT});
+        });
+        document.getElementById("plusmobP2").addEventListener("click", (event) => {
+            //function addMob() {
+            i++;
+            console.log("MobP2" + i);
+            const mobP2 = new Script.MobP2("MobP2" + i);
+            mobP2.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+            graph.addChild(mobP2);
+            Script.mobsP2.push(mobP2);
+            //Anzahl der Mobs generated im Array
+            console.log(Script.mobsP2); //CHANGE THIS GLEICH SOFORT});
+        });
+        document.getElementById("plusmob2P2").addEventListener("click", (event) => {
+            //function addMob() {
+            i++;
+            console.log("Mob2P2" + i);
+            const mob2P2 = new Script.Mob2P2("Mob2P2" + i);
+            mob2P2.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+            graph.addChild(mob2P2);
+            Script.mobsP2.push(mob2P2);
+            //Anzahl der Mobs generated im Array
+            console.log(Script.mobs2P2); //CHANGE THIS GLEICH SOFORT});
+        });
+        document.getElementById("changePlayer").addEventListener("click", (event) => {
+            //function addMob() {
+            if (currentplayer === 1) {
+                currentplayer = 2;
+            }
+            else {
+                currentplayer = 1;
+            }
+            console.log("Current turn player is now: " + currentplayer); //CHANGE THIS GLEICH SOFORT});
+            document.getElementById("currentPlayer").setAttribute('value', currentplayer.toString());
+        });
         //Admin Menu End ------------------------------------------------------------------
+        //If ( spieler 1 dont do changeunitP2)
         changeUnit(); //Funktion zum bewegen einer Unit in Main.ts
+        //changeUnitP2(); //Funktion zum bewegen einer Unit in Main.ts für PLAYER 2
         //setSprite(pacman);
         water.forEach(function (item, index) {
             Script.setSprite(water[index]);
@@ -154,6 +204,9 @@ var Script;
         // ƒ.Physics.simulate();  // if physics is included and used
         //movePacman();
         Script.mobs.map((g) => g.move()); //g.move(paths));
+        Script.mobs2.map((g) => g.move()); //g.move(paths));
+        Script.mobsP2.map((g) => g.move()); //g.move(paths));
+        Script.mobs2P2.map((g) => g.move()); //g.move(paths));
         //mobs.move(paths);
         //mobs[2].move(paths);
         /*if (checkIfMove()) {
@@ -168,39 +221,88 @@ var Script;
     }
     function currentPlayerSwapHandle() {
     }
-    // ------------- Moving Mob abteil ---------------------------------------------------
+    // ------------- Moving Mob abteil PLAYER 1 ---------------------------------------------------
     function changeUnit() {
         //let localVector: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
         //let localVector: ƒ.Matrix4x4 = mobs[currentUnitNumber].mtxLocal;
+        //console.log("Ist das die Länge vom Array?: " + mobs.length)
         document.addEventListener('keydown', (event) => {
-            var name = event.key;
-            if (name === 'd' || name === 'ArrowRight') {
-                if (checkIfMoveMob("x")) {
-                    Script.mobs[Script.currentUnitNumber].mtxLocal.translateX(1);
-                    console.log("trying to move right");
+            if (currentplayer === 1) {
+                var name = event.key;
+                console.log("Ist das die Länge vom Array?: " + Script.mobs.length);
+                if (name === 'd' || name === 'ArrowRight') {
+                    if (checkIfMoveMob("x")) {
+                        Script.mobs[Script.currentUnitNumber].mtxLocal.translateX(1);
+                        console.log("trying to move right");
+                    }
+                }
+                if (name === 'a' || name === 'ArrowLeft') {
+                    if (checkIfMoveMob("-x")) {
+                        Script.mobs[Script.currentUnitNumber].mtxLocal.translateX(-1);
+                        console.log("trying to move Left");
+                    }
+                }
+                if (name === 'w' || name === 'ArrowUp') {
+                    if (checkIfMoveMob("y")) {
+                        Script.mobs[Script.currentUnitNumber].mtxLocal.translateY(1);
+                        console.log("trying to move up");
+                    }
+                }
+                if (name === 's' || name === 'ArrowDown') {
+                    if (checkIfMoveMob("-y")) {
+                        Script.mobs[Script.currentUnitNumber].mtxLocal.translateY(-1);
+                        console.log("trying to move down");
+                    }
+                }
+                if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
+                    if ((Script.currentUnitNumber + 1) === Script.mobs.length) {
+                        console.log("RETURNINGP1");
+                        currentplayer = 2;
+                        return;
+                    }
+                    else {
+                        Script.currentUnitNumber++;
+                    }
+                    console.log("Logged position, going to next unit");
                 }
             }
-            if (name === 'a' || name === 'ArrowLeft') {
-                if (checkIfMoveMob("-x")) {
-                    Script.mobs[Script.currentUnitNumber].mtxLocal.translateX(-1);
-                    console.log("trying to move Left");
+            if (currentplayer === 2) {
+                var name = event.key;
+                if (name === 'd' || name === 'ArrowRight') {
+                    if (checkIfMoveMobP2("x")) {
+                        Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translateX(1);
+                        console.log("trying to move right");
+                    }
                 }
-            }
-            if (name === 'w' || name === 'ArrowUp') {
-                if (checkIfMoveMob("y")) {
-                    Script.mobs[Script.currentUnitNumber].mtxLocal.translateY(1);
-                    console.log("trying to move up");
+                if (name === 'a' || name === 'ArrowLeft') {
+                    if (checkIfMoveMobP2("-x")) {
+                        Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translateX(-1);
+                        console.log("trying to move Left");
+                    }
                 }
-            }
-            if (name === 's' || name === 'ArrowDown') {
-                if (checkIfMoveMob("-y")) {
-                    Script.mobs[Script.currentUnitNumber].mtxLocal.translateY(-1);
-                    console.log("trying to move down");
+                if (name === 'w' || name === 'ArrowUp') {
+                    if (checkIfMoveMobP2("y")) {
+                        Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translateY(1);
+                        console.log("trying to move up");
+                    }
                 }
-            }
-            if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
-                Script.currentUnitNumber++;
-                console.log("Logged position, going to next unit");
+                if (name === 's' || name === 'ArrowDown') {
+                    if (checkIfMoveMobP2("-y")) {
+                        Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translateY(-1);
+                        console.log("trying to move down");
+                    }
+                }
+                if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
+                    if ((Script.currentUnitNumberP2 + 1) === Script.mobsP2.length) {
+                        console.log("RETURNINGP2");
+                        currentplayer = 1;
+                        return;
+                    }
+                    else {
+                        Script.currentUnitNumberP2++;
+                    }
+                    console.log("Logged position, going to next unit");
+                }
             }
         });
     }
@@ -237,7 +339,86 @@ var Script;
         return true;
     }
     Script.checkIfMoveMob = checkIfMoveMob;
-    // ------------- Moving Mob abteil END ---------------------------------------------------
+    // ------------- Moving Mob abteil END PLAYER 1 ---------------------------------------------------
+    // ------------- Moving Mob abteil PLAYER 2 ---------------------------------------------------
+    function changeUnitP2() {
+        //let localVector: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
+        //let localVector: ƒ.Matrix4x4 = mobs[currentUnitNumber].mtxLocal;
+        document.addEventListener('keydown', (event) => {
+            if (currentplayer === 2) {
+                var name = event.key;
+                if (name === 'd' || name === 'ArrowRight') {
+                    if (checkIfMoveMobP2("x")) {
+                        Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translateX(1);
+                        console.log("trying to move right");
+                    }
+                }
+                if (name === 'a' || name === 'ArrowLeft') {
+                    if (checkIfMoveMobP2("-x")) {
+                        Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translateX(-1);
+                        console.log("trying to move Left");
+                    }
+                }
+                if (name === 'w' || name === 'ArrowUp') {
+                    if (checkIfMoveMobP2("y")) {
+                        Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translateY(1);
+                        console.log("trying to move up");
+                    }
+                }
+                if (name === 's' || name === 'ArrowDown') {
+                    if (checkIfMoveMobP2("-y")) {
+                        Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translateY(-1);
+                        console.log("trying to move down");
+                    }
+                }
+                if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
+                    if ((Script.currentUnitNumberP2 + 1) === Script.mobsP2.length) {
+                        console.log("RETURNINGP2");
+                        currentplayer = 1;
+                        return;
+                    }
+                    else {
+                        Script.currentUnitNumberP2++;
+                    }
+                    console.log("Logged position, going to next unit");
+                }
+            }
+        });
+    }
+    function checkIfMoveMobP2(_direction) {
+        const y = Script.mobsP2[Script.currentUnitNumber].mtxLocal.translation.y;
+        const x = Script.mobsP2[Script.currentUnitNumber].mtxLocal.translation.x;
+        let newPosition;
+        switch (_direction ?? Script.movingDirection) {
+            case "x":
+                newPosition = new ƒ.Vector3(x + 1, y, 0);
+                break;
+            case "-x":
+                newPosition = new ƒ.Vector3(x - 1, y, 0);
+                break;
+            case "y":
+                newPosition = new ƒ.Vector3(x, y + 1, 0);
+                break;
+            case "-y":
+                newPosition = new ƒ.Vector3(x, y - 1, 0);
+                break;
+            default:
+                break;
+        }
+        const wall = water.find((w) => w.mtxLocal.translation.equals(newPosition, 0));
+        if (wall) {
+            //sounds[1].play(false);
+            return false;
+        }
+        const path = paths.find((p) => p.mtxLocal.translation.equals(newPosition, 0));
+        if (!path) {
+            //sounds[1].play(false);
+            return false;
+        }
+        return true;
+    }
+    Script.checkIfMoveMobP2 = checkIfMoveMobP2;
+    // ------------- Moving Mob abteil END PLAYER 2 ---------------------------------------------------
     //Momentan noch uninteressant aber wichtig für interactable city later.
     function addInteractable(_path) {
         //random interactable auf der Map platzieren
@@ -602,6 +783,678 @@ var Script;
 })(Script || (Script = {}));
 var Script;
 (function (Script) {
+    var ƒ = FudgeCore;
+    var ƒAid = FudgeAid;
+    class Mob2 extends ƒ.Node {
+        //private movement: ƒ.Vector3 = new ƒ.Vector3(0, -1 / 600, 0);
+        //private lastPath: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
+        constructor(_name) {
+            super(_name);
+            const mesh = new ƒ.MeshSphere();
+            const material = new ƒ.Material("MaterialMob2", ƒ.ShaderLit, new ƒ.CoatColored());
+            const cmpTransform = new ƒ.ComponentTransform();
+            const cmpMesh = new ƒ.ComponentMesh(mesh);
+            const cmpMaterial = new ƒ.ComponentMaterial(material);
+            cmpMaterial.clrPrimary = ƒ.Color.CSS("red");
+            this.addComponent(cmpTransform);
+            this.addComponent(cmpMesh);
+            this.addComponent(cmpMaterial);
+            // sprites
+            const sprite = new ƒAid.NodeSprite("Sprite");
+            sprite.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
+            sprite.setAnimation(Script.animations["mob2"]);
+            sprite.setFrameDirection(1);
+            sprite.mtxLocal.translateZ(0.1);
+            sprite.framerate = 5;
+            this.addChild(sprite);
+            this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
+        }
+        //Bevor das hier aufgerufen wird MUSS der Lokale vektor gespeichert werden, da man von diesem aus die Position wechselt.
+        move() {
+            //Press Key for move into direction once
+            /*if (
+              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D,])
+            ) {
+               //Adjust this to max out for one field
+              //if (iMoveX == 0 && !finishedMobPlacement){
+                //iMoveX = 1;
+              //mobs[currentUnitNumber].mtxLocal.translateX(1);
+              //console.log("trying to move right");
+      
+            //}
+            }
+        
+            if (
+              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S])
+            ) {
+              if (iMoveYMinus == 0 && !finishedMobPlacement){
+                iMoveYMinus = 1;
+                mobs[currentUnitNumber].mtxLocal.translateY(-1);
+              }
+            }
+        
+            if (
+              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A])
+            )  {
+              if (iMoveXMinus == 0 && !finishedMobPlacement){
+                iMoveXMinus = 1;
+                mobs[currentUnitNumber].mtxLocal.translateX(-1);
+            }
+            }
+        
+            if (
+              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W])
+            ) {
+              if (iMoveY == 0 && !finishedMobPlacement){
+                iMoveY = 1;
+                mobs[currentUnitNumber].mtxLocal.translateY(1); //do mobs[x] for the according unit in the rooster. mobs[2].mtxLocal... for 3rd created unit
+            }
+          }
+      
+            if ( //After pressing space or enter the unit is placed and cant be moved anymore -> jump to next mob
+              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ENTER, ƒ.KEYBOARD_CODE.SPACE])
+            ) {
+                //finishedMobPlacement = true;
+                if (iLimitSpaceToOne == 0){
+                  iLimitSpaceToOne = 1;
+                  currentUnitNumber++;
+                  iMoveX = 0;           //Setze imoves zurück damit neue unit wieder verschoben werden kann
+                  iMoveXMinus = 0;
+                  iMoveY = 0;
+                  iMoveYMinus = 0;
+                  if(currentUnitNumber){ //useless, yet.
+      
+                  }
+              }
+            }
+      */
+            /*
+                  if (
+                    (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
+                    (this.mtxLocal.translation.x + 0.025) % 1 < 0.05 &&
+                    (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
+                    (this.mtxLocal.translation.x + 0.025) % 1 < 0.05
+                  ) {
+                    const possiblePaths: ƒ.Node[] = [];
+            
+                    // get possible paths
+                    for (const path of _paths) {
+                      if (
+                        path.mtxLocal.translation.equals(this.mtxLocal.translation, 1.05) &&
+                        !path.mtxLocal.translation.equals(this.mtxLocal.translation)
+                      ) {
+                        const isEvenPath =
+                          (path.mtxLocal.translation.y + path.mtxLocal.translation.x) % 2 === 0;
+            
+                        const isEvenLocal =
+                          (Math.round(this.mtxLocal.translation.y) + Math.round(this.mtxLocal.translation.x)) %
+                            2 ===
+                          0;
+            
+                        if (isEvenPath !== isEvenLocal) {
+                          possiblePaths.push(path);
+                        }
+                      }
+                    }
+            
+                    // lower probability for going back to same path
+                    const index = possiblePaths.findIndex((p) => p.mtxLocal.translation.equals(this.lastPath));
+            
+                    if (possiblePaths.length !== 1 && index !== -1) {
+                      const pathsCopy = possiblePaths.slice();
+                      pathsCopy.splice(index, 1);
+            
+                    }
+            
+                    const path = possiblePaths[Math.floor(0.2 * possiblePaths.length)];
+            
+                    this.lastPath.set(
+                      Math.round(this.mtxLocal.translation.x),
+                      Math.round(this.mtxLocal.translation.y),
+                      0
+                    );
+            
+                    // set moving direction
+                    if (path) {
+                      if (path.mtxLocal.translation.y > Math.round(this.mtxLocal.translation.y)) {
+                        this.movement.set(0, 1 / 600, 0);
+                      } else if (path.mtxLocal.translation.x > Math.round(this.mtxLocal.translation.x)) {
+                        this.movement.set(1 / 600, 0, 0);
+                      } else if (path.mtxLocal.translation.y < Math.round(this.mtxLocal.translation.y)) {
+                        this.movement.set(0, -1 / 600, 0);
+                      } else if (path.mtxLocal.translation.x < Math.round(this.mtxLocal.translation.x)) {
+                        //this.movement.set(-1 / 600, 0, 0);
+                        this.mtxLocal.translation.x -= 1;
+                      }
+                    }
+                  }
+                  this.mtxLocal.translate(this.movement);
+                
+            */
+            /*if (
+              (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
+              (this.mtxLocal.translation.x + 0.025) % 1 < 0.05 &&
+              (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
+              (this.mtxLocal.translation.x + 0.025) % 1 < 0.05
+            ) {
+              const possiblePaths: ƒ.Node[] = [];
+      
+              // get possible paths
+              for (const path of _paths) {
+                if (
+                  path.mtxLocal.translation.equals(this.mtxLocal.translation, 1.05) &&
+                  !path.mtxLocal.translation.equals(this.mtxLocal.translation)
+                ) {
+                  const isEvenPath =
+                    (path.mtxLocal.translation.y + path.mtxLocal.translation.x) % 2 === 0;
+      
+                  const isEvenLocal =
+                    (Math.round(this.mtxLocal.translation.y) + Math.round(this.mtxLocal.translation.x)) %
+                      2 ===
+                    0;
+      
+                  if (isEvenPath !== isEvenLocal) {
+                    possiblePaths.push(path);
+                  }
+                }
+              }
+      
+              // lower probability for going back to same path
+              const index = possiblePaths.findIndex((p) => p.mtxLocal.translation.equals(this.lastPath));
+      
+              if (possiblePaths.length !== 1 && index !== -1) {
+                const pathsCopy = possiblePaths.slice();
+                pathsCopy.splice(index, 1);
+      
+                possiblePaths.push(...pathsCopy);
+                possiblePaths.push(...pathsCopy.reverse());
+                possiblePaths.push(...pathsCopy);
+                possiblePaths.push(...pathsCopy.reverse());
+                possiblePaths.push(...pathsCopy);
+                possiblePaths.push(...pathsCopy.reverse());
+                possiblePaths.push(...pathsCopy.reverse());
+                possiblePaths.push(...pathsCopy);
+                possiblePaths.push(...pathsCopy.reverse());
+                possiblePaths.push(...pathsCopy);
+                possiblePaths.push(...pathsCopy);
+              }
+      
+              const path = possiblePaths[Math.floor(Math.random() * possiblePaths.length)];
+      
+              this.lastPath.set(
+                Math.round(this.mtxLocal.translation.x),
+                Math.round(this.mtxLocal.translation.y),
+                0
+              );
+      
+              // set moving direction
+              if (path) {
+                if (path.mtxLocal.translation.y > Math.round(this.mtxLocal.translation.y)) {
+                  this.movement.set(0, 1 / 60, 0);
+                } else if (path.mtxLocal.translation.x > Math.round(this.mtxLocal.translation.x)) {
+                  this.movement.set(1 / 60, 0, 0);
+                } else if (path.mtxLocal.translation.y < Math.round(this.mtxLocal.translation.y)) {
+                  this.movement.set(0, -1 / 60, 0);
+                } else if (path.mtxLocal.translation.x < Math.round(this.mtxLocal.translation.x)) {
+                  this.movement.set(-1 / 60, 0, 0);
+                }
+              }
+            }
+            this.mtxLocal.translate(this.movement);*/
+        }
+    }
+    Script.Mob2 = Mob2;
+})(Script || (Script = {}));
+var Script;
+(function (Script) {
+    var ƒ = FudgeCore;
+    var ƒAid = FudgeAid;
+    class Mob2P2 extends ƒ.Node {
+        //private movement: ƒ.Vector3 = new ƒ.Vector3(0, -1 / 600, 0);
+        //private lastPath: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
+        constructor(_name) {
+            super(_name);
+            const mesh = new ƒ.MeshSphere();
+            const material = new ƒ.Material("MaterialMob2P2", ƒ.ShaderLit, new ƒ.CoatColored());
+            const cmpTransform = new ƒ.ComponentTransform();
+            const cmpMesh = new ƒ.ComponentMesh(mesh);
+            const cmpMaterial = new ƒ.ComponentMaterial(material);
+            cmpMaterial.clrPrimary = ƒ.Color.CSS("red");
+            this.addComponent(cmpTransform);
+            this.addComponent(cmpMesh);
+            this.addComponent(cmpMaterial);
+            // sprites
+            const sprite = new ƒAid.NodeSprite("Sprite");
+            sprite.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
+            sprite.setAnimation(Script.animations["mob2P2"]);
+            sprite.setFrameDirection(1);
+            sprite.mtxLocal.translateZ(0.1);
+            sprite.framerate = 5;
+            this.addChild(sprite);
+            this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
+        }
+        //Bevor das hier aufgerufen wird MUSS der Lokale vektor gespeichert werden, da man von diesem aus die Position wechselt.
+        move() {
+            //Press Key for move into direction once
+            /*if (
+              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D,])
+            ) {
+               //Adjust this to max out for one field
+              //if (iMoveX == 0 && !finishedMobPlacement){
+                //iMoveX = 1;
+              //mobs[currentUnitNumber].mtxLocal.translateX(1);
+              //console.log("trying to move right");
+      
+            //}
+            }
+        
+            if (
+              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S])
+            ) {
+              if (iMoveYMinus == 0 && !finishedMobPlacement){
+                iMoveYMinus = 1;
+                mobs[currentUnitNumber].mtxLocal.translateY(-1);
+              }
+            }
+        
+            if (
+              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A])
+            )  {
+              if (iMoveXMinus == 0 && !finishedMobPlacement){
+                iMoveXMinus = 1;
+                mobs[currentUnitNumber].mtxLocal.translateX(-1);
+            }
+            }
+        
+            if (
+              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W])
+            ) {
+              if (iMoveY == 0 && !finishedMobPlacement){
+                iMoveY = 1;
+                mobs[currentUnitNumber].mtxLocal.translateY(1); //do mobs[x] for the according unit in the rooster. mobs[2].mtxLocal... for 3rd created unit
+            }
+          }
+      
+            if ( //After pressing space or enter the unit is placed and cant be moved anymore -> jump to next mob
+              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ENTER, ƒ.KEYBOARD_CODE.SPACE])
+            ) {
+                //finishedMobPlacement = true;
+                if (iLimitSpaceToOne == 0){
+                  iLimitSpaceToOne = 1;
+                  currentUnitNumber++;
+                  iMoveX = 0;           //Setze imoves zurück damit neue unit wieder verschoben werden kann
+                  iMoveXMinus = 0;
+                  iMoveY = 0;
+                  iMoveYMinus = 0;
+                  if(currentUnitNumber){ //useless, yet.
+      
+                  }
+              }
+            }
+      */
+            /*
+                  if (
+                    (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
+                    (this.mtxLocal.translation.x + 0.025) % 1 < 0.05 &&
+                    (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
+                    (this.mtxLocal.translation.x + 0.025) % 1 < 0.05
+                  ) {
+                    const possiblePaths: ƒ.Node[] = [];
+            
+                    // get possible paths
+                    for (const path of _paths) {
+                      if (
+                        path.mtxLocal.translation.equals(this.mtxLocal.translation, 1.05) &&
+                        !path.mtxLocal.translation.equals(this.mtxLocal.translation)
+                      ) {
+                        const isEvenPath =
+                          (path.mtxLocal.translation.y + path.mtxLocal.translation.x) % 2 === 0;
+            
+                        const isEvenLocal =
+                          (Math.round(this.mtxLocal.translation.y) + Math.round(this.mtxLocal.translation.x)) %
+                            2 ===
+                          0;
+            
+                        if (isEvenPath !== isEvenLocal) {
+                          possiblePaths.push(path);
+                        }
+                      }
+                    }
+            
+                    // lower probability for going back to same path
+                    const index = possiblePaths.findIndex((p) => p.mtxLocal.translation.equals(this.lastPath));
+            
+                    if (possiblePaths.length !== 1 && index !== -1) {
+                      const pathsCopy = possiblePaths.slice();
+                      pathsCopy.splice(index, 1);
+            
+                    }
+            
+                    const path = possiblePaths[Math.floor(0.2 * possiblePaths.length)];
+            
+                    this.lastPath.set(
+                      Math.round(this.mtxLocal.translation.x),
+                      Math.round(this.mtxLocal.translation.y),
+                      0
+                    );
+            
+                    // set moving direction
+                    if (path) {
+                      if (path.mtxLocal.translation.y > Math.round(this.mtxLocal.translation.y)) {
+                        this.movement.set(0, 1 / 600, 0);
+                      } else if (path.mtxLocal.translation.x > Math.round(this.mtxLocal.translation.x)) {
+                        this.movement.set(1 / 600, 0, 0);
+                      } else if (path.mtxLocal.translation.y < Math.round(this.mtxLocal.translation.y)) {
+                        this.movement.set(0, -1 / 600, 0);
+                      } else if (path.mtxLocal.translation.x < Math.round(this.mtxLocal.translation.x)) {
+                        //this.movement.set(-1 / 600, 0, 0);
+                        this.mtxLocal.translation.x -= 1;
+                      }
+                    }
+                  }
+                  this.mtxLocal.translate(this.movement);
+                
+            */
+            /*if (
+              (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
+              (this.mtxLocal.translation.x + 0.025) % 1 < 0.05 &&
+              (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
+              (this.mtxLocal.translation.x + 0.025) % 1 < 0.05
+            ) {
+              const possiblePaths: ƒ.Node[] = [];
+      
+              // get possible paths
+              for (const path of _paths) {
+                if (
+                  path.mtxLocal.translation.equals(this.mtxLocal.translation, 1.05) &&
+                  !path.mtxLocal.translation.equals(this.mtxLocal.translation)
+                ) {
+                  const isEvenPath =
+                    (path.mtxLocal.translation.y + path.mtxLocal.translation.x) % 2 === 0;
+      
+                  const isEvenLocal =
+                    (Math.round(this.mtxLocal.translation.y) + Math.round(this.mtxLocal.translation.x)) %
+                      2 ===
+                    0;
+      
+                  if (isEvenPath !== isEvenLocal) {
+                    possiblePaths.push(path);
+                  }
+                }
+              }
+      
+              // lower probability for going back to same path
+              const index = possiblePaths.findIndex((p) => p.mtxLocal.translation.equals(this.lastPath));
+      
+              if (possiblePaths.length !== 1 && index !== -1) {
+                const pathsCopy = possiblePaths.slice();
+                pathsCopy.splice(index, 1);
+      
+                possiblePaths.push(...pathsCopy);
+                possiblePaths.push(...pathsCopy.reverse());
+                possiblePaths.push(...pathsCopy);
+                possiblePaths.push(...pathsCopy.reverse());
+                possiblePaths.push(...pathsCopy);
+                possiblePaths.push(...pathsCopy.reverse());
+                possiblePaths.push(...pathsCopy.reverse());
+                possiblePaths.push(...pathsCopy);
+                possiblePaths.push(...pathsCopy.reverse());
+                possiblePaths.push(...pathsCopy);
+                possiblePaths.push(...pathsCopy);
+              }
+      
+              const path = possiblePaths[Math.floor(Math.random() * possiblePaths.length)];
+      
+              this.lastPath.set(
+                Math.round(this.mtxLocal.translation.x),
+                Math.round(this.mtxLocal.translation.y),
+                0
+              );
+      
+              // set moving direction
+              if (path) {
+                if (path.mtxLocal.translation.y > Math.round(this.mtxLocal.translation.y)) {
+                  this.movement.set(0, 1 / 60, 0);
+                } else if (path.mtxLocal.translation.x > Math.round(this.mtxLocal.translation.x)) {
+                  this.movement.set(1 / 60, 0, 0);
+                } else if (path.mtxLocal.translation.y < Math.round(this.mtxLocal.translation.y)) {
+                  this.movement.set(0, -1 / 60, 0);
+                } else if (path.mtxLocal.translation.x < Math.round(this.mtxLocal.translation.x)) {
+                  this.movement.set(-1 / 60, 0, 0);
+                }
+              }
+            }
+            this.mtxLocal.translate(this.movement);*/
+        }
+    }
+    Script.Mob2P2 = Mob2P2;
+})(Script || (Script = {}));
+var Script;
+(function (Script) {
+    var ƒ = FudgeCore;
+    var ƒAid = FudgeAid;
+    class MobP2 extends ƒ.Node {
+        //private movement: ƒ.Vector3 = new ƒ.Vector3(0, -1 / 600, 0);
+        //private lastPath: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
+        constructor(_name) {
+            super(_name);
+            const mesh = new ƒ.MeshSphere();
+            const material = new ƒ.Material("MaterialMobP2", ƒ.ShaderLit, new ƒ.CoatColored());
+            const cmpTransform = new ƒ.ComponentTransform();
+            const cmpMesh = new ƒ.ComponentMesh(mesh);
+            const cmpMaterial = new ƒ.ComponentMaterial(material);
+            cmpMaterial.clrPrimary = ƒ.Color.CSS("red");
+            this.addComponent(cmpTransform);
+            this.addComponent(cmpMesh);
+            this.addComponent(cmpMaterial);
+            // sprites
+            const sprite = new ƒAid.NodeSprite("Sprite");
+            sprite.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
+            sprite.setAnimation(Script.animations["mobP2"]);
+            sprite.setFrameDirection(1);
+            sprite.mtxLocal.translateZ(0.1);
+            sprite.framerate = 5;
+            this.addChild(sprite);
+            this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
+        }
+        //Bevor das hier aufgerufen wird MUSS der Lokale vektor gespeichert werden, da man von diesem aus die Position wechselt.
+        move() {
+            //Press Key for move into direction once
+            /*if (
+              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D,])
+            ) {
+               //Adjust this to max out for one field
+              //if (iMoveX == 0 && !finishedMobPlacement){
+                //iMoveX = 1;
+              //mobs[currentUnitNumber].mtxLocal.translateX(1);
+              //console.log("trying to move right");
+      
+            //}
+            }
+        
+            if (
+              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S])
+            ) {
+              if (iMoveYMinus == 0 && !finishedMobPlacement){
+                iMoveYMinus = 1;
+                mobs[currentUnitNumber].mtxLocal.translateY(-1);
+              }
+            }
+        
+            if (
+              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A])
+            )  {
+              if (iMoveXMinus == 0 && !finishedMobPlacement){
+                iMoveXMinus = 1;
+                mobs[currentUnitNumber].mtxLocal.translateX(-1);
+            }
+            }
+        
+            if (
+              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W])
+            ) {
+              if (iMoveY == 0 && !finishedMobPlacement){
+                iMoveY = 1;
+                mobs[currentUnitNumber].mtxLocal.translateY(1); //do mobs[x] for the according unit in the rooster. mobs[2].mtxLocal... for 3rd created unit
+            }
+          }
+      
+            if ( //After pressing space or enter the unit is placed and cant be moved anymore -> jump to next mob
+              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ENTER, ƒ.KEYBOARD_CODE.SPACE])
+            ) {
+                //finishedMobPlacement = true;
+                if (iLimitSpaceToOne == 0){
+                  iLimitSpaceToOne = 1;
+                  currentUnitNumber++;
+                  iMoveX = 0;           //Setze imoves zurück damit neue unit wieder verschoben werden kann
+                  iMoveXMinus = 0;
+                  iMoveY = 0;
+                  iMoveYMinus = 0;
+                  if(currentUnitNumber){ //useless, yet.
+      
+                  }
+              }
+            }
+      */
+            /*
+                  if (
+                    (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
+                    (this.mtxLocal.translation.x + 0.025) % 1 < 0.05 &&
+                    (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
+                    (this.mtxLocal.translation.x + 0.025) % 1 < 0.05
+                  ) {
+                    const possiblePaths: ƒ.Node[] = [];
+            
+                    // get possible paths
+                    for (const path of _paths) {
+                      if (
+                        path.mtxLocal.translation.equals(this.mtxLocal.translation, 1.05) &&
+                        !path.mtxLocal.translation.equals(this.mtxLocal.translation)
+                      ) {
+                        const isEvenPath =
+                          (path.mtxLocal.translation.y + path.mtxLocal.translation.x) % 2 === 0;
+            
+                        const isEvenLocal =
+                          (Math.round(this.mtxLocal.translation.y) + Math.round(this.mtxLocal.translation.x)) %
+                            2 ===
+                          0;
+            
+                        if (isEvenPath !== isEvenLocal) {
+                          possiblePaths.push(path);
+                        }
+                      }
+                    }
+            
+                    // lower probability for going back to same path
+                    const index = possiblePaths.findIndex((p) => p.mtxLocal.translation.equals(this.lastPath));
+            
+                    if (possiblePaths.length !== 1 && index !== -1) {
+                      const pathsCopy = possiblePaths.slice();
+                      pathsCopy.splice(index, 1);
+            
+                    }
+            
+                    const path = possiblePaths[Math.floor(0.2 * possiblePaths.length)];
+            
+                    this.lastPath.set(
+                      Math.round(this.mtxLocal.translation.x),
+                      Math.round(this.mtxLocal.translation.y),
+                      0
+                    );
+            
+                    // set moving direction
+                    if (path) {
+                      if (path.mtxLocal.translation.y > Math.round(this.mtxLocal.translation.y)) {
+                        this.movement.set(0, 1 / 600, 0);
+                      } else if (path.mtxLocal.translation.x > Math.round(this.mtxLocal.translation.x)) {
+                        this.movement.set(1 / 600, 0, 0);
+                      } else if (path.mtxLocal.translation.y < Math.round(this.mtxLocal.translation.y)) {
+                        this.movement.set(0, -1 / 600, 0);
+                      } else if (path.mtxLocal.translation.x < Math.round(this.mtxLocal.translation.x)) {
+                        //this.movement.set(-1 / 600, 0, 0);
+                        this.mtxLocal.translation.x -= 1;
+                      }
+                    }
+                  }
+                  this.mtxLocal.translate(this.movement);
+                
+            */
+            /*if (
+              (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
+              (this.mtxLocal.translation.x + 0.025) % 1 < 0.05 &&
+              (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
+              (this.mtxLocal.translation.x + 0.025) % 1 < 0.05
+            ) {
+              const possiblePaths: ƒ.Node[] = [];
+      
+              // get possible paths
+              for (const path of _paths) {
+                if (
+                  path.mtxLocal.translation.equals(this.mtxLocal.translation, 1.05) &&
+                  !path.mtxLocal.translation.equals(this.mtxLocal.translation)
+                ) {
+                  const isEvenPath =
+                    (path.mtxLocal.translation.y + path.mtxLocal.translation.x) % 2 === 0;
+      
+                  const isEvenLocal =
+                    (Math.round(this.mtxLocal.translation.y) + Math.round(this.mtxLocal.translation.x)) %
+                      2 ===
+                    0;
+      
+                  if (isEvenPath !== isEvenLocal) {
+                    possiblePaths.push(path);
+                  }
+                }
+              }
+      
+              // lower probability for going back to same path
+              const index = possiblePaths.findIndex((p) => p.mtxLocal.translation.equals(this.lastPath));
+      
+              if (possiblePaths.length !== 1 && index !== -1) {
+                const pathsCopy = possiblePaths.slice();
+                pathsCopy.splice(index, 1);
+      
+                possiblePaths.push(...pathsCopy);
+                possiblePaths.push(...pathsCopy.reverse());
+                possiblePaths.push(...pathsCopy);
+                possiblePaths.push(...pathsCopy.reverse());
+                possiblePaths.push(...pathsCopy);
+                possiblePaths.push(...pathsCopy.reverse());
+                possiblePaths.push(...pathsCopy.reverse());
+                possiblePaths.push(...pathsCopy);
+                possiblePaths.push(...pathsCopy.reverse());
+                possiblePaths.push(...pathsCopy);
+                possiblePaths.push(...pathsCopy);
+              }
+      
+              const path = possiblePaths[Math.floor(Math.random() * possiblePaths.length)];
+      
+              this.lastPath.set(
+                Math.round(this.mtxLocal.translation.x),
+                Math.round(this.mtxLocal.translation.y),
+                0
+              );
+      
+              // set moving direction
+              if (path) {
+                if (path.mtxLocal.translation.y > Math.round(this.mtxLocal.translation.y)) {
+                  this.movement.set(0, 1 / 60, 0);
+                } else if (path.mtxLocal.translation.x > Math.round(this.mtxLocal.translation.x)) {
+                  this.movement.set(1 / 60, 0, 0);
+                } else if (path.mtxLocal.translation.y < Math.round(this.mtxLocal.translation.y)) {
+                  this.movement.set(0, -1 / 60, 0);
+                } else if (path.mtxLocal.translation.x < Math.round(this.mtxLocal.translation.x)) {
+                  this.movement.set(-1 / 60, 0, 0);
+                }
+              }
+            }
+            this.mtxLocal.translate(this.movement);*/
+        }
+    }
+    Script.MobP2 = MobP2;
+})(Script || (Script = {}));
+var Script;
+(function (Script) {
     var ƒAid = FudgeAid;
     Script.animations = {};
     let spriteWater;
@@ -618,14 +1471,28 @@ var Script;
         //pacman.generateByGrid(ƒ.Rectangle.GET(0, 0, 32, 32), 3, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
         const water = new ƒAid.SpriteSheetAnimation("water", _spritesheet);
         water.generateByGrid(ƒ.Rectangle.GET(0, 0, 32, 32), 3, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
+        // ------------------------ Mobs p1 --------------------------------
         const mob = new ƒAid.SpriteSheetAnimation("mob", _spritesheet);
         //mob.generateByGrid(
         mob.generateByGrid(ƒ.Rectangle.GET(160, 0, 32, 32), 4, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
+        const mob2 = new ƒAid.SpriteSheetAnimation("mob2", _spritesheet);
+        //mob2.generateByGrid(
+        mob2.generateByGrid(ƒ.Rectangle.GET(288, 0, 32, 32), 4, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
+        // ------------------------ Mobs p2 --------------------------------
+        const mobP2 = new ƒAid.SpriteSheetAnimation("mobP2", _spritesheet);
+        //mob.generateByGrid(
+        mobP2.generateByGrid(ƒ.Rectangle.GET(416, 0, 32, 32), 4, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
+        const mob2P2 = new ƒAid.SpriteSheetAnimation("mob2P2", _spritesheet);
+        //mob2.generateByGrid(
+        mob2P2.generateByGrid(ƒ.Rectangle.GET(544, 0, 32, 32), 4, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
         const paths = new ƒAid.SpriteSheetAnimation("paths", _spritesheet);
         //mob.generateByGrid(
         paths.generateByGrid(ƒ.Rectangle.GET(96, 0, 32, 32), 2, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
         //animations["pacman"] = pacman;
         Script.animations["mob"] = mob;
+        Script.animations["mob2"] = mob2;
+        Script.animations["mobP2"] = mobP2;
+        Script.animations["mob2P2"] = mob2P2;
         Script.animations["paths"] = paths;
         Script.animations["water"] = water;
     }

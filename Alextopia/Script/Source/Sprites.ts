@@ -19,6 +19,8 @@ namespace Script {
     const water: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("water", _spritesheet);
     water.generateByGrid(ƒ.Rectangle.GET(0, 0, 32, 32), 3, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
 
+
+    // ------------------------ Mobs p1 --------------------------------
     const mob: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("mob", _spritesheet);
     //mob.generateByGrid(
       mob.generateByGrid(
@@ -28,6 +30,38 @@ namespace Script {
       ƒ.ORIGIN2D.CENTER,
       ƒ.Vector2.X(32)
     );
+    const mob2: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("mob2", _spritesheet);
+    //mob2.generateByGrid(
+      mob2.generateByGrid(
+      ƒ.Rectangle.GET(288, 0, 32, 32),
+      4,
+      32,
+      ƒ.ORIGIN2D.CENTER,
+      ƒ.Vector2.X(32)
+    );
+
+    // ------------------------ Mobs p2 --------------------------------
+
+    const mobP2: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("mobP2", _spritesheet);
+    //mob.generateByGrid(
+      mobP2.generateByGrid(
+      ƒ.Rectangle.GET(416, 0, 32, 32),
+      4,
+      32,
+      ƒ.ORIGIN2D.CENTER,
+      ƒ.Vector2.X(32)
+    );
+    const mob2P2: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("mob2P2", _spritesheet);
+    //mob2.generateByGrid(
+      mob2P2.generateByGrid(
+      ƒ.Rectangle.GET(544, 0, 32, 32),
+      4,
+      32,
+      ƒ.ORIGIN2D.CENTER,
+      ƒ.Vector2.X(32)
+    );
+
+
 
     const paths: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("paths", _spritesheet);
     //mob.generateByGrid(
@@ -41,6 +75,9 @@ namespace Script {
 
     //animations["pacman"] = pacman;
     animations["mob"] = mob;
+    animations["mob2"] = mob2;
+    animations["mobP2"] = mobP2;
+    animations["mob2P2"] = mob2P2;
     animations["paths"] = paths;
     animations["water"] = water;
   }

@@ -39,10 +39,9 @@ canvas.fullscreen {
 }
 
 #vui {
+  width: 100vw;
+  height: 100vh;
   background-color: transparent;
-  bottom: 10px;
-  padding: 10px;
-  position: absolute;
   visibility: visible;
   font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode", Geneva,
     Verdana, sans-serif;
@@ -50,6 +49,16 @@ canvas.fullscreen {
 }
 
 .--boxleftdown {
+  bottom: 10px;
+  padding: 10px;
+  position: absolute;
+  background-color: aliceblue;
+}
+
+.--boxtopmid {
+  top: 10px;
+  padding: 10px;
+  position: absolute;
   background-color: aliceblue;
 }
 
