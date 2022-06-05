@@ -67,7 +67,7 @@ namespace Script {
     //mob.generateByGrid(
       paths.generateByGrid(
       ƒ.Rectangle.GET(96, 0, 32, 32),
-      2,
+      1,
       32,
       ƒ.ORIGIN2D.CENTER,
       ƒ.Vector2.X(32)

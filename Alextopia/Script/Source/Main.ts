@@ -24,6 +24,7 @@ namespace Script {
 
 
   let currentplayer: number = 1; //distinguishes between player 1 and 2
+  let currentPhase: number = 1; //Distinguishes between phase 1 (placing troops, which might as well be different phases all together) and phase 2 (choosing cities to produce troops)
   let i = 0;
   export let currentUnitNumber: number = 0; //taken in account to cycle through the units to move them, used in Mob.move function
   export let currentUnitNumberP2: number = 0; //taken in account to cycle through the units to move them, used in Mob.move function
@@ -405,8 +406,8 @@ namespace Script {
   }
   // ------------- Moving Mob abteil END PLAYER 1 ---------------------------------------------------
 
-    // ------------- Moving Mob abteil PLAYER 2 ---------------------------------------------------
-    function changeUnitP2(): void { //Is used to track current unit and change values accordingly -> NOT ANYMORE
+    // ------------- Moving Mob abteil PLAYER 2 --------------------------------------------------- IS INTEGRATED IN changeUnit von P1 !!!!!!!!!!!!!!!!!!! #######################################
+    /*function changeUnitP2(): void { //Is used to track current unit and change values accordingly -> NOT ANYMORE
       //let localVector: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
       //let localVector: ƒ.Matrix4x4 = mobs[currentUnitNumber].mtxLocal;
   
@@ -456,7 +457,7 @@ namespace Script {
         
         }
         })
-      }
+      } */
   
     export function checkIfMoveMobP2(_direction?: string): boolean { //checks which directions the CURRENTUNITNUMBER can go, called in changeUnit()
       const y: number = mobsP2[currentUnitNumber].mtxLocal.translation.y;

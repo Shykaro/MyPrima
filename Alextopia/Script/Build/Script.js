@@ -52,6 +52,7 @@ var Script;
     Script.mobsP2 = []; //Array for all created mobs/units
     Script.mobs2P2 = []; //Array for all created mobs/units
     let currentplayer = 1; //distinguishes between player 1 and 2
+    let currentPhase = 1; //Distinguishes between phase 1 (placing troops, which might as well be different phases all together) and phase 2 (choosing cities to produce troops)
     let i = 0;
     Script.currentUnitNumber = 0; //taken in account to cycle through the units to move them, used in Mob.move function
     Script.currentUnitNumberP2 = 0; //taken in account to cycle through the units to move them, used in Mob.move function
@@ -340,51 +341,58 @@ var Script;
     }
     Script.checkIfMoveMob = checkIfMoveMob;
     // ------------- Moving Mob abteil END PLAYER 1 ---------------------------------------------------
-    // ------------- Moving Mob abteil PLAYER 2 ---------------------------------------------------
-    function changeUnitP2() {
-        //let localVector: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
-        //let localVector: ƒ.Matrix4x4 = mobs[currentUnitNumber].mtxLocal;
-        document.addEventListener('keydown', (event) => {
-            if (currentplayer === 2) {
-                var name = event.key;
-                if (name === 'd' || name === 'ArrowRight') {
-                    if (checkIfMoveMobP2("x")) {
-                        Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translateX(1);
-                        console.log("trying to move right");
-                    }
-                }
-                if (name === 'a' || name === 'ArrowLeft') {
-                    if (checkIfMoveMobP2("-x")) {
-                        Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translateX(-1);
-                        console.log("trying to move Left");
-                    }
-                }
-                if (name === 'w' || name === 'ArrowUp') {
-                    if (checkIfMoveMobP2("y")) {
-                        Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translateY(1);
-                        console.log("trying to move up");
-                    }
-                }
-                if (name === 's' || name === 'ArrowDown') {
-                    if (checkIfMoveMobP2("-y")) {
-                        Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translateY(-1);
-                        console.log("trying to move down");
-                    }
-                }
-                if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
-                    if ((Script.currentUnitNumberP2 + 1) === Script.mobsP2.length) {
-                        console.log("RETURNINGP2");
-                        currentplayer = 1;
-                        return;
-                    }
-                    else {
-                        Script.currentUnitNumberP2++;
-                    }
-                    console.log("Logged position, going to next unit");
-                }
-            }
-        });
-    }
+    // ------------- Moving Mob abteil PLAYER 2 --------------------------------------------------- IS INTEGRATED IN changeUnit von P1 !!!!!!!!!!!!!!!!!!! #######################################
+    /*function changeUnitP2(): void { //Is used to track current unit and change values accordingly -> NOT ANYMORE
+      //let localVector: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
+      //let localVector: ƒ.Matrix4x4 = mobs[currentUnitNumber].mtxLocal;
+  
+      
+      
+      document.addEventListener('keydown', (event) => {
+
+        if(currentplayer === 2){
+        var name = event.key;
+  
+        if (name === 'd' || name === 'ArrowRight') {
+          if (checkIfMoveMobP2("x")) {
+          mobsP2[currentUnitNumberP2].mtxLocal.translateX(1);
+          console.log("trying to move right");
+          }
+        }
+        if (name === 'a' || name === 'ArrowLeft') {
+          if (checkIfMoveMobP2("-x")) {
+          mobsP2[currentUnitNumberP2].mtxLocal.translateX(-1);
+          console.log("trying to move Left");
+          }
+        }
+        if (name === 'w' || name === 'ArrowUp') {
+          if (checkIfMoveMobP2("y")) {
+          mobsP2[currentUnitNumberP2].mtxLocal.translateY(1);
+          console.log("trying to move up");
+          }
+        }
+        if (name === 's' || name === 'ArrowDown') {
+          if (checkIfMoveMobP2("-y")) {
+          mobsP2[currentUnitNumberP2].mtxLocal.translateY(-1);
+          console.log("trying to move down");
+          }
+        }
+        if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
+          if((currentUnitNumberP2 + 1) === mobsP2.length){
+            console.log("RETURNINGP2");
+            currentplayer = 1;
+            return;
+          }
+          else{
+            currentUnitNumberP2++;
+          }
+        
+            console.log("Logged position, going to next unit");
+          }
+        
+        }
+        })
+      } */
     function checkIfMoveMobP2(_direction) {
         const y = Script.mobsP2[Script.currentUnitNumber].mtxLocal.translation.y;
         const x = Script.mobsP2[Script.currentUnitNumber].mtxLocal.translation.x;
@@ -1487,7 +1495,7 @@ var Script;
         mob2P2.generateByGrid(ƒ.Rectangle.GET(544, 0, 32, 32), 4, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
         const paths = new ƒAid.SpriteSheetAnimation("paths", _spritesheet);
         //mob.generateByGrid(
-        paths.generateByGrid(ƒ.Rectangle.GET(96, 0, 32, 32), 2, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
+        paths.generateByGrid(ƒ.Rectangle.GET(96, 0, 32, 32), 1, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
         //animations["pacman"] = pacman;
         Script.animations["mob"] = mob;
         Script.animations["mob2"] = mob2;
