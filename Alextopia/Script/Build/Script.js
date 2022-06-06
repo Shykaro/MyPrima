@@ -46,7 +46,8 @@ var Script;
     let sounds; //outdated? i need it for later
     let pacman; //outdated? yes
     let water; //Blocks that cant be set foot on with normal units - Beinhaltet jeden Wasserblock in einem Array gespeichert
-    let paths; //Building/Land are, every unit can walk on these - beinhaltet jeden begehbaren block in einem Array gespeichert
+    Script.cityNode = []; //City = new ƒ.Node("CityP2");
+    Script.cityNodeP2 = []; //City = new ƒ.Node("CityP2");
     Script.mobs = []; //Array for all created mobs/units
     Script.mobs2 = []; //Array for all created mobs/units
     Script.mobsP2 = []; //Array for all created mobs/units
@@ -126,12 +127,22 @@ var Script;
         sounds = graph.getChildrenByName("Sound")[0].getComponents(ƒ.ComponentAudio);
         //pacman = graph.getChildrenByName("Pacman")[0];
         water = graph.getChildrenByName("Grid")[0].getChild(1).getChildren();
-        paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
-        for (const path of paths) { //Herausfinden was das is
-            addInteractable(path);
+        Script.paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
+        for (const path of Script.paths) { //Herausfinden was das is
+            //addInteractable(path);
         }
-        console.log(paths);
+        const city = new Script.City("City");
+        const cityP2 = new Script.CityP2("CityP2");
+        Script.cityNode.push(city);
+        Script.cityNodeP2.push(cityP2);
+        //Positions of starting Cities
+        Script.paths[44].addChild(city);
+        Script.paths[34].addChild(cityP2);
+        //Test console Logs
+        console.log(Script.paths);
         console.log(water);
+        console.log(Script.cityNode);
+        console.log(Script.cityNodeP2);
         //alle Ui units auf display none machen, damit ich sie nicht einzeln aufzählen muss.
         for (let i = 1; i < 10; i++) { //goes through all 9 possible Units
             for (let ii = 1; ii < 5; ii++) { //goes through all 4 possible unit variations
@@ -147,9 +158,21 @@ var Script;
                 i++;
                 console.log("Mob" + i);
                 const mob = new Script.Mob("Mob" + i);
-                mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+                let cityPosition = new ƒ.Vector3(city.mtxWorld.translation.x, city.mtxWorld.translation.y, 0);
+                //console.log(cityPosition)
+                //mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+                mob.mtxLocal.translate(cityPosition);
                 graph.addChild(mob);
                 Script.mobs.push(mob);
+                //Spielerfigur == position von interactable, soll dann hochzählen
+                //const path = paths.find((p) => p.mtxLocal.translation.equals(mobs[0].mtxLocal.translation, 0.5)); //sucht interactables auf der selben stelle von Mobs
+                //if (path) {
+                //const city: ƒ.Node = path.getChild(0);
+                //if (city) {
+                //console.log(city);
+                //}
+                //}
+                //const city = path.getChild(0);
                 /*for(let iCounter = 0; iCounter < i+1; iCounter++){ //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
                   if(iCounter === i){
                     document.getElementById("--" + i + "img1").style.display = null;
@@ -159,15 +182,13 @@ var Script;
                 for (let iCounter = 0; iCounter < Script.mobs.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
                     if (iCounter === Script.mobs.length) {
                         document.getElementById("--" + Script.mobs.length + "img1").style.display = null;
-                        //console.log("--" + i + "img1")
                     }
                     ;
                 }
                 ;
             }
-            //document.getElementById("image_X").style.display='none';
             //Anzahl der Mobs generated im Array
-            console.log(Script.mobs); //CHANGE THIS GLEICH SOFORT});
+            //console.log(mobs) //CHANGE THIS GLEICH SOFORT});
         });
         document.getElementById("plusmob2").addEventListener("click", (event) => {
             //function addMob() {
@@ -175,7 +196,8 @@ var Script;
                 i++;
                 console.log("Mob2" + i);
                 const mob2 = new Script.Mob2("Mob2" + i);
-                mob2.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+                let cityPosition = new ƒ.Vector3(city.mtxWorld.translation.x, city.mtxWorld.translation.y, 0);
+                mob2.mtxLocal.translate(cityPosition);
                 graph.addChild(mob2);
                 Script.mobs.push(mob2);
                 for (let iCounter = 0; iCounter < Script.mobs.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
@@ -188,7 +210,7 @@ var Script;
                 ;
             }
             //Anzahl der Mobs generated im Array
-            console.log(Script.mobs2); //CHANGE THIS GLEICH SOFORT});
+            //console.log(mobs2)
         });
         document.getElementById("plusmobP2").addEventListener("click", (event) => {
             //function addMob() {
@@ -196,7 +218,8 @@ var Script;
                 i++;
                 console.log("MobP2" + i);
                 const mobP2 = new Script.MobP2("MobP2" + i);
-                mobP2.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+                let cityPosition = new ƒ.Vector3(cityP2.mtxWorld.translation.x, cityP2.mtxWorld.translation.y, 0);
+                mobP2.mtxLocal.translate(cityPosition);
                 graph.addChild(mobP2);
                 Script.mobsP2.push(mobP2);
                 for (let iCounter = 0; iCounter < Script.mobsP2.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
@@ -209,7 +232,7 @@ var Script;
                 ;
             }
             //Anzahl der Mobs generated im Array
-            console.log(Script.mobsP2); //CHANGE THIS GLEICH SOFORT});
+            //console.log(mobsP2) //CHANGE THIS GLEICH SOFORT});
         });
         document.getElementById("plusmob2P2").addEventListener("click", (event) => {
             //function addMob() {
@@ -217,7 +240,8 @@ var Script;
                 i++;
                 console.log("Mob2P2" + i);
                 const mob2P2 = new Script.Mob2P2("Mob2P2" + i);
-                mob2P2.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+                let cityPosition = new ƒ.Vector3(cityP2.mtxWorld.translation.x, cityP2.mtxWorld.translation.y, 0);
+                mob2P2.mtxLocal.translate(cityPosition);
                 graph.addChild(mob2P2);
                 Script.mobsP2.push(mob2P2);
                 for (let iCounter = 0; iCounter < Script.mobsP2.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
@@ -230,7 +254,7 @@ var Script;
                 ;
             }
             //Anzahl der Mobs generated im Array
-            console.log(Script.mobs2P2); //CHANGE THIS GLEICH SOFORT});
+            //console.log(mobs2P2) //CHANGE THIS GLEICH SOFORT});
         });
         document.getElementById("changePlayer").addEventListener("click", (event) => {
             //function addMob() {
@@ -250,8 +274,8 @@ var Script;
         water.forEach(function (item, index) {
             Script.setSprite(water[index]);
         });
-        paths.forEach(function (item, index) {
-            Script.setSpritePaths(paths[index]);
+        Script.paths.forEach(function (item, index) {
+            Script.setSpritePaths(Script.paths[index]);
         });
         ƒ.Loop.addEventListener("loopFrame" /* ƒ.EVENT.LOOP_FRAME */, update);
         ƒ.Loop.start(); // start the game loop to continuously draw the viewport, update the audiosystem and drive the physics i/a
@@ -280,7 +304,6 @@ var Script;
         document.addEventListener('keydown', (event) => {
             if (currentplayer === 1) {
                 var name = event.key;
-                console.log("Ist das die Länge vom Array?: " + Script.mobs.length);
                 if (name === 'd' || name === 'ArrowRight') {
                     if (checkIfMoveMob("x")) {
                         Script.mobs[Script.currentUnitNumber].mtxLocal.translateX(1);
@@ -309,6 +332,8 @@ var Script;
                     if ((Script.currentUnitNumber + 1) === Script.mobs.length) {
                         console.log("RETURNINGP1");
                         currentplayer = 2;
+                        document.getElementById("--unitdiv1P2").style.borderColor = "red";
+                        document.getElementById("--unitdiv" + (Script.currentUnitNumber + 1)).style.borderColor = "#048836";
                         Script.currentUnitNumber = 0;
                         handleUiPlayerswap();
                         console.log(currentplayer);
@@ -317,6 +342,8 @@ var Script;
                     }
                     else {
                         Script.currentUnitNumber++;
+                        document.getElementById("--unitdiv" + (Script.currentUnitNumber + 1)).style.borderColor = "red"; //--unitdiv1P2 für spieler 2
+                        document.getElementById("--unitdiv" + Script.currentUnitNumber).style.borderColor = "#048836";
                     }
                     console.log("Logged position, going to next unit");
                 }
@@ -351,6 +378,8 @@ var Script;
                     if ((Script.currentUnitNumberP2 + 1) === Script.mobsP2.length) {
                         console.log("RETURNINGP2");
                         currentplayer = 1;
+                        document.getElementById("--unitdiv1").style.borderColor = "red";
+                        document.getElementById("--unitdiv" + (Script.currentUnitNumberP2 + 1) + "P2").style.borderColor = "#048836";
                         Script.currentUnitNumberP2 = 0;
                         handleUiPlayerswap();
                         console.log(currentplayer);
@@ -359,6 +388,8 @@ var Script;
                     }
                     else {
                         Script.currentUnitNumberP2++;
+                        document.getElementById("--unitdiv" + (Script.currentUnitNumberP2 + 1) + "P2").style.borderColor = "red"; //--unitdiv1P2 für spieler 2
+                        document.getElementById("--unitdiv" + Script.currentUnitNumberP2 + "P2").style.borderColor = "#048836";
                     }
                     console.log("Logged position, going to next unit");
                 }
@@ -390,7 +421,7 @@ var Script;
             //sounds[1].play(false);
             return false;
         }
-        const path = paths.find((p) => p.mtxLocal.translation.equals(newPosition, 0));
+        const path = Script.paths.find((p) => p.mtxLocal.translation.equals(newPosition, 0));
         if (!path) {
             //sounds[1].play(false);
             return false;
@@ -497,7 +528,7 @@ var Script;
             //sounds[1].play(false);
             return false;
         }
-        const path = paths.find((p) => p.mtxLocal.translation.equals(newPosition, 0));
+        const path = Script.paths.find((p) => p.mtxLocal.translation.equals(newPosition, 0));
         if (!path) {
             //sounds[1].play(false);
             return false;
@@ -507,24 +538,43 @@ var Script;
     Script.checkIfMoveMobP2 = checkIfMoveMobP2;
     // ------------- Moving Mob abteil END PLAYER 2 ---------------------------------------------------
     //Momentan noch uninteressant aber wichtig für interactable city later.
-    function addInteractable(_path) {
-        //random interactable auf der Map platzieren
-        const mtrCity = new ƒ.Material("City", ƒ.ShaderLit, new ƒ.CoatColored(ƒ.Color.CSS("#f5ce42")));
-        const cityNode = new ƒ.Node("City");
-        cityNode.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
-        cityNode.addComponent(new ƒ.ComponentMaterial(mtrCity));
-        cityNode.addComponent(new ƒ.ComponentTransform());
-        cityNode.mtxLocal.scale(new ƒ.Vector3(0.3, 0.3, 0.3));
-        //paths[34].addChild(cityNode); //Why doesnt this work?
-        paths[42].addChild(cityNode); // an Path 43 ist nun ein Interactable City gepflanz, no clue was ich damit anfange. -> Feindliche city einnehmbar indem Truppe draufgesetzt wird.
-    }
+    /*function addInteractable(_path: ƒ.Node): void {
+      //random interactable auf der Map platzieren
+      const mtrCity: ƒ.Material = new ƒ.Material(
+        "City",
+        ƒ.ShaderLit,
+        new ƒ.CoatColored(ƒ.Color.CSS("#f5ce42"))
+      );
+  
+      const mtrCityP2: ƒ.Material = new ƒ.Material(
+        "CityP2",
+        ƒ.ShaderLit,
+        new ƒ.CoatColored(ƒ.Color.CSS("#426cf5"))
+      );
+  
+      //const cityNode = new ƒ.Node("City");
+      cityNode.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
+      cityNode.addComponent(new ƒ.ComponentMaterial(mtrCity));
+      cityNode.addComponent(new ƒ.ComponentTransform());
+      cityNode.mtxLocal.scale(new ƒ.Vector3(0.3, 0.3, 0.3));
+  
+      //const cityNodeP2 = new ƒ.Node("City");
+      cityNodeP2.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
+      cityNodeP2.addComponent(new ƒ.ComponentMaterial(mtrCityP2));
+      cityNodeP2.addComponent(new ƒ.ComponentTransform());
+      cityNodeP2.mtxLocal.scale(new ƒ.Vector3(0.3, 0.3, 0.3));
+  
+      //paths[34].addChild(cityNode); //Why doesnt this work? -> create new city node !!
+      paths[44].addChild(cityNode); // an Path 44 ist nun ein Interactable City gepflanzt, no clue was ich damit anfange. -> Feindliche city einnehmbar indem Truppe draufgesetzt wird.
+      paths[34].addChild(cityNodeP2); //cityNodeP2 ist p2 spieler stadt.
+    }*/
     function useInteractable() {
         //Spielerfigur == position von interactable, soll dann hochzählen
-        const path = paths.find((p) => p.mtxLocal.translation.equals(pacman.mtxLocal.translation, 0.2)); //Pacman ersetzen.
+        const path = Script.paths.find((p) => p.mtxLocal.translation.equals(pacman.mtxLocal.translation, 0.2)); //Pacman ersetzen. sucht interactables auf der selben stelle von pacman
         if (path) {
             const city = path.getChild(0);
             if (city) {
-                path.removeChild(city);
+                path.removeChild(city); //removes paths[x].addChild(cityNode)
             }
         }
     }
@@ -643,6 +693,143 @@ var Script;
         }
       }
     }*/
+})(Script || (Script = {}));
+var Script;
+(function (Script) {
+    var ƒAid = FudgeAid;
+    Script.animations = {};
+    let spriteWater;
+    let spritePaths;
+    async function loadSprites() {
+        let imgSpriteSheet = new ƒ.TextureImage();
+        await imgSpriteSheet.load("Assets/3232SpriteTP.png");
+        let spriteSheet = new ƒ.CoatTextured(undefined, imgSpriteSheet);
+        generateSprites(spriteSheet);
+    }
+    Script.loadSprites = loadSprites;
+    function generateSprites(_spritesheet) {
+        //const pacman: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("pacman", _spritesheet);
+        //pacman.generateByGrid(ƒ.Rectangle.GET(0, 0, 32, 32), 3, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
+        const water = new ƒAid.SpriteSheetAnimation("water", _spritesheet);
+        water.generateByGrid(ƒ.Rectangle.GET(0, 0, 32, 32), 3, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
+        // ------------------------ Mobs p1 --------------------------------
+        const mob = new ƒAid.SpriteSheetAnimation("mob", _spritesheet);
+        //mob.generateByGrid(
+        mob.generateByGrid(ƒ.Rectangle.GET(160, 0, 32, 32), 4, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
+        const mob2 = new ƒAid.SpriteSheetAnimation("mob2", _spritesheet);
+        //mob2.generateByGrid(
+        mob2.generateByGrid(ƒ.Rectangle.GET(288, 0, 32, 32), 4, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
+        // ------------------------ Mobs p2 --------------------------------
+        const mobP2 = new ƒAid.SpriteSheetAnimation("mobP2", _spritesheet);
+        //mob.generateByGrid(
+        mobP2.generateByGrid(ƒ.Rectangle.GET(416, 0, 32, 32), 4, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
+        const mob2P2 = new ƒAid.SpriteSheetAnimation("mob2P2", _spritesheet);
+        //mob2.generateByGrid(
+        mob2P2.generateByGrid(ƒ.Rectangle.GET(544, 0, 32, 32), 4, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
+        const paths = new ƒAid.SpriteSheetAnimation("paths", _spritesheet);
+        //mob.generateByGrid(
+        paths.generateByGrid(ƒ.Rectangle.GET(96, 0, 32, 32), 1, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
+        //animations["pacman"] = pacman;
+        Script.animations["mob"] = mob;
+        Script.animations["mob2"] = mob2;
+        Script.animations["mobP2"] = mobP2;
+        Script.animations["mob2P2"] = mob2P2;
+        Script.animations["paths"] = paths;
+        Script.animations["water"] = water;
+    }
+    function setSprite(_node) {
+        spriteWater = new ƒAid.NodeSprite("Sprite");
+        spriteWater.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
+        spriteWater.setAnimation(Script.animations["water"]);
+        spriteWater.setFrameDirection(1);
+        spriteWater.mtxLocal.translateZ(0.0001);
+        spriteWater.framerate = 2;
+        _node.addChild(spriteWater);
+        _node.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
+        //spritePacman.mtxLocal.rotateZ(90);
+    }
+    Script.setSprite = setSprite;
+    function setSpritePaths(_node) {
+        spritePaths = new ƒAid.NodeSprite("Sprite");
+        spritePaths.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
+        spritePaths.setAnimation(Script.animations["paths"]);
+        spritePaths.setFrameDirection(1);
+        spritePaths.mtxLocal.translateZ(0.0001);
+        spritePaths.framerate = 1;
+        _node.addChild(spritePaths);
+        _node.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
+        //spritePacman.mtxLocal.rotateZ(90);
+    }
+    Script.setSpritePaths = setSpritePaths;
+    /*export function setSprite(_node: ƒ.Node): void {
+      spritePacman = new ƒAid.NodeSprite("Sprite");
+      spritePacman.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
+      spritePacman.setAnimation(<ƒAid.SpriteSheetAnimation>animations["water"]);
+      spritePacman.setFrameDirection(1);
+      spritePacman.mtxLocal.translateZ(0.0001);
+      spritePacman.framerate = 1;
+  
+      _node.addChild(spritePacman);
+      _node.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
+      //spritePacman.mtxLocal.rotateZ(90);
+    }*/
+    /*export function rotateSprite(_direction: string): void {
+      if (_direction !== movingDirection) {
+        if (
+          (_direction === "x" && movingDirection === "y") ||
+          (_direction === "-y" && movingDirection === "x") ||
+          (_direction === "-x" && movingDirection === "-y") ||
+          (_direction === "y" && movingDirection === "-x")
+        ) {
+          spritePacman.mtxLocal.rotateZ(-90);
+        } else if (
+          (_direction === "-x" && movingDirection === "y") ||
+          (_direction === "x" && movingDirection === "-y") ||
+          (_direction === "y" && movingDirection === "x") ||
+          (_direction === "-y" && movingDirection === "-x")
+        ) {
+          spritePacman.mtxLocal.rotateZ(90);
+        } else if (
+          (_direction === "-x" && movingDirection === "x") ||
+          (_direction === "x" && movingDirection === "-x") ||
+          (_direction === "y" && movingDirection === "-y") ||
+          (_direction === "-y" && movingDirection === "y")
+        ) {
+          spritePacman.mtxLocal.rotateZ(180);
+        }
+      }
+    }*/
+})(Script || (Script = {}));
+var Script;
+(function (Script) {
+    var ƒ = FudgeCore;
+    class City extends ƒ.Node {
+        constructor(_name) {
+            super(_name);
+            const mtrCity = new ƒ.Material("City", ƒ.ShaderLit, new ƒ.CoatColored(ƒ.Color.CSS("#f5ce42")));
+            this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
+            this.addComponent(new ƒ.ComponentMaterial(mtrCity));
+            this.addComponent(new ƒ.ComponentTransform());
+            this.mtxLocal.scale(new ƒ.Vector3(0.3, 0.3, 0.3));
+        }
+    }
+    Script.City = City;
+})(Script || (Script = {}));
+var Script;
+(function (Script) {
+    var ƒ = FudgeCore;
+    class CityP2 extends ƒ.Node {
+        constructor(_name) {
+            super(_name);
+            const mtrCityP2 = new ƒ.Material("CityP2", ƒ.ShaderLit, new ƒ.CoatColored(ƒ.Color.CSS("#426cf5")));
+            //const cityNodeP2 = new ƒ.Node("City");
+            this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
+            this.addComponent(new ƒ.ComponentMaterial(mtrCityP2));
+            this.addComponent(new ƒ.ComponentTransform());
+            this.mtxLocal.scale(new ƒ.Vector3(0.3, 0.3, 0.3));
+        }
+    }
+    Script.CityP2 = CityP2;
 })(Script || (Script = {}));
 var Script;
 (function (Script) {
@@ -1543,111 +1730,5 @@ var Script;
         }
     }
     Script.MobP2 = MobP2;
-})(Script || (Script = {}));
-var Script;
-(function (Script) {
-    var ƒAid = FudgeAid;
-    Script.animations = {};
-    let spriteWater;
-    let spritePaths;
-    async function loadSprites() {
-        let imgSpriteSheet = new ƒ.TextureImage();
-        await imgSpriteSheet.load("Assets/3232SpriteTP.png");
-        let spriteSheet = new ƒ.CoatTextured(undefined, imgSpriteSheet);
-        generateSprites(spriteSheet);
-    }
-    Script.loadSprites = loadSprites;
-    function generateSprites(_spritesheet) {
-        //const pacman: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("pacman", _spritesheet);
-        //pacman.generateByGrid(ƒ.Rectangle.GET(0, 0, 32, 32), 3, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
-        const water = new ƒAid.SpriteSheetAnimation("water", _spritesheet);
-        water.generateByGrid(ƒ.Rectangle.GET(0, 0, 32, 32), 3, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
-        // ------------------------ Mobs p1 --------------------------------
-        const mob = new ƒAid.SpriteSheetAnimation("mob", _spritesheet);
-        //mob.generateByGrid(
-        mob.generateByGrid(ƒ.Rectangle.GET(160, 0, 32, 32), 4, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
-        const mob2 = new ƒAid.SpriteSheetAnimation("mob2", _spritesheet);
-        //mob2.generateByGrid(
-        mob2.generateByGrid(ƒ.Rectangle.GET(288, 0, 32, 32), 4, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
-        // ------------------------ Mobs p2 --------------------------------
-        const mobP2 = new ƒAid.SpriteSheetAnimation("mobP2", _spritesheet);
-        //mob.generateByGrid(
-        mobP2.generateByGrid(ƒ.Rectangle.GET(416, 0, 32, 32), 4, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
-        const mob2P2 = new ƒAid.SpriteSheetAnimation("mob2P2", _spritesheet);
-        //mob2.generateByGrid(
-        mob2P2.generateByGrid(ƒ.Rectangle.GET(544, 0, 32, 32), 4, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
-        const paths = new ƒAid.SpriteSheetAnimation("paths", _spritesheet);
-        //mob.generateByGrid(
-        paths.generateByGrid(ƒ.Rectangle.GET(96, 0, 32, 32), 1, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
-        //animations["pacman"] = pacman;
-        Script.animations["mob"] = mob;
-        Script.animations["mob2"] = mob2;
-        Script.animations["mobP2"] = mobP2;
-        Script.animations["mob2P2"] = mob2P2;
-        Script.animations["paths"] = paths;
-        Script.animations["water"] = water;
-    }
-    function setSprite(_node) {
-        spriteWater = new ƒAid.NodeSprite("Sprite");
-        spriteWater.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
-        spriteWater.setAnimation(Script.animations["water"]);
-        spriteWater.setFrameDirection(1);
-        spriteWater.mtxLocal.translateZ(0.0001);
-        spriteWater.framerate = 2;
-        _node.addChild(spriteWater);
-        _node.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
-        //spritePacman.mtxLocal.rotateZ(90);
-    }
-    Script.setSprite = setSprite;
-    function setSpritePaths(_node) {
-        spritePaths = new ƒAid.NodeSprite("Sprite");
-        spritePaths.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
-        spritePaths.setAnimation(Script.animations["paths"]);
-        spritePaths.setFrameDirection(1);
-        spritePaths.mtxLocal.translateZ(0.0001);
-        spritePaths.framerate = 1;
-        _node.addChild(spritePaths);
-        _node.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
-        //spritePacman.mtxLocal.rotateZ(90);
-    }
-    Script.setSpritePaths = setSpritePaths;
-    /*export function setSprite(_node: ƒ.Node): void {
-      spritePacman = new ƒAid.NodeSprite("Sprite");
-      spritePacman.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
-      spritePacman.setAnimation(<ƒAid.SpriteSheetAnimation>animations["water"]);
-      spritePacman.setFrameDirection(1);
-      spritePacman.mtxLocal.translateZ(0.0001);
-      spritePacman.framerate = 1;
-  
-      _node.addChild(spritePacman);
-      _node.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
-      //spritePacman.mtxLocal.rotateZ(90);
-    }*/
-    /*export function rotateSprite(_direction: string): void {
-      if (_direction !== movingDirection) {
-        if (
-          (_direction === "x" && movingDirection === "y") ||
-          (_direction === "-y" && movingDirection === "x") ||
-          (_direction === "-x" && movingDirection === "-y") ||
-          (_direction === "y" && movingDirection === "-x")
-        ) {
-          spritePacman.mtxLocal.rotateZ(-90);
-        } else if (
-          (_direction === "-x" && movingDirection === "y") ||
-          (_direction === "x" && movingDirection === "-y") ||
-          (_direction === "y" && movingDirection === "x") ||
-          (_direction === "-y" && movingDirection === "-x")
-        ) {
-          spritePacman.mtxLocal.rotateZ(90);
-        } else if (
-          (_direction === "-x" && movingDirection === "x") ||
-          (_direction === "x" && movingDirection === "-x") ||
-          (_direction === "y" && movingDirection === "-y") ||
-          (_direction === "-y" && movingDirection === "y")
-        ) {
-          spritePacman.mtxLocal.rotateZ(180);
-        }
-      }
-    }*/
 })(Script || (Script = {}));
 //# sourceMappingURL=Script.js.map

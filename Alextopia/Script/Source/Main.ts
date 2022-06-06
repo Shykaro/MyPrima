@@ -13,7 +13,9 @@ namespace Script {
   let sounds: ƒ.ComponentAudio[]; //outdated? i need it for later
   let pacman: ƒ.Node;             //outdated? yes
   let water: ƒ.Node[];    //Blocks that cant be set foot on with normal units - Beinhaltet jeden Wasserblock in einem Array gespeichert
-  let paths: ƒ.Node[];    //Building/Land are, every unit can walk on these - beinhaltet jeden begehbaren block in einem Array gespeichert
+  export let paths: ƒ.Node[];    //Building/Land are, every unit can walk on these - beinhaltet jeden begehbaren block in einem Array gespeichert
+  export let cityNode: City[] = [];   //City = new ƒ.Node("CityP2");
+  export let cityNodeP2: CityP2[] = []; //City = new ƒ.Node("CityP2");
 
   export let mobs: Mob[] = [];   //Array for all created mobs/units
   export let mobs2: Mob2[] = [];   //Array for all created mobs/units
@@ -120,11 +122,25 @@ namespace Script {
     paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
 
     for (const path of paths) { //Herausfinden was das is
-      addInteractable(path);
+      //addInteractable(path);
     }
 
+    const city = new City("City");
+    const cityP2 = new CityP2("CityP2");
+
+    cityNode.push(city);
+    cityNodeP2.push(cityP2);
+
+    //Positions of starting Cities
+    paths[44].addChild(city);
+    paths[34].addChild(cityP2);
+    
+
+    //Test console Logs
     console.log(paths);
     console.log(water);
+    console.log(cityNode);
+    console.log(cityNodeP2);
 
     //alle Ui units auf display none machen, damit ich sie nicht einzeln aufzählen muss.
     for (let i = 1; i < 10; i++) { //goes through all 9 possible Units
@@ -143,10 +159,24 @@ namespace Script {
         console.log("Mob" + i)
 
         const mob = new Mob("Mob" + i);
-        mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+        let cityPosition = new ƒ.Vector3(city.mtxWorld.translation.x, city.mtxWorld.translation.y, 0);
+        //console.log(cityPosition)
+        //mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+        mob.mtxLocal.translate(cityPosition);
         graph.addChild(mob);
 
         mobs.push(mob);
+        //Spielerfigur == position von interactable, soll dann hochzählen
+        //const path = paths.find((p) => p.mtxLocal.translation.equals(mobs[0].mtxLocal.translation, 0.5)); //sucht interactables auf der selben stelle von Mobs
+
+        //if (path) {
+          //const city: ƒ.Node = path.getChild(0);
+
+          //if (city) {
+            //console.log(city);
+          //}
+        //}
+        //const city = path.getChild(0);
 
 
         /*for(let iCounter = 0; iCounter < i+1; iCounter++){ //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
@@ -159,14 +189,12 @@ namespace Script {
         for (let iCounter = 0; iCounter < mobs.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
           if (iCounter === mobs.length) {
             document.getElementById("--" + mobs.length + "img1").style.display = null;
-            //console.log("--" + i + "img1")
           };
         };
       }
-      //document.getElementById("image_X").style.display='none';
 
       //Anzahl der Mobs generated im Array
-      console.log(mobs) //CHANGE THIS GLEICH SOFORT});
+      //console.log(mobs) //CHANGE THIS GLEICH SOFORT});
 
 
     })
@@ -180,7 +208,8 @@ namespace Script {
 
 
         const mob2 = new Mob2("Mob2" + i);
-        mob2.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+        let cityPosition = new ƒ.Vector3(city.mtxWorld.translation.x, city.mtxWorld.translation.y, 0);
+        mob2.mtxLocal.translate(cityPosition);
         graph.addChild(mob2);
 
         mobs.push(mob2);
@@ -195,7 +224,7 @@ namespace Script {
       }
 
       //Anzahl der Mobs generated im Array
-      console.log(mobs2) //CHANGE THIS GLEICH SOFORT});
+      //console.log(mobs2)
 
 
     })
@@ -206,7 +235,8 @@ namespace Script {
         console.log("MobP2" + i)
 
         const mobP2 = new MobP2("MobP2" + i);
-        mobP2.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+        let cityPosition = new ƒ.Vector3(cityP2.mtxWorld.translation.x, cityP2.mtxWorld.translation.y, 0);
+        mobP2.mtxLocal.translate(cityPosition);
         graph.addChild(mobP2);
 
         mobsP2.push(mobP2);
@@ -220,7 +250,7 @@ namespace Script {
         };
       }
       //Anzahl der Mobs generated im Array
-      console.log(mobsP2) //CHANGE THIS GLEICH SOFORT});
+      //console.log(mobsP2) //CHANGE THIS GLEICH SOFORT});
 
 
     })
@@ -232,7 +262,8 @@ namespace Script {
         console.log("Mob2P2" + i)
 
         const mob2P2 = new Mob2P2("Mob2P2" + i);
-        mob2P2.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+        let cityPosition = new ƒ.Vector3(cityP2.mtxWorld.translation.x, cityP2.mtxWorld.translation.y, 0);
+        mob2P2.mtxLocal.translate(cityPosition);
         graph.addChild(mob2P2);
 
         mobsP2.push(mob2P2);
@@ -247,7 +278,7 @@ namespace Script {
       }
 
       //Anzahl der Mobs generated im Array
-      console.log(mobs2P2) //CHANGE THIS GLEICH SOFORT});
+      //console.log(mobs2P2) //CHANGE THIS GLEICH SOFORT});
 
 
     })
@@ -322,8 +353,6 @@ namespace Script {
       if (currentplayer === 1) {
         var name = event.key;
 
-        console.log("Ist das die Länge vom Array?: " + mobs.length)
-
         if (name === 'd' || name === 'ArrowRight') {
           if (checkIfMoveMob("x")) {
             mobs[currentUnitNumber].mtxLocal.translateX(1);
@@ -352,7 +381,10 @@ namespace Script {
           if ((currentUnitNumber + 1) === mobs.length) {
             console.log("RETURNINGP1");
             currentplayer = 2;
+            document.getElementById("--unitdiv1P2").style.borderColor = "red";
+            document.getElementById("--unitdiv" + (currentUnitNumber + 1)).style.borderColor = "#048836";
             currentUnitNumber = 0;
+
 
             handleUiPlayerswap();
             console.log(currentplayer);
@@ -361,6 +393,8 @@ namespace Script {
           }
           else {
             currentUnitNumber++;
+            document.getElementById("--unitdiv" + (currentUnitNumber + 1)).style.borderColor = "red"; //--unitdiv1P2 für spieler 2
+            document.getElementById("--unitdiv" + currentUnitNumber).style.borderColor = "#048836";
           }
 
           console.log("Logged position, going to next unit");
@@ -399,6 +433,8 @@ namespace Script {
           if ((currentUnitNumberP2 + 1) === mobsP2.length) {
             console.log("RETURNINGP2");
             currentplayer = 1;
+            document.getElementById("--unitdiv1").style.borderColor = "red";
+            document.getElementById("--unitdiv" + (currentUnitNumberP2 + 1) + "P2").style.borderColor = "#048836";
             currentUnitNumberP2 = 0;
             handleUiPlayerswap();
             console.log(currentplayer);
@@ -408,6 +444,8 @@ namespace Script {
           }
           else {
             currentUnitNumberP2++;
+            document.getElementById("--unitdiv" + (currentUnitNumberP2 + 1) + "P2").style.borderColor = "red"; //--unitdiv1P2 für spieler 2
+            document.getElementById("--unitdiv" + currentUnitNumberP2 + "P2").style.borderColor = "#048836";
           }
 
           console.log("Logged position, going to next unit");
@@ -583,7 +621,7 @@ namespace Script {
 
 
   //Momentan noch uninteressant aber wichtig für interactable city later.
-  function addInteractable(_path: ƒ.Node): void {
+  /*function addInteractable(_path: ƒ.Node): void {
     //random interactable auf der Map platzieren
     const mtrCity: ƒ.Material = new ƒ.Material(
       "City",
@@ -591,25 +629,38 @@ namespace Script {
       new ƒ.CoatColored(ƒ.Color.CSS("#f5ce42"))
     );
 
-    const cityNode = new ƒ.Node("City");
+    const mtrCityP2: ƒ.Material = new ƒ.Material(
+      "CityP2",
+      ƒ.ShaderLit,
+      new ƒ.CoatColored(ƒ.Color.CSS("#426cf5"))
+    );
+
+    //const cityNode = new ƒ.Node("City");
     cityNode.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
     cityNode.addComponent(new ƒ.ComponentMaterial(mtrCity));
     cityNode.addComponent(new ƒ.ComponentTransform());
     cityNode.mtxLocal.scale(new ƒ.Vector3(0.3, 0.3, 0.3));
 
-    //paths[34].addChild(cityNode); //Why doesnt this work?
-    paths[42].addChild(cityNode); // an Path 43 ist nun ein Interactable City gepflanz, no clue was ich damit anfange. -> Feindliche city einnehmbar indem Truppe draufgesetzt wird.
-  }
+    //const cityNodeP2 = new ƒ.Node("City");
+    cityNodeP2.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
+    cityNodeP2.addComponent(new ƒ.ComponentMaterial(mtrCityP2));
+    cityNodeP2.addComponent(new ƒ.ComponentTransform());
+    cityNodeP2.mtxLocal.scale(new ƒ.Vector3(0.3, 0.3, 0.3));
+
+    //paths[34].addChild(cityNode); //Why doesnt this work? -> create new city node !!
+    paths[44].addChild(cityNode); // an Path 44 ist nun ein Interactable City gepflanzt, no clue was ich damit anfange. -> Feindliche city einnehmbar indem Truppe draufgesetzt wird.
+    paths[34].addChild(cityNodeP2); //cityNodeP2 ist p2 spieler stadt.
+  }*/
 
   function useInteractable() { //Search function and how its used before.
     //Spielerfigur == position von interactable, soll dann hochzählen
-    const path = paths.find((p) => p.mtxLocal.translation.equals(pacman.mtxLocal.translation, 0.2)); //Pacman ersetzen.
+    const path = paths.find((p) => p.mtxLocal.translation.equals(pacman.mtxLocal.translation, 0.2)); //Pacman ersetzen. sucht interactables auf der selben stelle von pacman
 
     if (path) {
       const city: ƒ.Node = path.getChild(0);
 
       if (city) {
-        path.removeChild(city);
+        path.removeChild(city); //removes paths[x].addChild(cityNode)
       }
     }
   }

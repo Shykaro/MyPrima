@@ -10,6 +10,9 @@ declare namespace Script {
 declare namespace Script {
     import ƒ = FudgeCore;
     let viewport: ƒ.Viewport;
+    let paths: ƒ.Node[];
+    let cityNode: City[];
+    let cityNodeP2: CityP2[];
     let mobs: Mob[];
     let mobs2: Mob2[];
     let mobsP2: MobP2[];
@@ -26,6 +29,25 @@ declare namespace Script {
     let movement: ƒ.Vector3;
     function checkIfMoveMob(_direction?: string): boolean;
     function checkIfMoveMobP2(_direction?: string): boolean;
+}
+declare namespace Script {
+    import ƒAid = FudgeAid;
+    let animations: ƒAid.SpriteSheetAnimations;
+    function loadSprites(): Promise<void>;
+    function setSprite(_node: ƒ.Node): void;
+    function setSpritePaths(_node: ƒ.Node): void;
+}
+declare namespace Script {
+    import ƒ = FudgeCore;
+    class City extends ƒ.Node {
+        constructor(_name: string);
+    }
+}
+declare namespace Script {
+    import ƒ = FudgeCore;
+    class CityP2 extends ƒ.Node {
+        constructor(_name: string);
+    }
 }
 declare namespace Script {
     import ƒ = FudgeCore;
@@ -54,11 +76,4 @@ declare namespace Script {
         constructor(_name: string);
         move(): void;
     }
-}
-declare namespace Script {
-    import ƒAid = FudgeAid;
-    let animations: ƒAid.SpriteSheetAnimations;
-    function loadSprites(): Promise<void>;
-    function setSprite(_node: ƒ.Node): void;
-    function setSpritePaths(_node: ƒ.Node): void;
 }
