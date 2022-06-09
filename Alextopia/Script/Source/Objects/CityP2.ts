@@ -10,15 +10,14 @@ namespace Script {
             const mtrCityP2: ƒ.Material = new ƒ.Material(
                 "CityP2",
                 ƒ.ShaderLit,
-                new ƒ.CoatColored(ƒ.Color.CSS("#426cf5"))
+                new ƒ.CoatColored(ƒ.Color.CSS("#ff6961"))
             );
 
             //const cityNodeP2 = new ƒ.Node("City");
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
             this.addComponent(new ƒ.ComponentMaterial(mtrCityP2));
             this.addComponent(new ƒ.ComponentTransform());
-            this.mtxLocal.scale(new ƒ.Vector3(0.3, 0.3, 0.3));
-
+            this.mtxLocal.scale(new ƒ.Vector3(0.5, 0.5, 0.01));
         }
     }
 }

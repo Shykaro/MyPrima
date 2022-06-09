@@ -17,8 +17,6 @@ declare namespace Script {
     let mobs2: Mob2[];
     let mobsP2: MobP2[];
     let mobs2P2: Mob2P2[];
-    let gold: number;
-    let goldP2: number;
     let currentplayer: number;
     let currentUnitNumber: number;
     let currentUnitNumberP2: number;

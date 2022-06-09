@@ -34,6 +34,8 @@ namespace Script {
       sprite.mtxLocal.translateZ(0.1);
       sprite.mtxLocal.translateY(0.1);
       sprite.framerate = 8;
+      sprite.mtxLocal.scale(new ƒ.Vector3(0.6, 0.6, 1));
+
 
       this.addChild(sprite);
       this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);

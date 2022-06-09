@@ -52,14 +52,13 @@ var Script;
     Script.mobs2 = []; //Array for all created mobs/units
     Script.mobsP2 = []; //Array for all created mobs/units
     Script.mobs2P2 = []; //Array for all created mobs/units
-    Script.gold = 0; //Geld für Spieler 1
-    Script.goldP2 = 0; //Geld für Spieler 2
-    //export let possibleLRCGlobalX: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0); //LRC = LimitReachCheck, used in checking that unit can only work one field from origin.
-    //export let possibleLRCGlobalY: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
-    //export let possibleLRCGlobalXMinus: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
-    //export let possibleLRCGlobalYMinus: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
-    //export let possibleLRCGlobalStay: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
-    let zwischenSpeicherCoordinateLRC = new ƒ.Vector3(0, 0, 0);
+    let gold = 0; //StartGeld für Spieler 1
+    let goldP2 = 0; //StartGeld für Spieler 2
+    let goldGain = 10; //Geld die jeder Spieler am Anfang seines Zuges bekommt ##Adjustable for balancing,  //Das stimmt NICHTMEHR-> beachte dass für den Start des Spiels jeder Spieler einmal den Goldgain erhält
+    let costMob = 15; //Kosten für eine normale Einheit
+    let costMob2 = 15; //Kosten für eine stärkere Einheit
+    let mobBuyLimit = 1; //Adjust this number if players should be able to buy more than 1 unit per turn.
+    let zwischenSpeicherCoordinateLRC = new ƒ.Vector3(0, 0, 0); //LRC = LimitReachCheck, used in checking that unit can only work one field from origin.
     let zwischenSpeicherCoordinateLRCP2 = new ƒ.Vector3(0, 0, 0);
     let possibleLimitReachedCheckX = new ƒ.Vector3(0, 0, 0);
     let possibleLimitReachedCheckY = new ƒ.Vector3(0, 0, 0);
@@ -74,6 +73,9 @@ var Script;
     Script.currentplayer = 1; //distinguishes between player 1 and 2 and also who starts!!
     let currentPhase = 1; //Distinguishes between phase 1 (placing troops, which might as well be different phases all together) and phase 2 (choosing cities to produce troops)
     let i = 0;
+    let roundsPlayed = 0; //if console logged shows round passed (keep in mind that it should be used -2 since the game starts in turn 3)
+    let addMobLimitCounter = mobBuyLimit; //limits how many units per round can be bought for P1. -> adjust mobBuyLimit to change this
+    let addMobLimitCounterP2 = mobBuyLimit; //limits how many units per round can be bought for P2. -> adjust mobBuyLimit to change this
     Script.currentUnitNumber = 0; //taken in account to cycle through the units to move them, used in Mob.move function
     Script.currentUnitNumberP2 = 0; //taken in account to cycle through the units to move them, used in Mob.move function
     Script.iMoveY = 0; //Necessary global variables to limit user to one move per time. ALLE OBSOLET.
@@ -152,6 +154,9 @@ var Script;
         for (const path of Script.paths) { //Herausfinden was das is
             //addInteractable(path);
         }
+        document.getElementById("vui").style.visibility = 'visible'; //Vui einschalten
+        document.getElementById("--addMob").style.display = 'none'; //Mob menü ausschalten
+        document.getElementById("--addMobP2").style.display = 'none'; //Mob menü ausschalten
         const city = new Script.City("City");
         const cityP2 = new Script.CityP2("CityP2");
         Script.cityNode.push(city);
@@ -172,17 +177,17 @@ var Script;
             }
         }
         ;
-        //Admin  Menu --------------------------------------------------------------------
-        document.getElementById("plusmob").addEventListener("click", (event) => {
+        //Admin  Menu -------------------------------------------------------------------- ->>>>> Repurposed with -- to normal city troop adding!!
+        document.getElementById("--plusmob").addEventListener("click", (event) => {
             creatingMob(1, graph, city, cityP2);
         });
-        document.getElementById("plusmob2").addEventListener("click", (event) => {
+        document.getElementById("--plusmob2").addEventListener("click", (event) => {
             creatingMob(2, graph, city, cityP2);
         });
-        document.getElementById("plusmobP2").addEventListener("click", (event) => {
+        document.getElementById("--plusmobP2").addEventListener("click", (event) => {
             creatingMob(3, graph, city, cityP2);
         });
-        document.getElementById("plusmob2P2").addEventListener("click", (event) => {
+        document.getElementById("--plusmob2P2").addEventListener("click", (event) => {
             creatingMob(4, graph, city, cityP2);
         });
         document.getElementById("changePlayer").addEventListener("click", (event) => {
@@ -210,88 +215,138 @@ var Script;
         creatingMob(3, graph, city, cityP2); //Gibt eine mobP2 - unit zu Stadt von Spieler2
         //skips 2 turns, so players have start gold and some Bugs are shoved away lol 
         logInUnit();
+        handleEndOfCityProcedure(Script.currentUnitNumber, 2);
         logInUnitP2();
+        handleEndOfCityProcedure(Script.currentUnitNumber, 1);
         //Ende start items ---------------------------------------------------------------------------------------
     } //ENDKLAMMER FÜR START FUNKTION -------------------------------------------------------------------------------------
     function update(_event) {
         // ƒ.Physics.simulate();  // if physics is included and used
-        document.getElementById("--goldInput").setAttribute('value', Script.gold.toString());
-        document.getElementById("--goldInputP2").setAttribute('value', Script.goldP2.toString());
+        //document.getElementById("--goldInput").setAttribute('value', gold.toString());
+        //document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
         Script.mobs.map((g) => g.move()); //g.move(paths));
         Script.mobs2.map((g) => g.move()); //g.move(paths));
         Script.mobsP2.map((g) => g.move()); //g.move(paths));
         Script.mobs2P2.map((g) => g.move()); //g.move(paths));
         Script.viewport.draw();
+        if (addMobLimitCounter == 0) {
+            document.getElementById("--plusmob").setAttribute('disabled', "");
+            document.getElementById("--plusmob2").setAttribute('disabled', "");
+        }
+        if (addMobLimitCounterP2 == 0) {
+            document.getElementById("--plusmobP2").setAttribute('disabled', "");
+            document.getElementById("--plusmob2P2").setAttribute('disabled', "");
+        }
+        if (addMobLimitCounter > 0) {
+            document.getElementById("--plusmob").removeAttribute('disabled');
+            document.getElementById("--plusmob2").removeAttribute('disabled');
+        }
+        if (addMobLimitCounterP2 > 0) {
+            document.getElementById("--plusmobP2").removeAttribute('disabled');
+            document.getElementById("--plusmob2P2").removeAttribute('disabled');
+        }
     }
     // ------------- Moving Mob abteil für beide Spieler ---------------------------------------------------
     function changeUnit() {
         document.addEventListener('keydown', (event) => {
+            var name = event.key;
             if (Script.currentplayer === 1) {
-                var name = event.key;
-                //console.log(mobs[currentUnitNumber].mtxLocal + " and " + currentUnitNumber);
-                if (name === 'd' || name === 'ArrowRight') {
-                    //currentMobPosition = new ƒ.Vector3(mobs[currentUnitNumber].mtxLocal.translation.x, mobs[currentUnitNumber].mtxLocal.translation.y, 0);
-                    if (checkIfMoveMob("x")) {
-                        Script.mobs[Script.currentUnitNumber].mtxLocal.translateX(1);
-                        //console.log("trying to move right");
+                if (currentPhase === 1) {
+                    //console.log(mobs[currentUnitNumber].mtxLocal + " and " + currentUnitNumber);
+                    if (name === 'd' || name === 'ArrowRight') {
+                        //currentMobPosition = new ƒ.Vector3(mobs[currentUnitNumber].mtxLocal.translation.x, mobs[currentUnitNumber].mtxLocal.translation.y, 0);
+                        if (checkIfMoveMob("x")) {
+                            Script.mobs[Script.currentUnitNumber].mtxLocal.translateX(1);
+                            //console.log("trying to move right");
+                        }
+                    }
+                    if (name === 'a' || name === 'ArrowLeft') {
+                        if (checkIfMoveMob("-x")) {
+                            Script.mobs[Script.currentUnitNumber].mtxLocal.translateX(-1);
+                            //console.log("trying to move Left");
+                        }
+                    }
+                    if (name === 'w' || name === 'ArrowUp') {
+                        if (checkIfMoveMob("y")) {
+                            Script.mobs[Script.currentUnitNumber].mtxLocal.translateY(1);
+                            //console.log("trying to move up");
+                        }
+                    }
+                    if (name === 's' || name === 'ArrowDown') {
+                        if (checkIfMoveMob("-y")) {
+                            Script.mobs[Script.currentUnitNumber].mtxLocal.translateY(-1);
+                            //console.log("trying to move down");
+                        }
+                    }
+                    if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
+                        if (Script.currentplayer === 1) {
+                            //currentPhase = 2;
+                            logInUnit(); //also end of turn procedure if its not the last unit.
+                        }
+                        return;
                     }
                 }
-                if (name === 'a' || name === 'ArrowLeft') {
-                    if (checkIfMoveMob("-x")) {
-                        Script.mobs[Script.currentUnitNumber].mtxLocal.translateX(-1);
-                        //console.log("trying to move Left");
+                if (currentPhase === 2) { //Shuts down the other key down events, initiates or gives time for phase 2
+                    if (name === 'Space' || name === 'Enter') {
+                        handleEndOfCityProcedure(Script.currentUnitNumber, 2);
+                        //console.log("Please work");
+                        //document.getElementById("--unitdiv1P2").style.borderColor = "red";
+                        //document.getElementById("--unitdiv" + (currentUnitNumber + 1)).style.borderColor = "#048836";
+                        //currentPhase = 1;
+                        //currentplayer = 2;
+                        //document.getElementById("--addMob").style.display = 'none';
+                        //console.log("ENDING P1");
+                        //handleUiPlayerswap();
+                        return;
                     }
-                }
-                if (name === 'w' || name === 'ArrowUp') {
-                    if (checkIfMoveMob("y")) {
-                        Script.mobs[Script.currentUnitNumber].mtxLocal.translateY(1);
-                        //console.log("trying to move up");
-                    }
-                }
-                if (name === 's' || name === 'ArrowDown') {
-                    if (checkIfMoveMob("-y")) {
-                        Script.mobs[Script.currentUnitNumber].mtxLocal.translateY(-1);
-                        //console.log("trying to move down");
-                    }
-                }
-                if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
-                    if (Script.currentplayer === 1) {
-                        logInUnit(); //also end of turn procedure if its not the last unit.
-                    }
-                    return;
                 }
             }
             if (Script.currentplayer === 2) {
-                var name = event.key;
-                if (name === 'd' || name === 'ArrowRight') {
-                    if (checkIfMoveMobP2("x")) {
-                        Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translateX(1);
-                        //console.log("trying to move right");
+                if (currentPhase === 1) {
+                    if (name === 'd' || name === 'ArrowRight') {
+                        if (checkIfMoveMobP2("x")) {
+                            Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translateX(1);
+                            //console.log("trying to move right");
+                        }
+                    }
+                    if (name === 'a' || name === 'ArrowLeft') {
+                        if (checkIfMoveMobP2("-x")) {
+                            Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translateX(-1);
+                            //console.log("trying to move Left");
+                        }
+                    }
+                    if (name === 'w' || name === 'ArrowUp') {
+                        if (checkIfMoveMobP2("y")) {
+                            Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translateY(1);
+                            //console.log("trying to move up");
+                        }
+                    }
+                    if (name === 's' || name === 'ArrowDown') {
+                        if (checkIfMoveMobP2("-y")) {
+                            Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translateY(-1);
+                            //console.log("trying to move down");
+                        }
+                    }
+                    if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
+                        if (Script.currentplayer === 2) {
+                            //currentPhase = 2;
+                            logInUnitP2(); //also end of turn procedure if its not the last unit.
+                        }
+                        return;
                     }
                 }
-                if (name === 'a' || name === 'ArrowLeft') {
-                    if (checkIfMoveMobP2("-x")) {
-                        Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translateX(-1);
-                        //console.log("trying to move Left");
+                if (currentPhase === 2) {
+                    if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
+                        handleEndOfCityProcedure(Script.currentUnitNumberP2, 1);
+                        ///document.getElementById("--unitdiv1").style.borderColor = "red";
+                        //document.getElementById("--unitdiv" + (currentUnitNumberP2 + 1) + "P2").style.borderColor = "#048836";
+                        //currentPhase = 1;
+                        //currentplayer = 1;
+                        //document.getElementById("--addMobP2").style.display = 'none';
+                        //console.log("ENDING P2");
+                        //handleUiPlayerswap();
+                        return;
                     }
-                }
-                if (name === 'w' || name === 'ArrowUp') {
-                    if (checkIfMoveMobP2("y")) {
-                        Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translateY(1);
-                        //console.log("trying to move up");
-                    }
-                }
-                if (name === 's' || name === 'ArrowDown') {
-                    if (checkIfMoveMobP2("-y")) {
-                        Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translateY(-1);
-                        //console.log("trying to move down");
-                    }
-                }
-                if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
-                    if (Script.currentplayer === 2) {
-                        logInUnitP2(); //also end of turn procedure if its not the last unit.
-                    }
-                    return;
                 }
             }
         });
@@ -389,9 +444,14 @@ var Script;
     // ------------- Handle END TURN abteil Anfang für Spieler 1 ---------------------------------------------------
     function logInUnit() {
         if ((Script.currentUnitNumber + 1) === Script.mobs.length) {
-            console.log("RETURNINGP1");
-            Script.currentplayer = 2;
-            document.getElementById("--unitdiv1P2").style.borderColor = "red";
+            roundsPlayed++;
+            if (roundsPlayed > 2) {
+                currentPhase = 2;
+            }
+            handleCityTurnPart();
+            //TURN ENDE (Not actually wenn danach noch city stuff kommt) für player 1 -> moved all pieces ####################################################################
+            //currentplayer = 2;
+            //document.getElementById("--unitdiv1P2").style.borderColor = "red";
             document.getElementById("--unitdiv" + (Script.currentUnitNumber + 1)).style.borderColor = "#048836";
             Script.currentUnitNumber = 0;
             possibleLimitReachedCheckX.set(Script.mobs[Script.currentUnitNumber].mtxLocal.translation.x + 1, Script.mobs[Script.currentUnitNumber].mtxLocal.translation.y, 0);
@@ -399,10 +459,9 @@ var Script;
             possibleLimitReachedCheckXMinus.set(Script.mobs[Script.currentUnitNumber].mtxLocal.translation.x - 1, Script.mobs[Script.currentUnitNumber].mtxLocal.translation.y, 0);
             possibleLimitReachedCheckYMinus.set(Script.mobs[Script.currentUnitNumber].mtxLocal.translation.x, Script.mobs[Script.currentUnitNumber].mtxLocal.translation.y - 1, 0);
             possibleLimitReachedCheckStay.set(Script.mobs[Script.currentUnitNumber].mtxLocal.translation.x, Script.mobs[Script.currentUnitNumber].mtxLocal.translation.y, 0);
-            handleCityTurnPart();
-            handleUiPlayerswap();
-            console.log(Script.currentplayer);
-            //TURN ENDE (Not actually wenn danach noch city stuff kommt) für player 1 -> moved all pieces ####################################################################
+            //handleUiPlayerswap();
+            console.log("turnplayer is now: " + Script.currentplayer);
+            console.log("turnphase is now: " + currentPhase);
             return;
         }
         else {
@@ -414,6 +473,7 @@ var Script;
             possibleLimitReachedCheckStay.set(Script.mobs[Script.currentUnitNumber].mtxLocal.translation.x, Script.mobs[Script.currentUnitNumber].mtxLocal.translation.y, 0);
             document.getElementById("--unitdiv" + (Script.currentUnitNumber + 1)).style.borderColor = "red"; //--unitdiv1P2 für spieler 2
             document.getElementById("--unitdiv" + Script.currentUnitNumber).style.borderColor = "#048836";
+            console.log(Script.currentUnitNumber + " setze diese zahl auf grün");
             return;
         }
     }
@@ -421,9 +481,14 @@ var Script;
     // ------------- Handle END TURN abteil Anfang für Spieler 2 ---------------------------------------------------
     function logInUnitP2() {
         if ((Script.currentUnitNumberP2 + 1) === Script.mobsP2.length) {
-            console.log("RETURNINGP2");
-            Script.currentplayer = 1;
-            document.getElementById("--unitdiv1").style.borderColor = "red";
+            roundsPlayed++;
+            if (roundsPlayed > 2) {
+                currentPhase = 2;
+            }
+            handleCityTurnPartP2();
+            //TURN ENDE (Not actually wenn danach noch city stuff kommt) für player 2 -> moved all pieces #################################################################################
+            //currentplayer = 1;
+            //document.getElementById("--unitdiv1").style.borderColor = "red";
             document.getElementById("--unitdiv" + (Script.currentUnitNumberP2 + 1) + "P2").style.borderColor = "#048836";
             Script.currentUnitNumberP2 = 0;
             possibleLimitReachedCheckXP2.set(Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translation.x + 1, Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translation.y, 0);
@@ -431,10 +496,9 @@ var Script;
             possibleLimitReachedCheckXMinusP2.set(Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translation.x - 1, Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translation.y, 0);
             possibleLimitReachedCheckYMinusP2.set(Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translation.x, Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translation.y - 1, 0);
             possibleLimitReachedCheckStayP2.set(Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translation.x, Script.mobsP2[Script.currentUnitNumberP2].mtxLocal.translation.y, 0);
-            handleCityTurnPartP2();
-            handleUiPlayerswap();
-            console.log(Script.currentplayer);
-            //TURN ENDE (Not actually wenn danach noch city stuff kommt) für player 2 -> moved all pieces #################################################################################
+            //handleUiPlayerswap();
+            console.log("turnplayer is now: " + Script.currentplayer);
+            console.log("turnphase is now: " + currentPhase);
             return;
         }
         else {
@@ -451,8 +515,11 @@ var Script;
     }
     // ------------- Handle END TURN abteil END für Spieler 2 ---------------------------------------------------
     function handleUiPlayerswap() {
+        //console.log(currentplayer + "<- current player -> should be 1 and also gold for p1: " + gold + " p2 gold: " + goldP2);
         if (Script.currentplayer === 1) {
-            Script.gold += 10;
+            console.log(Script.currentplayer + "<- current player and also gold for p1: " + gold);
+            gold += goldGain;
+            document.getElementById("--goldInput").setAttribute('value', gold.toString());
             document.getElementById("--gold").style.display = 'none';
             document.getElementById("--goldP2").style.display = null;
             //alle Ui units auf display none machen, damit ich sie nicht einzeln aufzählen muss.
@@ -464,7 +531,8 @@ var Script;
             }
         }
         else {
-            Script.goldP2 += 10;
+            goldP2 += goldGain;
+            document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
             document.getElementById("--goldP2").style.display = 'none';
             document.getElementById("--gold").style.display = null;
             //alle Ui units auf display none machen, damit ich sie nicht einzeln aufzählen muss.
@@ -481,18 +549,22 @@ var Script;
     function creatingMob(whichUnit, graph, city, cityP2) {
         if (whichUnit === 1) {
             if ((Script.mobs.length + Script.mobs2.length) != 9) {
-                i++;
-                console.log("Gesamte anzahl an Units: Mob" + i);
-                const mob = new Script.Mob("Mob" + i);
-                let cityPosition = new ƒ.Vector3(city.mtxWorld.translation.x, city.mtxWorld.translation.y, 0);
-                //console.log(cityPosition)
-                //mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
-                mob.mtxLocal.translate(cityPosition);
-                graph.addChild(mob);
-                Script.mobs.push(mob);
-                for (let iCounter = 0; iCounter < Script.mobs.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
-                    if (iCounter === Script.mobs.length) {
-                        document.getElementById("--" + Script.mobs.length + "img1").style.display = null;
+                if (addMobLimitCounter > 0) {
+                    addMobLimitCounter--;
+                    i++;
+                    console.log("Gesamte anzahl an Units: Mob" + i);
+                    const mob = new Script.Mob("Mob" + i);
+                    let cityPosition = new ƒ.Vector3(city.mtxWorld.translation.x, city.mtxWorld.translation.y, 0);
+                    //console.log(cityPosition)
+                    //mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+                    mob.mtxLocal.translate(cityPosition);
+                    graph.addChild(mob);
+                    Script.mobs.push(mob);
+                    for (let iCounter = 0; iCounter < Script.mobs.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+                        if (iCounter === Script.mobs.length) {
+                            document.getElementById("--" + Script.mobs.length + "img1").style.display = null;
+                        }
+                        ;
                     }
                     ;
                 }
@@ -501,17 +573,21 @@ var Script;
         }
         if (whichUnit === 2) {
             if ((Script.mobs.length + Script.mobs2.length) != 9) {
-                i++;
-                console.log("Gesamte anzahl an Units: Mob" + i);
-                const mob2 = new Script.Mob2("Mob2" + i);
-                let cityPosition = new ƒ.Vector3(city.mtxWorld.translation.x, city.mtxWorld.translation.y, 0);
-                mob2.mtxLocal.translate(cityPosition);
-                graph.addChild(mob2);
-                Script.mobs.push(mob2);
-                for (let iCounter = 0; iCounter < Script.mobs.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
-                    if (iCounter === Script.mobs.length) {
-                        document.getElementById("--" + Script.mobs.length + "img3").style.display = null;
-                        //console.log("--" + i + "img3")
+                if (addMobLimitCounter > 0) {
+                    addMobLimitCounter--;
+                    i++;
+                    console.log("Gesamte anzahl an Units: Mob" + i);
+                    const mob2 = new Script.Mob2("Mob2" + i);
+                    let cityPosition = new ƒ.Vector3(city.mtxWorld.translation.x, city.mtxWorld.translation.y, 0);
+                    mob2.mtxLocal.translate(cityPosition);
+                    graph.addChild(mob2);
+                    Script.mobs.push(mob2);
+                    for (let iCounter = 0; iCounter < Script.mobs.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+                        if (iCounter === Script.mobs.length) {
+                            document.getElementById("--" + Script.mobs.length + "img3").style.display = null;
+                            //console.log("--" + i + "img3")
+                        }
+                        ;
                     }
                     ;
                 }
@@ -520,17 +596,21 @@ var Script;
         }
         if (whichUnit === 3) {
             if ((Script.mobsP2.length + Script.mobs2P2.length) != 9) {
-                i++;
-                console.log("Gesamte anzahl an Units: Mob" + i);
-                const mobP2 = new Script.MobP2("MobP2" + i);
-                let cityPosition = new ƒ.Vector3(cityP2.mtxWorld.translation.x, cityP2.mtxWorld.translation.y, 0);
-                mobP2.mtxLocal.translate(cityPosition);
-                graph.addChild(mobP2);
-                Script.mobsP2.push(mobP2);
-                for (let iCounter = 0; iCounter < Script.mobsP2.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
-                    if (iCounter === Script.mobsP2.length) {
-                        document.getElementById("--" + Script.mobsP2.length + "img2").style.display = null;
-                        //console.log("--" + i + "img1")
+                if (addMobLimitCounterP2 > 0) {
+                    addMobLimitCounterP2--;
+                    i++;
+                    console.log("Gesamte anzahl an Units: Mob" + i);
+                    const mobP2 = new Script.MobP2("MobP2" + i);
+                    let cityPosition = new ƒ.Vector3(cityP2.mtxWorld.translation.x, cityP2.mtxWorld.translation.y, 0);
+                    mobP2.mtxLocal.translate(cityPosition);
+                    graph.addChild(mobP2);
+                    Script.mobsP2.push(mobP2);
+                    for (let iCounter = 0; iCounter < Script.mobsP2.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+                        if (iCounter === Script.mobsP2.length) {
+                            document.getElementById("--" + Script.mobsP2.length + "img2").style.display = null;
+                            //console.log("--" + i + "img1")
+                        }
+                        ;
                     }
                     ;
                 }
@@ -539,17 +619,21 @@ var Script;
         }
         if (whichUnit === 4) {
             if ((Script.mobsP2.length + Script.mobs2P2.length) != 9) {
-                i++;
-                console.log("Gesamte anzahl an Units: Mob" + i);
-                const mob2P2 = new Script.Mob2P2("Mob2P2" + i);
-                let cityPosition = new ƒ.Vector3(cityP2.mtxWorld.translation.x, cityP2.mtxWorld.translation.y, 0);
-                mob2P2.mtxLocal.translate(cityPosition);
-                graph.addChild(mob2P2);
-                Script.mobsP2.push(mob2P2);
-                for (let iCounter = 0; iCounter < Script.mobsP2.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
-                    if (iCounter === Script.mobsP2.length) {
-                        document.getElementById("--" + Script.mobsP2.length + "img4").style.display = null;
-                        //console.log("--" + i + "img1")
+                if (addMobLimitCounterP2 > 0) {
+                    addMobLimitCounterP2--;
+                    i++;
+                    console.log("Gesamte anzahl an Units: Mob" + i);
+                    const mob2P2 = new Script.Mob2P2("Mob2P2" + i);
+                    let cityPosition = new ƒ.Vector3(cityP2.mtxWorld.translation.x, cityP2.mtxWorld.translation.y, 0);
+                    mob2P2.mtxLocal.translate(cityPosition);
+                    graph.addChild(mob2P2);
+                    Script.mobsP2.push(mob2P2);
+                    for (let iCounter = 0; iCounter < Script.mobsP2.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+                        if (iCounter === Script.mobsP2.length) {
+                            document.getElementById("--" + Script.mobsP2.length + "img4").style.display = null;
+                            //console.log("--" + i + "img1")
+                        }
+                        ;
                     }
                     ;
                 }
@@ -560,13 +644,70 @@ var Script;
     // ------------- Creating Mobs, both player END ---------------------------------------------------
     // ------------- Handles the city part of the turn, after all troops have been moved. ---------------------------------------------------
     function handleCityTurnPart() {
-        let iLeave = 0;
-        //while(iLeave == 0){
-        //}
+        document.getElementById("--addMob").style.display = null;
+        if (roundsPlayed > 2) {
+            document.getElementById("--addMobP2").style.display = 'none';
+        }
+        ;
+        addMobLimitCounter = mobBuyLimit;
+        //currentPhase = 2;
+        //console.log("Why no disable? " + addMobLimitCounter);
+        //document.getElementById("--addMobP2").style.display = null;
+        /*document.addEventListener('keydown', (event) => {
+          var name = event.key;
+          if (name === 'Space' || name === 'Enter') {
+            console.log("This will probably not work, but if it does ill be happy.");
+            addMobLimitCounter = mobBuyLimit;
+            return;
+          };
+    
+        });*/
     }
     function handleCityTurnPartP2() {
+        document.getElementById("--addMobP2").style.display = null;
+        if (roundsPlayed > 2) {
+            document.getElementById("--addMob").style.display = 'none';
+        }
+        ;
+        addMobLimitCounterP2 = mobBuyLimit;
+        //currentPhase = 2;
+        /*document.addEventListener('keydown', (event) => {
+          var name = event.key;
+          if (name === 'Space' || name === 'Enter') {
+            document.getElementById("--addMobP2").style.display = 'none';
+            //document.getElementById("--addMob").style.display = null;
+            addMobLimitCounterP2 = mobBuyLimit;
+            return;
+          };
+    
+        });*/
     }
     // ------------- Handles the city part of the turn, after all troops have been moved. END ---------------------------------------------------
+    function handleEndOfCityProcedure(currentUnitNumb, setPlayer) {
+        let playerPlaceHolder = "";
+        let playerPlaceHolder2 = "P2";
+        if (setPlayer === 1) { //wenn spieler zu 1 wechseln soll nimm diese modifikatoren
+            playerPlaceHolder = "P2";
+            playerPlaceHolder2 = "";
+        }
+        ;
+        document.getElementById("--unitdiv1" + playerPlaceHolder2).style.borderColor = "red";
+        document.getElementById("--unitdiv" + (currentUnitNumb + 1) + "" + playerPlaceHolder).style.borderColor = "#048836";
+        console.log("ENDING P" + Script.currentplayer);
+        currentPhase = 1;
+        Script.currentplayer = setPlayer;
+        document.getElementById("--addMob" + playerPlaceHolder).style.display = 'none';
+        handleUiPlayerswap();
+        return;
+        document.getElementById("--unitdiv1").style.borderColor = "red";
+        document.getElementById("--unitdiv" + (Script.currentUnitNumberP2 + 1) + "P2").style.borderColor = "#048836";
+        currentPhase = 1;
+        Script.currentplayer = 1;
+        document.getElementById("--addMobP2").style.display = 'none';
+        console.log("ENDING P2");
+        handleUiPlayerswap();
+        return;
+    }
     /*function useInteractable() { //Search function and how its used before.
       //Spielerfigur == position von interactable, soll dann hochzählen
       const path = paths.find((p) => p.mtxLocal.translation.equals(pacman.mtxLocal.translation, 0.2)); //Pacman ersetzen. sucht interactables auf der selben stelle von pacman
@@ -807,11 +948,11 @@ var Script;
     class City extends ƒ.Node {
         constructor(_name) {
             super(_name);
-            const mtrCity = new ƒ.Material("City", ƒ.ShaderLit, new ƒ.CoatColored(ƒ.Color.CSS("#f5ce42")));
+            const mtrCity = new ƒ.Material("City", ƒ.ShaderLit, new ƒ.CoatColored(ƒ.Color.CSS("#90d4ed")));
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
             this.addComponent(new ƒ.ComponentMaterial(mtrCity));
             this.addComponent(new ƒ.ComponentTransform());
-            this.mtxLocal.scale(new ƒ.Vector3(0.3, 0.3, 0.3));
+            this.mtxLocal.scale(new ƒ.Vector3(0.5, 0.5, 0.01));
         }
     }
     Script.City = City;
@@ -822,12 +963,12 @@ var Script;
     class CityP2 extends ƒ.Node {
         constructor(_name) {
             super(_name);
-            const mtrCityP2 = new ƒ.Material("CityP2", ƒ.ShaderLit, new ƒ.CoatColored(ƒ.Color.CSS("#426cf5")));
+            const mtrCityP2 = new ƒ.Material("CityP2", ƒ.ShaderLit, new ƒ.CoatColored(ƒ.Color.CSS("#ff6961")));
             //const cityNodeP2 = new ƒ.Node("City");
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
             this.addComponent(new ƒ.ComponentMaterial(mtrCityP2));
             this.addComponent(new ƒ.ComponentTransform());
-            this.mtxLocal.scale(new ƒ.Vector3(0.3, 0.3, 0.3));
+            this.mtxLocal.scale(new ƒ.Vector3(0.5, 0.5, 0.01));
         }
     }
     Script.CityP2 = CityP2;
@@ -858,8 +999,10 @@ var Script;
             sprite.mtxLocal.translateZ(0.1);
             sprite.mtxLocal.translateY(0.1);
             sprite.framerate = 8;
+            sprite.mtxLocal.scale(new ƒ.Vector3(0.5, 0.5, 1));
             this.addChild(sprite);
             this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
+            //sprite.mtxLocal.scale(new ƒ.Vector3(0.5, 0.5, 1));
         }
         //Bevor das hier aufgerufen wird MUSS der Lokale vektor gespeichert werden, da man von diesem aus die Position wechselt.
         move() {
@@ -1083,6 +1226,7 @@ var Script;
             sprite.mtxLocal.translateZ(0.1);
             sprite.mtxLocal.translateY(0.1);
             sprite.framerate = 8;
+            sprite.mtxLocal.scale(new ƒ.Vector3(0.6, 0.6, 1));
             this.addChild(sprite);
             this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
         }
@@ -1308,6 +1452,7 @@ var Script;
             sprite.mtxLocal.translateZ(0.1);
             sprite.mtxLocal.translateY(0.1);
             sprite.framerate = 8;
+            sprite.mtxLocal.scale(new ƒ.Vector3(0.6, 0.6, 1));
             this.addChild(sprite);
             this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
         }
@@ -1533,6 +1678,7 @@ var Script;
             sprite.mtxLocal.translateZ(0.1);
             sprite.mtxLocal.translateY(0.1);
             sprite.framerate = 8;
+            sprite.mtxLocal.scale(new ƒ.Vector3(0.5, 0.5, 1));
             this.addChild(sprite);
             this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
         }
