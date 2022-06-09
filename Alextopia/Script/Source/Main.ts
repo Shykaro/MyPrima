@@ -11,7 +11,6 @@ namespace Script {
 
   export let viewport: ƒ.Viewport;
   let sounds: ƒ.ComponentAudio[]; //outdated? i need it for later
-  let pacman: ƒ.Node;             //outdated? yes
   let water: ƒ.Node[];    //Blocks that cant be set foot on with normal units - Beinhaltet jeden Wasserblock in einem Array gespeichert
   export let paths: ƒ.Node[];    //Building/Land are, every unit can walk on these - beinhaltet jeden begehbaren block in einem Array gespeichert
   export let cityNode: City[] = [];   //City = new ƒ.Node("CityP2");
@@ -33,9 +32,9 @@ namespace Script {
 
   let mobBuyLimit: number = 1;  //Adjust this number if players should be able to buy more than 1 unit per turn.
 
-  let turnPhaseOne = "Bewege deine Einheiten, drücke Enter zum bestätigen der Position.";
+  let turnPhaseOne = "Bewege deine Einheiten, drücke Enter zum Bestätigen der Position.";
   let turnPhaseTwo = "Produziere Truppen oder rüste deine Stadt auf, drücke Enter zum fortfahren.";
-  //document.getElementById("--headingInfo").setAttribute('value', turnPhaseOne);
+  //document.getElementById("--headingInfo").setAttribute('value', turnPhaseOne/Two);
 
   let zwischenSpeicherCoordinateLRC: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);    //LRC = LimitReachCheck, used in checking that unit can only work one field from origin.
   let zwischenSpeicherCoordinateLRCP2: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);

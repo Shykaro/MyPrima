@@ -44,7 +44,6 @@ var Script;
     window.addEventListener("load", init);
     document.addEventListener("interactiveViewportStarted", start);
     let sounds; //outdated? i need it for later
-    let pacman; //outdated? yes
     let water; //Blocks that cant be set foot on with normal units - Beinhaltet jeden Wasserblock in einem Array gespeichert
     Script.cityNode = []; //City = new ƒ.Node("CityP2");
     Script.cityNodeP2 = []; //City = new ƒ.Node("CityP2");
@@ -58,9 +57,9 @@ var Script;
     let gold = costMob + 0; //StartGeld für Spieler 1 PLUS costMob weil die Unit am anfang verschenkt wird!!
     let goldP2 = costMob + 0; //StartGeld für Spieler 2
     let mobBuyLimit = 1; //Adjust this number if players should be able to buy more than 1 unit per turn.
-    let turnPhaseOne = "Bewege deine Einheiten, drücke Enter zum bestätigen der Position.";
+    let turnPhaseOne = "Bewege deine Einheiten, drücke Enter zum Bestätigen der Position.";
     let turnPhaseTwo = "Produziere Truppen oder rüste deine Stadt auf, drücke Enter zum fortfahren.";
-    //document.getElementById("--headingInfo").setAttribute('value', turnPhaseOne);
+    //document.getElementById("--headingInfo").setAttribute('value', turnPhaseOne/Two);
     let zwischenSpeicherCoordinateLRC = new ƒ.Vector3(0, 0, 0); //LRC = LimitReachCheck, used in checking that unit can only work one field from origin.
     let zwischenSpeicherCoordinateLRCP2 = new ƒ.Vector3(0, 0, 0);
     let possibleLimitReachedCheckX = new ƒ.Vector3(0, 0, 0);

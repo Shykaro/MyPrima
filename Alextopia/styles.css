@@ -9,6 +9,7 @@ body {
 
 dialog {
   text-align: center;
+  font-family: 'Courier New', Courier, monospace;
 }
 
 canvas.fullscreen {
