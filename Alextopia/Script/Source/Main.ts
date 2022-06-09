@@ -23,16 +23,19 @@ namespace Script {
   export let mobsP2: MobP2[] = [];   //Array for all created mobs/units
   export let mobs2P2: Mob2P2[] = [];   //Array for all created mobs/units
 
+  let costMob: number = 14;   //Kosten für eine normale Einheit
+  let costMob2: number = 26;  //Kosten für eine stärkere Einheit
 
-
-  let gold: number = 0;      //StartGeld für Spieler 1
-  let goldP2: number = 0;    //StartGeld für Spieler 2
   let goldGain: number = 10;      //Geld die jeder Spieler am Anfang seines Zuges bekommt ##Adjustable for balancing,  //Das stimmt NICHTMEHR-> beachte dass für den Start des Spiels jeder Spieler einmal den Goldgain erhält
+  let gold: number = costMob + 0;      //StartGeld für Spieler 1 PLUS costMob weil die Unit am anfang verschenkt wird!!
+  let goldP2: number = costMob + 0;    //StartGeld für Spieler 2
 
-  let costMob: number = 15;   //Kosten für eine normale Einheit
-  let costMob2: number = 15;  //Kosten für eine stärkere Einheit
 
   let mobBuyLimit: number = 1;  //Adjust this number if players should be able to buy more than 1 unit per turn.
+
+  let turnPhaseOne = "Bewege deine Einheiten, drücke Enter zum bestätigen der Position.";
+  let turnPhaseTwo = "Produziere Truppen oder rüste deine Stadt auf, drücke Enter zum fortfahren.";
+  //document.getElementById("--headingInfo").setAttribute('value', turnPhaseOne);
 
   let zwischenSpeicherCoordinateLRC: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);    //LRC = LimitReachCheck, used in checking that unit can only work one field from origin.
   let zwischenSpeicherCoordinateLRCP2: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
@@ -146,7 +149,10 @@ namespace Script {
 
     const graph: ƒ.Node = viewport.getBranch();
 
-
+    document.getElementById("--plusmob").innerHTML = "Cost: " + costMob;
+    document.getElementById("--plusmob2").innerHTML = "Cost: " + costMob2;
+    document.getElementById("--plusmobP2").innerHTML = "Cost: " + costMob;
+    document.getElementById("--plusmob2P2").innerHTML = "Cost: " + costMob2;
 
     ƒ.AudioManager.default.listenTo(graph);
 
@@ -234,13 +240,13 @@ namespace Script {
     creatingMob(1, graph, city, cityP2); //Gibt eine mob - unit zu Stadt von Spieler1
     creatingMob(3, graph, city, cityP2); //Gibt eine mobP2 - unit zu Stadt von Spieler2
     //skips 2 turns, so players have start gold and some Bugs are shoved away lol 
-    
+
     logInUnit();
     handleEndOfCityProcedure(currentUnitNumber, 2);
-    
+
     logInUnitP2();
     handleEndOfCityProcedure(currentUnitNumber, 1);
-    
+
     //Ende start items ---------------------------------------------------------------------------------------
 
   } //ENDKLAMMER FÜR START FUNKTION -------------------------------------------------------------------------------------
@@ -342,6 +348,10 @@ namespace Script {
             //document.getElementById("--addMob").style.display = 'none';
             //console.log("ENDING P1");
             //handleUiPlayerswap();
+            //goldP2 += goldGain;
+            //document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
+            //document.getElementById("--goldP2").style.display = null;
+            //document.getElementById("--gold").style.display = 'none';
             return;
           }
         }
@@ -392,6 +402,10 @@ namespace Script {
             //document.getElementById("--addMobP2").style.display = 'none';
             //console.log("ENDING P2");
             //handleUiPlayerswap();
+            //gold += goldGain;
+            //document.getElementById("--goldInput").setAttribute('value', gold.toString());
+            //document.getElementById("--gold").style.display = null;
+            //document.getElementById("--goldP2").style.display = 'none';
             return;
           }
         }
@@ -507,6 +521,7 @@ namespace Script {
   // ------------- Handle END TURN abteil Anfang für Spieler 1 ---------------------------------------------------
   function logInUnit(): void {
     if ((currentUnitNumber + 1) === mobs.length) {
+      document.getElementById("--headingInfo").setAttribute('value', turnPhaseTwo);
       roundsPlayed++
 
       if (roundsPlayed > 2) {
@@ -548,12 +563,13 @@ namespace Script {
 
   // ------------- Handle END TURN abteil Anfang für Spieler 2 ---------------------------------------------------
   function logInUnitP2(): void {
+    document.getElementById("--headingInfo").setAttribute('value', turnPhaseTwo);
     if ((currentUnitNumberP2 + 1) === mobsP2.length) {
       roundsPlayed++
       if (roundsPlayed > 2) {
         currentPhase = 2;
       }
-      
+
       handleCityTurnPartP2();
 
       //TURN ENDE (Not actually wenn danach noch city stuff kommt) für player 2 -> moved all pieces #################################################################################
@@ -591,10 +607,7 @@ namespace Script {
 
     if (currentplayer === 1) {
       console.log(currentplayer + "<- current player and also gold for p1: " + gold);
-      gold += goldGain;
-      document.getElementById("--goldInput").setAttribute('value', gold.toString());
-      document.getElementById("--gold").style.display = 'none';
-      document.getElementById("--goldP2").style.display = null;
+
       //alle Ui units auf display none machen, damit ich sie nicht einzeln aufzählen muss.
       for (let i = 1; i < 10; i++) { //goes through all 9 possible Units and makes turnplayer troops invisible
         document.getElementById("--unitdiv" + i + "P2").style.display = 'none';
@@ -604,10 +617,7 @@ namespace Script {
       }
     }
     else {
-      goldP2 += goldGain;
-      document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
-      document.getElementById("--goldP2").style.display = 'none';
-      document.getElementById("--gold").style.display = null;
+
       //alle Ui units auf display none machen, damit ich sie nicht einzeln aufzählen muss.
       for (let i = 1; i < 10; i++) { //goes through all 9 possible Units and makes turnplayer troops invisible
         document.getElementById("--unitdiv" + i).style.display = 'none';
@@ -623,19 +633,23 @@ namespace Script {
     if (whichUnit === 1) {
       if ((mobs.length + mobs2.length) != 9) {
         if (addMobLimitCounter > 0) {
-          addMobLimitCounter--
-          i++
-          console.log("Gesamte anzahl an Units: Mob" + i)
-          const mob = new Mob("Mob" + i);
-          let cityPosition = new ƒ.Vector3(city.mtxWorld.translation.x, city.mtxWorld.translation.y, 0);
-          //console.log(cityPosition)
-          //mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
-          mob.mtxLocal.translate(cityPosition);
-          graph.addChild(mob);
-          mobs.push(mob);
-          for (let iCounter = 0; iCounter < mobs.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
-            if (iCounter === mobs.length) {
-              document.getElementById("--" + mobs.length + "img1").style.display = null;
+          if (gold >= costMob) {
+            gold -= costMob;
+            document.getElementById("--goldInput").setAttribute('value', gold.toString());
+            addMobLimitCounter--
+            i++
+            console.log("Gesamte anzahl an Units: Mob" + i)
+            const mob = new Mob("Mob" + i);
+            let cityPosition = new ƒ.Vector3(city.mtxWorld.translation.x, city.mtxWorld.translation.y, 0);
+            //console.log(cityPosition)
+            //mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+            mob.mtxLocal.translate(cityPosition);
+            graph.addChild(mob);
+            mobs.push(mob);
+            for (let iCounter = 0; iCounter < mobs.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+              if (iCounter === mobs.length) {
+                document.getElementById("--" + mobs.length + "img1").style.display = null;
+              };
             };
           };
         };
@@ -644,18 +658,22 @@ namespace Script {
     if (whichUnit === 2) {
       if ((mobs.length + mobs2.length) != 9) {
         if (addMobLimitCounter > 0) {
-          addMobLimitCounter--
-          i++
-          console.log("Gesamte anzahl an Units: Mob" + i)
-          const mob2 = new Mob2("Mob2" + i);
-          let cityPosition = new ƒ.Vector3(city.mtxWorld.translation.x, city.mtxWorld.translation.y, 0);
-          mob2.mtxLocal.translate(cityPosition);
-          graph.addChild(mob2);
-          mobs.push(mob2);
-          for (let iCounter = 0; iCounter < mobs.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
-            if (iCounter === mobs.length) {
-              document.getElementById("--" + mobs.length + "img3").style.display = null;
-              //console.log("--" + i + "img3")
+          if (gold >= costMob2) {
+            gold -= costMob2;
+            document.getElementById("--goldInput").setAttribute('value', gold.toString());
+            addMobLimitCounter--
+            i++
+            console.log("Gesamte anzahl an Units: Mob" + i)
+            const mob2 = new Mob2("Mob2" + i);
+            let cityPosition = new ƒ.Vector3(city.mtxWorld.translation.x, city.mtxWorld.translation.y, 0);
+            mob2.mtxLocal.translate(cityPosition);
+            graph.addChild(mob2);
+            mobs.push(mob2);
+            for (let iCounter = 0; iCounter < mobs.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+              if (iCounter === mobs.length) {
+                document.getElementById("--" + mobs.length + "img3").style.display = null;
+                //console.log("--" + i + "img3")
+              };
             };
           };
         };
@@ -664,18 +682,22 @@ namespace Script {
     if (whichUnit === 3) {
       if ((mobsP2.length + mobs2P2.length) != 9) {
         if (addMobLimitCounterP2 > 0) {
-          addMobLimitCounterP2--
-          i++
-          console.log("Gesamte anzahl an Units: Mob" + i)
-          const mobP2 = new MobP2("MobP2" + i);
-          let cityPosition = new ƒ.Vector3(cityP2.mtxWorld.translation.x, cityP2.mtxWorld.translation.y, 0);
-          mobP2.mtxLocal.translate(cityPosition);
-          graph.addChild(mobP2);
-          mobsP2.push(mobP2);
-          for (let iCounter = 0; iCounter < mobsP2.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
-            if (iCounter === mobsP2.length) {
-              document.getElementById("--" + mobsP2.length + "img2").style.display = null;
-              //console.log("--" + i + "img1")
+          if (goldP2 >= costMob) {
+            goldP2 -= costMob;
+            document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
+            addMobLimitCounterP2--
+            i++
+            console.log("Gesamte anzahl an Units: Mob" + i)
+            const mobP2 = new MobP2("MobP2" + i);
+            let cityPosition = new ƒ.Vector3(cityP2.mtxWorld.translation.x, cityP2.mtxWorld.translation.y, 0);
+            mobP2.mtxLocal.translate(cityPosition);
+            graph.addChild(mobP2);
+            mobsP2.push(mobP2);
+            for (let iCounter = 0; iCounter < mobsP2.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+              if (iCounter === mobsP2.length) {
+                document.getElementById("--" + mobsP2.length + "img2").style.display = null;
+                //console.log("--" + i + "img1")
+              };
             };
           };
         };
@@ -684,18 +706,22 @@ namespace Script {
     if (whichUnit === 4) {
       if ((mobsP2.length + mobs2P2.length) != 9) {
         if (addMobLimitCounterP2 > 0) {
-          addMobLimitCounterP2--
-          i++
-          console.log("Gesamte anzahl an Units: Mob" + i)
-          const mob2P2 = new Mob2P2("Mob2P2" + i);
-          let cityPosition = new ƒ.Vector3(cityP2.mtxWorld.translation.x, cityP2.mtxWorld.translation.y, 0);
-          mob2P2.mtxLocal.translate(cityPosition);
-          graph.addChild(mob2P2);
-          mobsP2.push(mob2P2);
-          for (let iCounter = 0; iCounter < mobsP2.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
-            if (iCounter === mobsP2.length) {
-              document.getElementById("--" + mobsP2.length + "img4").style.display = null;
-              //console.log("--" + i + "img1")
+          if (goldP2 >= costMob2) {
+            goldP2 -= costMob2;
+            document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
+            addMobLimitCounterP2--
+            i++
+            console.log("Gesamte anzahl an Units: Mob" + i)
+            const mob2P2 = new Mob2P2("Mob2P2" + i);
+            let cityPosition = new ƒ.Vector3(cityP2.mtxWorld.translation.x, cityP2.mtxWorld.translation.y, 0);
+            mob2P2.mtxLocal.translate(cityPosition);
+            graph.addChild(mob2P2);
+            mobsP2.push(mob2P2);
+            for (let iCounter = 0; iCounter < mobsP2.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+              if (iCounter === mobsP2.length) {
+                document.getElementById("--" + mobsP2.length + "img4").style.display = null;
+                //console.log("--" + i + "img1")
+              };
             };
           };
         };
@@ -712,21 +738,6 @@ namespace Script {
       document.getElementById("--addMobP2").style.display = 'none';
     };
     addMobLimitCounter = mobBuyLimit;
-    //currentPhase = 2;
-    //console.log("Why no disable? " + addMobLimitCounter);
-
-
-    //document.getElementById("--addMobP2").style.display = null;
-    /*document.addEventListener('keydown', (event) => {
-      var name = event.key;
-      if (name === 'Space' || name === 'Enter') {
-        console.log("This will probably not work, but if it does ill be happy.");
-        addMobLimitCounter = mobBuyLimit;
-        return;
-      };
-
-    });*/
-
   }
 
 
@@ -736,30 +747,30 @@ namespace Script {
       document.getElementById("--addMob").style.display = 'none';
     };
     addMobLimitCounterP2 = mobBuyLimit;
-    //currentPhase = 2;
-    /*document.addEventListener('keydown', (event) => {
-      var name = event.key;
-      if (name === 'Space' || name === 'Enter') {
-        document.getElementById("--addMobP2").style.display = 'none';
-        //document.getElementById("--addMob").style.display = null;
-        addMobLimitCounterP2 = mobBuyLimit;
-        return;
-      };
-
-    });*/
   }
   // ------------- Handles the city part of the turn, after all troops have been moved. END ---------------------------------------------------
 
 
   function handleEndOfCityProcedure(currentUnitNumb: number, setPlayer: number) {
-
     let playerPlaceHolder: string = "";
     let playerPlaceHolder2: string = "P2";
-    if(setPlayer === 1){ //wenn spieler zu 1 wechseln soll nimm diese modifikatoren
+    if (setPlayer === 1) { //wenn spieler zu 1 wechseln soll nimm diese modifikatoren
       playerPlaceHolder = "P2";
       playerPlaceHolder2 = "";
-    };
-
+      gold += goldGain
+      document.getElementById("--goldInput").setAttribute('value', gold.toString());
+      document.getElementById("--gold").style.display = null;
+      document.getElementById("--goldP2").style.display = 'none';
+    }
+    else {
+      if (roundsPlayed > 1) { //Fixes a bug, i dont know why p2 gets one tick more than P1 so iam reducing one turn for P2
+        goldP2 += goldGain;
+      };
+      console.log("P2 gets money. ")
+      document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
+      document.getElementById("--goldP2").style.display = null;
+      document.getElementById("--gold").style.display = 'none';
+    }
     document.getElementById("--unitdiv1" + playerPlaceHolder2).style.borderColor = "red";
     document.getElementById("--unitdiv" + (currentUnitNumb + 1) + "" + playerPlaceHolder).style.borderColor = "#048836";
     console.log("ENDING P" + currentplayer);
@@ -767,16 +778,18 @@ namespace Script {
     currentplayer = setPlayer;
     document.getElementById("--addMob" + playerPlaceHolder).style.display = 'none';
     handleUiPlayerswap();
+    document.getElementById("--headingInfo").setAttribute('value', turnPhaseOne);
+
     return;
 
     document.getElementById("--unitdiv1").style.borderColor = "red";
-            document.getElementById("--unitdiv" + (currentUnitNumberP2 + 1) + "P2").style.borderColor = "#048836";
-            currentPhase = 1;
-            currentplayer = 1;
-            document.getElementById("--addMobP2").style.display = 'none';
-            console.log("ENDING P2");
-            handleUiPlayerswap();
-            return;
+    document.getElementById("--unitdiv" + (currentUnitNumberP2 + 1) + "P2").style.borderColor = "#048836";
+    currentPhase = 1;
+    currentplayer = 1;
+    document.getElementById("--addMobP2").style.display = 'none';
+    console.log("ENDING P2");
+    handleUiPlayerswap();
+    return;
   }
 
 

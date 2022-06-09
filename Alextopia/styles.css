@@ -74,6 +74,36 @@ canvas.fullscreen {
   background-color: transparent;
 }
 
+.--boxtopmid {
+  left: 0px;
+  right: 0px;
+  top: 1px;
+  margin-right: auto;
+  margin-left: auto;
+  width: 850px;
+  position: absolute;
+  background-color: transparent;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.--topPlayerInfo{
+  border-radius: 0px 0px 10px 10px;
+  background-color: aliceblue;
+  padding: 10px;
+}
+
+.--topPlayerInfo input{
+  width: 800px;
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  text-align: center;
+  font-size: 200%;
+  font-weight: 600;
+  font-style: italic;
+  color: rgb(14, 14, 14);
+}
+
 .--boxtopright{
   width: 150px;
   top: 0px;
@@ -102,6 +132,11 @@ canvas.fullscreen {
   text-align: left;
   font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   font-size: 25px;
+  font-weight: bolder;
+}
+
+button {
+  font-size: 12px;
   font-weight: bolder;
 }
 
