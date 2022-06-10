@@ -80,8 +80,8 @@ namespace Script {
   // Start implementing different rounds in a players turn -> unit moving -> unit producing -> playerswap
   // Add Gold mechanic
   // Random Map generator
-  // 
-  // 
+  // adding all the requirements is more important
+  // work on Networking
   //
   // ++ DONE Unit should only be able to walk 1 field from starting position, maybe test with random spawnfields for Unit +1 button.
   // ++ DONE but maybe needs rework ++ Graphics, like terrain and Units
@@ -91,7 +91,7 @@ namespace Script {
   // Do random maps as external data save and load.
   // Money Balancing überlegen -> stadt upgradable?
   // Ui Zeigt leben der Einheiten wenn diese nicht onehit sterben sollten.
-  //
+  // Physik einbauen indem man kästchen rumschiebt -> geht nicht wegen tp-ing, eher konfetti oder so einbauen am beginn oder ende der runde
   //
   //------------ Notizen End ---------------------------------------------------------------
 
