@@ -82,22 +82,31 @@ var Script;
 var Script;
 (function (Script) {
     var ƒ = FudgeCore;
+    var ƒAid = FudgeAid;
     ƒ.Debug.info("Main Program Template running!");
     let viewport;
     let avatar;
     let camera;
     let graph;
+    let node;
+    let root;
     const speedRotY = -0.1;
     const speedRotX = 0.2;
     let rotationX = 0;
     let cntrWalk = new ƒ.Control("cntrWalk", 2, 0 /* PROPORTIONAL */, 300);
+    let battery = 1.0;
+    let config;
     document.addEventListener("interactiveViewportStarted", start);
-    function start(_event) {
+    async function start(_event) {
         viewport = _event.detail;
         graph = viewport.getBranch();
         avatar = graph.getChildrenByName("Avatar")[0];
         camera = avatar.getChild(0).getComponent(ƒ.ComponentCamera);
         viewport.camera = camera;
+        init();
+        let response = await fetch("External.json");
+        config = await response.json();
+        console.log(config);
         viewport.getCanvas().addEventListener("pointermove", hndPointerMove);
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
@@ -108,6 +117,11 @@ var Script;
         controlWalk();
         viewport.draw();
         ƒ.AudioManager.default.update();
+        if (battery > config.drain) { //config drain 
+            battery -= config.drain;
+        }
+        console.log(battery);
+        document.querySelector("div#vui>input").value = battery.toFixed(2);
     }
     function hndPointerMove(_event) {
         //avatar.getComponent(ƒ.ComponentRigidbody).rotateBody(ƒ.Vector3.Y(_event.movementX * speedRotY))
@@ -115,6 +129,70 @@ var Script;
         rotationX += _event.movementY * speedRotX;
         rotationX = Math.min(60, Math.max(-60, rotationX));
         camera.mtxPivot.rotation = ƒ.Vector3.X(rotationX);
+    }
+    function init() {
+        root = new ƒ.Node("Root");
+        node = new ƒAid.Node("Test", ƒ.Matrix4x4.IDENTITY(), new ƒ.Material("texture", ƒ.ShaderLitTextured, new ƒ.CoatTextured()), new ƒ.MeshCube("Cube"));
+        root.appendChild(node);
+        viewport = ƒAid.Viewport.create(root);
+        viewport.draw();
+        initAnim();
+        document.body.addEventListener("change", initAnim);
+        document.querySelector("button[id=jump]").addEventListener("click", jump);
+        function jump(_event) {
+            console.log("Jump");
+            let cmpAnimator = node.getComponent(ƒ.ComponentAnimator);
+            cmpAnimator.jumpToLabel("jump");
+        }
+        ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
+        ƒ.Loop.start();
+    }
+    function initAnim() {
+        console.log("%cStart over", "color: red;");
+        let form = document.forms[0];
+        let formData = new FormData(document.forms[0]);
+        let time0 = parseInt(form.querySelector("input[name=time0]").value);
+        let time1 = parseInt(form.querySelector("input[name=time1]").value);
+        let value0 = parseInt(form.querySelector("input[name=value0]").value);
+        let value1 = parseInt(form.querySelector("input[name=value1]").value);
+        let animseq = new ƒ.AnimationSequence();
+        animseq.addKey(new ƒ.AnimationKey(time0, value0));
+        animseq.addKey(new ƒ.AnimationKey(time1, value1));
+        let animStructure = {
+            components: {
+                ComponentTransform: [
+                    {
+                        "ƒ.ComponentTransform": {
+                            mtxLocal: {
+                                rotation: {
+                                    x: animseq,
+                                    y: animseq
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        };
+        let fpsInput = document.querySelector("input[name=fps]");
+        let fps = parseInt(fpsInput.value);
+        let animation = new ƒ.Animation("testAnimation", animStructure, fps);
+        animation.setEvent("event", parseInt(form.querySelector("input[name=event]").value));
+        animation.labels["jump"] = parseInt(form.querySelector("input[name=label]").value);
+        let playmode = String(formData.get("mode"));
+        let playback = String(formData.get("back"));
+        let cmpAnimator = new ƒ.ComponentAnimator(animation, ƒ.ANIMATION_PLAYMODE[playmode], ƒ.ANIMATION_PLAYBACK[playback]);
+        cmpAnimator.scale = 1;
+        cmpAnimator.addEventListener("event", (_event) => {
+            let time = _event.target.time;
+            console.log(`Event fired at ${time}`, _event);
+        });
+        if (node.getComponent(ƒ.ComponentAnimator)) {
+            node.removeComponent(node.getComponent(ƒ.ComponentAnimator));
+        }
+        node.addComponent(cmpAnimator);
+        cmpAnimator.activate(true);
+        console.log("Component", cmpAnimator);
     }
     function controlWalk() {
         /*let input: number = ƒ.Keyboard.mapToTrit(
