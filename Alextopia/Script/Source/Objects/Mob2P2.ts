@@ -5,6 +5,9 @@ namespace Script {
   export class Mob2P2 extends ƒ.Node {
     //private movement: ƒ.Vector3 = new ƒ.Vector3(0, -1 / 600, 0);
     //private lastPath: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
+
+    private health: number = healthUnitSmall;
+    private dmg: number = dmgUnitSmall;
     
 
     constructor(_name: string) {

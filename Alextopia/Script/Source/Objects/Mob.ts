@@ -5,7 +5,9 @@ namespace Script {
   export class Mob extends ƒ.Node {
     //private movement: ƒ.Vector3 = new ƒ.Vector3(0, -1 / 600, 0);
     //private lastPath: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
-    
+
+    private health: number = healthUnitSmall;
+    private dmg: number = dmgUnitSmall;
 
     constructor(_name: string) {
       super(_name);
@@ -25,6 +27,7 @@ namespace Script {
       this.addComponent(cmpTransform);
       this.addComponent(cmpMesh);
       this.addComponent(cmpMaterial);
+      //this.addChild(stats);
 
       // sprites
       const sprite: ƒAid.NodeSprite = new ƒAid.NodeSprite("Sprite");
@@ -40,6 +43,10 @@ namespace Script {
       this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
       //sprite.mtxLocal.scale(new ƒ.Vector3(0.5, 0.5, 1));
     }
+
+    //public getHealth(){
+    
+    //}
 
     
 

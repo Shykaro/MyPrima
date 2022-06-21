@@ -13,10 +13,12 @@ declare namespace Script {
     let paths: ƒ.Node[];
     let cityNode: City[];
     let cityNodeP2: CityP2[];
-    let mobs: Mob[];
-    let mobs2: Mob2[];
-    let mobsP2: MobP2[];
-    let mobs2P2: Mob2P2[];
+    let mobsAnzPlayer1: number;
+    let mobsAnzPlayer2: number;
+    let healthUnitSmall: number;
+    let healthUnitBig: number;
+    let dmgUnitSmall: number;
+    let dmgUnitBig: number;
     let currentplayer: number;
     let currentUnitNumber: number;
     let currentUnitNumberP2: number;
@@ -53,6 +55,8 @@ declare namespace Script {
 declare namespace Script {
     import ƒ = FudgeCore;
     class Mob extends ƒ.Node {
+        private health;
+        private dmg;
         constructor(_name: string);
         move(): void;
     }
@@ -60,6 +64,8 @@ declare namespace Script {
 declare namespace Script {
     import ƒ = FudgeCore;
     class Mob2 extends ƒ.Node {
+        private health;
+        private dmg;
         constructor(_name: string);
         move(): void;
     }
@@ -67,6 +73,8 @@ declare namespace Script {
 declare namespace Script {
     import ƒ = FudgeCore;
     class Mob2P2 extends ƒ.Node {
+        private health;
+        private dmg;
         constructor(_name: string);
         move(): void;
     }
@@ -74,6 +82,8 @@ declare namespace Script {
 declare namespace Script {
     import ƒ = FudgeCore;
     class MobP2 extends ƒ.Node {
+        private health;
+        private dmg;
         constructor(_name: string);
         move(): void;
     }

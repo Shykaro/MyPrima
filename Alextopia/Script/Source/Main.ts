@@ -16,11 +16,17 @@ namespace Script {
   export let cityNode: City[] = [];   //City = new ƒ.Node("CityP2");
   export let cityNodeP2: CityP2[] = []; //City = new ƒ.Node("CityP2");
 
-  export let mobs: Mob[] = [];   //Array for all created mobs/units
-  export let mobs2: Mob2[] = [];   //Array for all created mobs/units
+  //export let mobsAny: Mob[] = [];   //Array for all created mobs/units
+  //export let mobsAny: Mob2[] = [];   //Array for all created mobs/units
+  export let mobsAnzPlayer1: number = 0; //Ist die länge von beiden Arrays des Spielers zusammen
 
-  export let mobsP2: MobP2[] = [];   //Array for all created mobs/units
-  export let mobs2P2: Mob2P2[] = [];   //Array for all created mobs/units
+  //export let mobsP2Any: MobP2[] = [];   //Array for all created mobs/units
+  //export let mobsP2Any: Mob2P2[] = [];   //Array for all created mobs/units
+  export let mobsAnzPlayer2: number = 0; //Ist die länge von beiden Arrays des Spielers zusammen
+
+  let mobsAny: any[] = [];
+
+  let mobsP2Any: any[] = [];
 
   let costMob: number = 14;   //Kosten für eine normale Einheit
   let costMob2: number = 26;  //Kosten für eine stärkere Einheit
@@ -28,6 +34,12 @@ namespace Script {
   let goldGain: number = 10;      //Geld die jeder Spieler am Anfang seines Zuges bekommt ##Adjustable for balancing,  //Das stimmt NICHTMEHR-> beachte dass für den Start des Spiels jeder Spieler einmal den Goldgain erhält
   let gold: number = costMob + 0;      //StartGeld für Spieler 1 PLUS costMob weil die Unit am anfang verschenkt wird!!
   let goldP2: number = costMob + 0;    //StartGeld für Spieler 2
+
+  export let healthUnitSmall: number = 10;
+  export let healthUnitBig: number = 20;
+
+  export let dmgUnitSmall: number = 5;
+  export let dmgUnitBig: number = 10;
 
 
   let mobBuyLimit: number = 1;  //Adjust this number if players should be able to buy more than 1 unit per turn.
@@ -76,12 +88,12 @@ namespace Script {
   //------------ TO-DO'S -------------------------------------------------------------------
   // Start on Unit to unit intercation ?? How do they interact, do they have HP or other Stats? -> Do another spawn RANDOM button for enemy units, let every unit move by one and automatically change side when everyone moved/interacted.
   // ein fking UI <-- Important, less complexity, machen sobald ich kb auf programming aber Zeit habe.
-  // Handle Player swap -> currentPlayerSwapHandle()
   // Start implementing different rounds in a players turn -> unit moving -> unit producing -> playerswap
-  // Add Gold mechanic
+  // Add Gold mechanic -> expand with buying upgrades and getting gold from defeating units
   // Random Map generator
   // adding all the requirements is more important
   // work on Networking
+  //
   //
   // ++ DONE Unit should only be able to walk 1 field from starting position, maybe test with random spawnfields for Unit +1 button.
   // ++ DONE but maybe needs rework ++ Graphics, like terrain and Units
@@ -246,6 +258,10 @@ namespace Script {
     logInUnitP2();
     handleEndOfCityProcedure(currentUnitNumber, 1);
 
+    //console.log("Erster Mob: ");
+    //console.log(mobs[0]);
+    
+
     //Ende start items ---------------------------------------------------------------------------------------
 
   } //ENDKLAMMER FÜR START FUNKTION -------------------------------------------------------------------------------------
@@ -257,10 +273,10 @@ namespace Script {
     //document.getElementById("--goldInput").setAttribute('value', gold.toString());
     //document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
 
-    mobs.map((g) => g.move()); //g.move(paths));
-    mobs2.map((g) => g.move()); //g.move(paths));
-    mobsP2.map((g) => g.move()); //g.move(paths));
-    mobs2P2.map((g) => g.move()); //g.move(paths));
+    mobsAny.map((g) => g.move()); //g.move(paths));
+    mobsAny.map((g) => g.move()); //g.move(paths));
+    mobsP2Any.map((g) => g.move()); //g.move(paths));
+    mobsP2Any.map((g) => g.move()); //g.move(paths));
 
     viewport.draw();
 
@@ -297,7 +313,7 @@ namespace Script {
             //currentMobPosition = new ƒ.Vector3(mobs[currentUnitNumber].mtxLocal.translation.x, mobs[currentUnitNumber].mtxLocal.translation.y, 0);
 
             if (checkIfMoveMob("x")) {
-              mobs[currentUnitNumber].mtxLocal.translateX(1);
+              mobsAny[currentUnitNumber].mtxLocal.translateX(1);
               //console.log("trying to move right");
 
             }
@@ -305,7 +321,7 @@ namespace Script {
           if (name === 'a' || name === 'ArrowLeft') {
 
             if (checkIfMoveMob("-x")) {
-              mobs[currentUnitNumber].mtxLocal.translateX(-1);
+              mobsAny[currentUnitNumber].mtxLocal.translateX(-1);
               //console.log("trying to move Left");
 
             }
@@ -313,7 +329,7 @@ namespace Script {
           if (name === 'w' || name === 'ArrowUp') {
 
             if (checkIfMoveMob("y")) {
-              mobs[currentUnitNumber].mtxLocal.translateY(1);
+              mobsAny[currentUnitNumber].mtxLocal.translateY(1);
               //console.log("trying to move up");
 
             }
@@ -321,7 +337,7 @@ namespace Script {
           if (name === 's' || name === 'ArrowDown') {
 
             if (checkIfMoveMob("-y")) {
-              mobs[currentUnitNumber].mtxLocal.translateY(-1);
+              mobsAny[currentUnitNumber].mtxLocal.translateY(-1);
               //console.log("trying to move down");
 
             }
@@ -361,25 +377,25 @@ namespace Script {
 
           if (name === 'd' || name === 'ArrowRight') {
             if (checkIfMoveMobP2("x")) {
-              mobsP2[currentUnitNumberP2].mtxLocal.translateX(1);
+              mobsP2Any[currentUnitNumberP2].mtxLocal.translateX(1);
               //console.log("trying to move right");
             }
           }
           if (name === 'a' || name === 'ArrowLeft') {
             if (checkIfMoveMobP2("-x")) {
-              mobsP2[currentUnitNumberP2].mtxLocal.translateX(-1);
+              mobsP2Any[currentUnitNumberP2].mtxLocal.translateX(-1);
               //console.log("trying to move Left");
             }
           }
           if (name === 'w' || name === 'ArrowUp') {
             if (checkIfMoveMobP2("y")) {
-              mobsP2[currentUnitNumberP2].mtxLocal.translateY(1);
+              mobsP2Any[currentUnitNumberP2].mtxLocal.translateY(1);
               //console.log("trying to move up");
             }
           }
           if (name === 's' || name === 'ArrowDown') {
             if (checkIfMoveMobP2("-y")) {
-              mobsP2[currentUnitNumberP2].mtxLocal.translateY(-1);
+              mobsP2Any[currentUnitNumberP2].mtxLocal.translateY(-1);
               //console.log("trying to move down");
             }
           }
@@ -414,26 +430,26 @@ namespace Script {
 
   // ------------- Check Moving Mob abteil Anfang für Spieler 1 ---------------------------------------------------
   export function checkIfMoveMob(_direction?: string): boolean { //checks which directions the CURRENTUNITNUMBER can go, called in changeUnit()
-    const y: number = mobs[currentUnitNumber].mtxLocal.translation.y;
-    const x: number = mobs[currentUnitNumber].mtxLocal.translation.x;
+    const y: number = mobsAny[currentUnitNumber].mtxLocal.translation.y;
+    const x: number = mobsAny[currentUnitNumber].mtxLocal.translation.x;
     let newPosition: ƒ.Vector3;
 
     switch (_direction ?? movingDirection) {
       case "x":
         newPosition = new ƒ.Vector3(x + 1, y, 0);
-        zwischenSpeicherCoordinateLRC.set(((mobs[currentUnitNumber].mtxLocal.translation.x) + 1), mobs[currentUnitNumber].mtxLocal.translation.y, 0);
+        zwischenSpeicherCoordinateLRC.set(((mobsAny[currentUnitNumber].mtxLocal.translation.x) + 1), mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
         break;
       case "-x":
         newPosition = new ƒ.Vector3(x - 1, y, 0);
-        zwischenSpeicherCoordinateLRC.set(((mobs[currentUnitNumber].mtxLocal.translation.x) - 1), mobs[currentUnitNumber].mtxLocal.translation.y, 0);
+        zwischenSpeicherCoordinateLRC.set(((mobsAny[currentUnitNumber].mtxLocal.translation.x) - 1), mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
         break;
       case "y":
         newPosition = new ƒ.Vector3(x, y + 1, 0);
-        zwischenSpeicherCoordinateLRC.set(mobs[currentUnitNumber].mtxLocal.translation.x, ((mobs[currentUnitNumber].mtxLocal.translation.y) + 1), 0);
+        zwischenSpeicherCoordinateLRC.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, ((mobsAny[currentUnitNumber].mtxLocal.translation.y) + 1), 0);
         break;
       case "-y":
         newPosition = new ƒ.Vector3(x, y - 1, 0);
-        zwischenSpeicherCoordinateLRC.set(mobs[currentUnitNumber].mtxLocal.translation.x, ((mobs[currentUnitNumber].mtxLocal.translation.y) - 1), 0);
+        zwischenSpeicherCoordinateLRC.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, ((mobsAny[currentUnitNumber].mtxLocal.translation.y) - 1), 0);
         break;
 
       default:
@@ -454,6 +470,8 @@ namespace Script {
       return false;
     }
 
+    //console.log("x: " + x + " y: " + y);
+
     if (zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckStay) || zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckX)
       || zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckY) || zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckXMinus) || zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckYMinus)) {
       return true;
@@ -467,26 +485,26 @@ namespace Script {
 
   // ------------- Check Moving Mob abteil Anfang für Spieler 2 ---------------------------------------------------
   export function checkIfMoveMobP2(_direction?: string): boolean { //checks which directions the CURRENTUNITNUMBER can go, called in changeUnit()
-    const y: number = mobsP2[currentUnitNumberP2].mtxLocal.translation.y;
-    const x: number = mobsP2[currentUnitNumberP2].mtxLocal.translation.x;
+    const y: number = mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y;
+    const x: number = mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x;
     let newPosition: ƒ.Vector3;
 
     switch (_direction ?? movingDirection) {
       case "x":
         newPosition = new ƒ.Vector3(x + 1, y, 0);
-        zwischenSpeicherCoordinateLRCP2.set(((mobsP2[currentUnitNumberP2].mtxLocal.translation.x) + 1), mobsP2[currentUnitNumberP2].mtxLocal.translation.y, 0);
+        zwischenSpeicherCoordinateLRCP2.set(((mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x) + 1), mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
         break;
       case "-x":
         newPosition = new ƒ.Vector3(x - 1, y, 0);
-        zwischenSpeicherCoordinateLRCP2.set(((mobsP2[currentUnitNumberP2].mtxLocal.translation.x) - 1), mobsP2[currentUnitNumberP2].mtxLocal.translation.y, 0);
+        zwischenSpeicherCoordinateLRCP2.set(((mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x) - 1), mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
         break;
       case "y":
         newPosition = new ƒ.Vector3(x, y + 1, 0);
-        zwischenSpeicherCoordinateLRCP2.set(mobsP2[currentUnitNumberP2].mtxLocal.translation.x, ((mobsP2[currentUnitNumberP2].mtxLocal.translation.y) + 1), 0);
+        zwischenSpeicherCoordinateLRCP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, ((mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y) + 1), 0);
         break;
       case "-y":
         newPosition = new ƒ.Vector3(x, y - 1, 0);
-        zwischenSpeicherCoordinateLRCP2.set(mobsP2[currentUnitNumberP2].mtxLocal.translation.x, ((mobsP2[currentUnitNumberP2].mtxLocal.translation.y) - 1), 0);
+        zwischenSpeicherCoordinateLRCP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, ((mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y) - 1), 0);
         break;
 
       default:
@@ -519,7 +537,7 @@ namespace Script {
 
   // ------------- Handle END TURN abteil Anfang für Spieler 1 ---------------------------------------------------
   function logInUnit(): void {
-    if ((currentUnitNumber + 1) === mobs.length) {
+    if ((currentUnitNumber + 1) === mobsAny.length) {
       document.getElementById("--headingInfo").setAttribute('value', turnPhaseTwo);
       roundsPlayed++
 
@@ -534,24 +552,24 @@ namespace Script {
       //document.getElementById("--unitdiv1P2").style.borderColor = "red";
       document.getElementById("--unitdiv" + (currentUnitNumber + 1)).style.borderColor = "#048836";
       currentUnitNumber = 0;
-      possibleLimitReachedCheckX.set(mobs[currentUnitNumber].mtxLocal.translation.x + 1, mobs[currentUnitNumber].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckY.set(mobs[currentUnitNumber].mtxLocal.translation.x, mobs[currentUnitNumber].mtxLocal.translation.y + 1, 0);
-      possibleLimitReachedCheckXMinus.set(mobs[currentUnitNumber].mtxLocal.translation.x - 1, mobs[currentUnitNumber].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckYMinus.set(mobs[currentUnitNumber].mtxLocal.translation.x, mobs[currentUnitNumber].mtxLocal.translation.y - 1, 0);
-      possibleLimitReachedCheckStay.set(mobs[currentUnitNumber].mtxLocal.translation.x, mobs[currentUnitNumber].mtxLocal.translation.y, 0);
+      possibleLimitReachedCheckX.set(mobsAny[currentUnitNumber].mtxLocal.translation.x + 1, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
+      possibleLimitReachedCheckY.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y + 1, 0);
+      possibleLimitReachedCheckXMinus.set(mobsAny[currentUnitNumber].mtxLocal.translation.x - 1, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
+      possibleLimitReachedCheckYMinus.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y - 1, 0);
+      possibleLimitReachedCheckStay.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
       //handleUiPlayerswap();
 
       console.log("turnplayer is now: " + currentplayer);
-      console.log("turnphase is now: " + currentPhase);
+      //console.log("turnphase is now: " + currentPhase);
       return;
     }
     else {
       currentUnitNumber++;
-      possibleLimitReachedCheckX.set(mobs[currentUnitNumber].mtxLocal.translation.x + 1, mobs[currentUnitNumber].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckY.set(mobs[currentUnitNumber].mtxLocal.translation.x, mobs[currentUnitNumber].mtxLocal.translation.y + 1, 0);
-      possibleLimitReachedCheckXMinus.set(mobs[currentUnitNumber].mtxLocal.translation.x - 1, mobs[currentUnitNumber].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckYMinus.set(mobs[currentUnitNumber].mtxLocal.translation.x, mobs[currentUnitNumber].mtxLocal.translation.y - 1, 0);
-      possibleLimitReachedCheckStay.set(mobs[currentUnitNumber].mtxLocal.translation.x, mobs[currentUnitNumber].mtxLocal.translation.y, 0);
+      possibleLimitReachedCheckX.set(mobsAny[currentUnitNumber].mtxLocal.translation.x + 1, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
+      possibleLimitReachedCheckY.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y + 1, 0);
+      possibleLimitReachedCheckXMinus.set(mobsAny[currentUnitNumber].mtxLocal.translation.x - 1, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
+      possibleLimitReachedCheckYMinus.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y - 1, 0);
+      possibleLimitReachedCheckStay.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
       document.getElementById("--unitdiv" + (currentUnitNumber + 1)).style.borderColor = "red"; //--unitdiv1P2 für spieler 2
       document.getElementById("--unitdiv" + currentUnitNumber).style.borderColor = "#048836";
       console.log(currentUnitNumber + " setze diese zahl auf grün");
@@ -563,7 +581,7 @@ namespace Script {
   // ------------- Handle END TURN abteil Anfang für Spieler 2 ---------------------------------------------------
   function logInUnitP2(): void {
     document.getElementById("--headingInfo").setAttribute('value', turnPhaseTwo);
-    if ((currentUnitNumberP2 + 1) === mobsP2.length) {
+    if ((currentUnitNumberP2 + 1) === mobsP2Any.length) { //############### mögliche Bugstelle, ij
       roundsPlayed++
       if (roundsPlayed > 2) {
         currentPhase = 2;
@@ -576,24 +594,24 @@ namespace Script {
       //document.getElementById("--unitdiv1").style.borderColor = "red";
       document.getElementById("--unitdiv" + (currentUnitNumberP2 + 1) + "P2").style.borderColor = "#048836";
       currentUnitNumberP2 = 0;
-      possibleLimitReachedCheckXP2.set(mobsP2[currentUnitNumberP2].mtxLocal.translation.x + 1, mobsP2[currentUnitNumberP2].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckYP2.set(mobsP2[currentUnitNumberP2].mtxLocal.translation.x, mobsP2[currentUnitNumberP2].mtxLocal.translation.y + 1, 0);
-      possibleLimitReachedCheckXMinusP2.set(mobsP2[currentUnitNumberP2].mtxLocal.translation.x - 1, mobsP2[currentUnitNumberP2].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckYMinusP2.set(mobsP2[currentUnitNumberP2].mtxLocal.translation.x, mobsP2[currentUnitNumberP2].mtxLocal.translation.y - 1, 0);
-      possibleLimitReachedCheckStayP2.set(mobsP2[currentUnitNumberP2].mtxLocal.translation.x, mobsP2[currentUnitNumberP2].mtxLocal.translation.y, 0);
+      possibleLimitReachedCheckXP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x + 1, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
+      possibleLimitReachedCheckYP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y + 1, 0);
+      possibleLimitReachedCheckXMinusP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x - 1, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
+      possibleLimitReachedCheckYMinusP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y - 1, 0);
+      possibleLimitReachedCheckStayP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
       //handleUiPlayerswap();
 
       console.log("turnplayer is now: " + currentplayer);
-      console.log("turnphase is now: " + currentPhase);
+      //console.log("turnphase is now: " + currentPhase);
       return;
     }
     else {
       currentUnitNumberP2++;
-      possibleLimitReachedCheckXP2.set(mobsP2[currentUnitNumberP2].mtxLocal.translation.x + 1, mobsP2[currentUnitNumberP2].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckYP2.set(mobsP2[currentUnitNumberP2].mtxLocal.translation.x, mobsP2[currentUnitNumberP2].mtxLocal.translation.y + 1, 0);
-      possibleLimitReachedCheckXMinusP2.set(mobsP2[currentUnitNumberP2].mtxLocal.translation.x - 1, mobsP2[currentUnitNumberP2].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckYMinusP2.set(mobsP2[currentUnitNumberP2].mtxLocal.translation.x, mobsP2[currentUnitNumberP2].mtxLocal.translation.y - 1, 0);
-      possibleLimitReachedCheckStayP2.set(mobsP2[currentUnitNumberP2].mtxLocal.translation.x, mobsP2[currentUnitNumberP2].mtxLocal.translation.y, 0);
+      possibleLimitReachedCheckXP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x + 1, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
+      possibleLimitReachedCheckYP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y + 1, 0);
+      possibleLimitReachedCheckXMinusP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x - 1, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
+      possibleLimitReachedCheckYMinusP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y - 1, 0);
+      possibleLimitReachedCheckStayP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
       document.getElementById("--unitdiv" + (currentUnitNumberP2 + 1) + "P2").style.borderColor = "red"; //--unitdiv1P2 für spieler 2
       document.getElementById("--unitdiv" + currentUnitNumberP2 + "P2").style.borderColor = "#048836";
       return;
@@ -605,7 +623,7 @@ namespace Script {
     //console.log(currentplayer + "<- current player -> should be 1 and also gold for p1: " + gold + " p2 gold: " + goldP2);
 
     if (currentplayer === 1) {
-      console.log(currentplayer + "<- current player and also gold for p1: " + gold);
+      //console.log(currentplayer + "<- current player and also gold for p1: " + gold);
 
       //alle Ui units auf display none machen, damit ich sie nicht einzeln aufzählen muss.
       for (let i = 1; i < 10; i++) { //goes through all 9 possible Units and makes turnplayer troops invisible
@@ -630,7 +648,7 @@ namespace Script {
   // ------------- Creating Mobs, both player ---------------------------------------------------
   function creatingMob(whichUnit: number, graph: ƒ.Node, city: City, cityP2: City): void {  //1=mobs, 2=mobs2, 3=mobsP2, 4=mobs2P2 für "whichUnit" ---- Benötigt graph, city und cityP2 da diese nicht Global sein können.
     if (whichUnit === 1) {
-      if ((mobs.length + mobs2.length) != 9) {
+      if ((mobsAny.length + mobsAny.length) != 9) {
         if (addMobLimitCounter > 0) {
           if (gold >= costMob) {
             gold -= costMob;
@@ -644,10 +662,11 @@ namespace Script {
             //mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
             mob.mtxLocal.translate(cityPosition);
             graph.addChild(mob);
-            mobs.push(mob);
-            for (let iCounter = 0; iCounter < mobs.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
-              if (iCounter === mobs.length) {
-                document.getElementById("--" + mobs.length + "img1").style.display = null;
+            mobsAny.push(mob);
+            for (let iCounter = 0; iCounter < mobsAny.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+              if (iCounter === mobsAny.length) {
+                document.getElementById("--" + mobsAny.length + "img1").style.display = null;
+                document.getElementById("--" + mobsAny.length + "Filler").style.display = 'none';
               };
             };
           };
@@ -655,7 +674,7 @@ namespace Script {
       }
     }
     if (whichUnit === 2) {
-      if ((mobs.length + mobs2.length) != 9) {
+      if ((mobsAny.length + mobsAny.length) != 9) {
         if (addMobLimitCounter > 0) {
           if (gold >= costMob2) {
             gold -= costMob2;
@@ -667,10 +686,11 @@ namespace Script {
             let cityPosition = new ƒ.Vector3(city.mtxWorld.translation.x, city.mtxWorld.translation.y, 0);
             mob2.mtxLocal.translate(cityPosition);
             graph.addChild(mob2);
-            mobs.push(mob2);
-            for (let iCounter = 0; iCounter < mobs.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
-              if (iCounter === mobs.length) {
-                document.getElementById("--" + mobs.length + "img3").style.display = null;
+            mobsAny.push(mob2);
+            for (let iCounter = 0; iCounter < mobsAny.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+              if (iCounter === mobsAny.length) {
+                document.getElementById("--" + mobsAny.length + "img3").style.display = null;
+                document.getElementById("--" + mobsAny.length + "Filler").style.display = 'none';
                 //console.log("--" + i + "img3")
               };
             };
@@ -679,7 +699,7 @@ namespace Script {
       }
     }
     if (whichUnit === 3) {
-      if ((mobsP2.length + mobs2P2.length) != 9) {
+      if ((mobsP2Any.length + mobsP2Any.length) != 9) {
         if (addMobLimitCounterP2 > 0) {
           if (goldP2 >= costMob) {
             goldP2 -= costMob;
@@ -691,10 +711,11 @@ namespace Script {
             let cityPosition = new ƒ.Vector3(cityP2.mtxWorld.translation.x, cityP2.mtxWorld.translation.y, 0);
             mobP2.mtxLocal.translate(cityPosition);
             graph.addChild(mobP2);
-            mobsP2.push(mobP2);
-            for (let iCounter = 0; iCounter < mobsP2.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
-              if (iCounter === mobsP2.length) {
-                document.getElementById("--" + mobsP2.length + "img2").style.display = null;
+            mobsP2Any.push(mobP2);
+            for (let iCounter = 0; iCounter < mobsP2Any.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+              if (iCounter === mobsP2Any.length) {
+                document.getElementById("--" + mobsP2Any.length + "img2").style.display = null;
+                document.getElementById("--" + mobsAny.length + "FillerP2").style.display = 'none';
                 //console.log("--" + i + "img1")
               };
             };
@@ -703,7 +724,7 @@ namespace Script {
       }
     }
     if (whichUnit === 4) {
-      if ((mobsP2.length + mobs2P2.length) != 9) {
+      if ((mobsP2Any.length + mobsP2Any.length) != 9) {
         if (addMobLimitCounterP2 > 0) {
           if (goldP2 >= costMob2) {
             goldP2 -= costMob2;
@@ -715,10 +736,12 @@ namespace Script {
             let cityPosition = new ƒ.Vector3(cityP2.mtxWorld.translation.x, cityP2.mtxWorld.translation.y, 0);
             mob2P2.mtxLocal.translate(cityPosition);
             graph.addChild(mob2P2);
-            mobsP2.push(mob2P2);
-            for (let iCounter = 0; iCounter < mobsP2.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
-              if (iCounter === mobsP2.length) {
-                document.getElementById("--" + mobsP2.length + "img4").style.display = null;
+            mobsP2Any.push(mob2P2);
+            console.log(mobsP2Any + " :mobsP2 vs mob2P2: " + mob2P2)
+            for (let iCounter = 0; iCounter < mobsP2Any.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+              if (iCounter === mobsP2Any.length) {
+                document.getElementById("--" + mobsP2Any.length + "img4").style.display = null;
+                document.getElementById("--" + mobsAny.length + "FillerP2").style.display = 'none';
                 //console.log("--" + i + "img1")
               };
             };
@@ -765,29 +788,20 @@ namespace Script {
       if (roundsPlayed > 1) { //Fixes a bug, i dont know why p2 gets one tick more than P1 so iam reducing one turn for P2
         goldP2 += goldGain;
       };
-      console.log("P2 gets money. ")
+      //console.log("P2 gets money. ")
       document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
       document.getElementById("--goldP2").style.display = null;
       document.getElementById("--gold").style.display = 'none';
     }
     document.getElementById("--unitdiv1" + playerPlaceHolder2).style.borderColor = "red";
     document.getElementById("--unitdiv" + (currentUnitNumb + 1) + "" + playerPlaceHolder).style.borderColor = "#048836";
-    console.log("ENDING P" + currentplayer);
+    //console.log("ENDING P" + currentplayer);
     currentPhase = 1;
     currentplayer = setPlayer;
     document.getElementById("--addMob" + playerPlaceHolder).style.display = 'none';
     handleUiPlayerswap();
     document.getElementById("--headingInfo").setAttribute('value', turnPhaseOne);
 
-    return;
-
-    document.getElementById("--unitdiv1").style.borderColor = "red";
-    document.getElementById("--unitdiv" + (currentUnitNumberP2 + 1) + "P2").style.borderColor = "#048836";
-    currentPhase = 1;
-    currentplayer = 1;
-    document.getElementById("--addMobP2").style.display = 'none';
-    console.log("ENDING P2");
-    handleUiPlayerswap();
     return;
   }
 
