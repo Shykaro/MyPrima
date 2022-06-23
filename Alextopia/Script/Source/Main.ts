@@ -92,7 +92,7 @@ namespace Script {
   // Add Gold mechanic -> expand with buying upgrades and getting gold from defeating units
   // Random Map generator
   // adding all the requirements is more important
-  // work on Networking
+  // work on Networking this gon be fun
   //
   //
   // ++ DONE Unit should only be able to walk 1 field from starting position, maybe test with random spawnfields for Unit +1 button.
