@@ -28,12 +28,19 @@ namespace Script {
 
   let mobsP2Any: any[] = [];
 
+  let anzMine: number = 0;
+  let anzMineP2: number = 0;
+
+  // Balancing Field ############################################################################
   let costMob: number = 14;   //Kosten für eine normale Einheit
   let costMob2: number = 26;  //Kosten für eine stärkere Einheit
 
-  let goldGain: number = 10;      //Geld die jeder Spieler am Anfang seines Zuges bekommt ##Adjustable for balancing,  //Das stimmt NICHTMEHR-> beachte dass für den Start des Spiels jeder Spieler einmal den Goldgain erhält
-  let gold: number = costMob + 0;      //StartGeld für Spieler 1 PLUS costMob weil die Unit am anfang verschenkt wird!!
-  let goldP2: number = costMob + 0;    //StartGeld für Spieler 2
+  let costMineBuild: number = 10; //Kosten um eine Mine in der Stadt zu bauen, welche extra Gold generiert
+  let goldMineOutput: number = 5; //Zusätzlicher Gold output einer Mine pro Runde
+
+  let goldGain: number = 10;          //Geld die jeder Spieler am Anfang seines Zuges bekommt ##Adjustable for balancing,  //Das stimmt NICHTMEHR-> beachte dass für den Start des Spiels jeder Spieler einmal den Goldgain erhält
+  let gold: number = costMob + 0;     //StartGeld für Spieler 1 PLUS costMob weil die Unit am anfang verschenkt wird!!
+  let goldP2: number = costMob + 0;   //StartGeld für Spieler 2
 
   export let healthUnitSmall: number = 10;
   export let healthUnitBig: number = 20;
@@ -41,12 +48,14 @@ namespace Script {
   export let dmgUnitSmall: number = 5;
   export let dmgUnitBig: number = 10;
 
-
   let mobBuyLimit: number = 1;  //Adjust this number if players should be able to buy more than 1 unit per turn.
+  //Balancing Field End ############################################################################
 
   let turnPhaseOne = "Bewege deine Einheiten, drücke Enter zum Bestätigen der Position.";
   let turnPhaseTwo = "Produziere Truppen oder rüste deine Stadt auf, drücke Enter zum fortfahren.";
   //document.getElementById("--headingInfo").setAttribute('value', turnPhaseOne/Two);
+
+  let unitPositionPlaceholder: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
 
   let zwischenSpeicherCoordinateLRC: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);    //LRC = LimitReachCheck, used in checking that unit can only work one field from origin.
   let zwischenSpeicherCoordinateLRCP2: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
@@ -93,7 +102,7 @@ namespace Script {
   // Random Map generator
   // adding all the requirements is more important
   // work on Networking this gon be fun
-  //
+  // Implement light to use as viewing distance
   //
   // ++ DONE Unit should only be able to walk 1 field from starting position, maybe test with random spawnfields for Unit +1 button.
   // ++ DONE but maybe needs rework ++ Graphics, like terrain and Units
@@ -104,7 +113,7 @@ namespace Script {
   // Money Balancing überlegen -> stadt upgradable?
   // Ui Zeigt leben der Einheiten wenn diese nicht onehit sterben sollten.
   // Physik einbauen indem man kästchen rumschiebt -> geht nicht wegen tp-ing, eher konfetti oder so einbauen am beginn oder ende der runde
-  //
+  // SPÄTERES BUG PROBLEM: Unit spawnen während gegnerische einheit auf dem Cityfield steht. -> Unitinteraction nur möglich wenn einheit gemoved wird!!
   //------------ Notizen End ---------------------------------------------------------------
 
 
@@ -164,6 +173,8 @@ namespace Script {
     document.getElementById("--plusmob2").innerHTML = "Cost: " + costMob2;
     document.getElementById("--plusmobP2").innerHTML = "Cost: " + costMob;
     document.getElementById("--plusmob2P2").innerHTML = "Cost: " + costMob2;
+    document.getElementById("--plusMine").innerHTML = "Cost: " + costMineBuild;
+    document.getElementById("--plusMineP2").innerHTML = "Cost: " + costMineBuild;
 
     ƒ.AudioManager.default.listenTo(graph);
 
@@ -179,6 +190,10 @@ namespace Script {
     document.getElementById("vui").style.visibility = 'visible';  //Vui einschalten
     document.getElementById("--addMob").style.display = 'none';   //Mob menü ausschalten
     document.getElementById("--addMobP2").style.display = 'none'; //Mob menü ausschalten
+    document.getElementById("--addBuildings").style.display = 'none';   //Mob menü ausschalten
+    document.getElementById("--addBuildingsP2").style.display = 'none'; //Mob menü ausschalten
+
+    //console.log(document.getElementById("--addBuildingsP2").style.display);
 
     const city = new City("City");
     const cityP2 = new CityP2("CityP2");
@@ -216,6 +231,12 @@ namespace Script {
     })
     document.getElementById("--plusmob2P2").addEventListener("click", (event) => {
       creatingMob(4, graph, city, cityP2);
+    })
+    document.getElementById("--plusMine").addEventListener("click", (event) => {
+      creatingBuildings();
+    })
+    document.getElementById("--plusMineP2").addEventListener("click", (event) => {
+      creatingBuildings();
     })
 
     document.getElementById("changePlayer").addEventListener("click", (event) => {
@@ -299,6 +320,13 @@ namespace Script {
     }
   }
 
+  /*if(currentplayer === 1){
+    document.getElementById("--infoBuiltMines").setAttribute('value', anzMine.toString());
+  }
+  if(currentplayer === 2){
+    document.getElementById("--infoBuiltMines").setAttribute('value', anzMineP2.toString());
+  }*/
+
 
   // ------------- Moving Mob abteil für beide Spieler ---------------------------------------------------
   function changeUnit(): void { //Is used to track current unit and change values accordingly -> NOT ANYMORE
@@ -344,6 +372,7 @@ namespace Script {
           }
           if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
             if (currentplayer === 1) {
+              unitInteraction(); //UNIT INTERACTION HERE
               //currentPhase = 2;
               logInUnit(); //also end of turn procedure if its not the last unit.
             }
@@ -402,6 +431,7 @@ namespace Script {
           if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
             if (currentplayer === 2) {
               //currentPhase = 2;
+              unitInteraction(); //UNIT INTERACTION HERE
               logInUnitP2() //also end of turn procedure if its not the last unit.
             }
             return;
@@ -430,6 +460,8 @@ namespace Script {
 
   // ------------- Check Moving Mob abteil Anfang für Spieler 1 ---------------------------------------------------
   export function checkIfMoveMob(_direction?: string): boolean { //checks which directions the CURRENTUNITNUMBER can go, called in changeUnit()
+
+
     const y: number = mobsAny[currentUnitNumber].mtxLocal.translation.y;
     const x: number = mobsAny[currentUnitNumber].mtxLocal.translation.x;
     let newPosition: ƒ.Vector3;
@@ -474,7 +506,8 @@ namespace Script {
 
     if (zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckStay) || zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckX)
       || zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckY) || zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckXMinus) || zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckYMinus)) {
-      return true;
+        //unitPositionPlaceholder.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0); //USED FOR UNIT INTERACTION to get position before it is moved
+        return true;
     }
     else {
       return false; //Changed this to false since only if mob still in allowed grid it is allowed to move -> allowed to return true
@@ -527,7 +560,8 @@ namespace Script {
 
     if (zwischenSpeicherCoordinateLRCP2.equals(possibleLimitReachedCheckStayP2) || zwischenSpeicherCoordinateLRCP2.equals(possibleLimitReachedCheckXP2)
       || zwischenSpeicherCoordinateLRCP2.equals(possibleLimitReachedCheckYP2) || zwischenSpeicherCoordinateLRCP2.equals(possibleLimitReachedCheckXMinusP2) || zwischenSpeicherCoordinateLRCP2.equals(possibleLimitReachedCheckYMinusP2)) {
-      return true; //WENN zwischenSpeicher sagt er läuft auf ein feld zu dass aus den possibleLimitReachedCheck feldERN drüber hinausgeht, wirft es return false anstatt true.
+        //unitPositionPlaceholder.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0); //USED FOR UNIT INTERACTION to get position before it is moved
+        return true; //WENN zwischenSpeicher sagt er läuft auf ein feld zu dass aus den possibleLimitReachedCheck feldERN drüber hinausgeht, wirft es return false anstatt true.
     }
     else {
       return false; //Changed this to false since only if mob still in allowed grid it is allowed to move -> allowed to return true
@@ -572,7 +606,7 @@ namespace Script {
       possibleLimitReachedCheckStay.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
       document.getElementById("--unitdiv" + (currentUnitNumber + 1)).style.borderColor = "red"; //--unitdiv1P2 für spieler 2
       document.getElementById("--unitdiv" + currentUnitNumber).style.borderColor = "#048836";
-      console.log(currentUnitNumber + " setze diese zahl auf grün");
+      //console.log(currentUnitNumber + " setze diese zahl auf grün");
       return;
     }
   }
@@ -715,7 +749,7 @@ namespace Script {
             for (let iCounter = 0; iCounter < mobsP2Any.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
               if (iCounter === mobsP2Any.length) {
                 document.getElementById("--" + mobsP2Any.length + "img2").style.display = null;
-                document.getElementById("--" + mobsAny.length + "FillerP2").style.display = 'none';
+                document.getElementById("--" + mobsP2Any.length + "FillerP2").style.display = 'none';
                 //console.log("--" + i + "img1")
               };
             };
@@ -741,7 +775,7 @@ namespace Script {
             for (let iCounter = 0; iCounter < mobsP2Any.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
               if (iCounter === mobsP2Any.length) {
                 document.getElementById("--" + mobsP2Any.length + "img4").style.display = null;
-                document.getElementById("--" + mobsAny.length + "FillerP2").style.display = 'none';
+                document.getElementById("--" + mobsP2Any.length + "FillerP2").style.display = 'none';
                 //console.log("--" + i + "img1")
               };
             };
@@ -756,17 +790,28 @@ namespace Script {
   // ------------- Handles the city part of the turn, after all troops have been moved. ---------------------------------------------------
   function handleCityTurnPart() {
     document.getElementById("--addMob").style.display = null;
+    document.getElementById("--addBuildings").style.display = null;
+    document.getElementById("--addBuildingsP2").style.display = 'none';
+    document.getElementById("--infoBuildings").style.display = null;
+    document.getElementById("--infoBuildingsP2").style.display = 'none';
     if (roundsPlayed > 2) {
       document.getElementById("--addMobP2").style.display = 'none';
+      //console.log("Setze BuildingP2 und MobP2 zu none");
     };
     addMobLimitCounter = mobBuyLimit;
   }
 
 
   function handleCityTurnPartP2() {
+    document.getElementById("--addBuildingsP2").style.display = null;
+    document.getElementById("--infoBuildingsP2").style.display = null;
     document.getElementById("--addMobP2").style.display = null;
+    document.getElementById("--addBuildings").style.display = 'none';
+    document.getElementById("--infoBuildings").style.display = 'none';
     if (roundsPlayed > 2) {
       document.getElementById("--addMob").style.display = 'none';
+      
+      //console.log("Setze BuildingP1 und MobP1 zu none");
     };
     addMobLimitCounterP2 = mobBuyLimit;
   }
@@ -779,14 +824,14 @@ namespace Script {
     if (setPlayer === 1) { //wenn spieler zu 1 wechseln soll nimm diese modifikatoren
       playerPlaceHolder = "P2";
       playerPlaceHolder2 = "";
-      gold += goldGain
+      gold += (goldGain + (anzMine * goldMineOutput));
       document.getElementById("--goldInput").setAttribute('value', gold.toString());
       document.getElementById("--gold").style.display = null;
       document.getElementById("--goldP2").style.display = 'none';
     }
     else {
       if (roundsPlayed > 1) { //Fixes a bug, i dont know why p2 gets one tick more than P1 so iam reducing one turn for P2
-        goldP2 += goldGain;
+        goldP2 += (goldGain + (anzMineP2 * goldMineOutput));
       };
       //console.log("P2 gets money. ")
       document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
@@ -799,10 +844,64 @@ namespace Script {
     currentPhase = 1;
     currentplayer = setPlayer;
     document.getElementById("--addMob" + playerPlaceHolder).style.display = 'none';
+    document.getElementById("--addBuildings" + playerPlaceHolder).style.display = 'none';
+    document.getElementById("--infoBuildings" + playerPlaceHolder).style.display = 'none';
+    //document.querySelector("#anz_mine")
     handleUiPlayerswap();
     document.getElementById("--headingInfo").setAttribute('value', turnPhaseOne);
 
     return;
+  }
+
+  function creatingBuildings(){ //Handles all Buildings, needs additional parameter if multiple Buildings should be available
+    if (currentplayer === 1) {
+      if (gold >= costMineBuild){
+        gold -= costMineBuild;
+        document.getElementById("--goldInput").setAttribute('value', gold.toString());
+        anzMine++;
+        document.querySelector("#anz_mine").setAttribute('value', anzMine.toString());
+      }
+    }
+    if (currentplayer === 2) {
+      if (goldP2 >= costMineBuild){
+        goldP2 -= costMineBuild;
+        document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
+        anzMineP2++;
+        document.querySelector("#anz_minep2").setAttribute('value', anzMineP2.toString());
+      }
+    }
+  }
+
+  function unitInteraction(){
+    //auf Placeholder zugreifen zum Vergleich mit ursprünglicher position
+    //unitPositionPlaceholder NOT THIS ONE
+    //possibleLimitReachedCheckStay IS ACTUALLY THE CORE POSITION FOR THE UNIT.
+
+
+    if (currentplayer === 1){
+      //In schleife unitPositionPlaceholder mit allen Figuren von Spieler 2 abfragen
+      for (let iCounter2 = 0; iCounter2 < mobsP2Any.length; iCounter2++){
+        if (mobsAny[currentUnitNumber].mtxLocal === (mobsP2Any[iCounter2].mtxLocal)){ //THIS NEEDS FIXING
+          mobsAny[currentUnitNumber].mtxLocal.set(possibleLimitReachedCheckStay);
+          mobsP2Any[iCounter2].health -= mobsAny[currentUnitNumber].dmg;
+          console.log("Health of p2 unit: " + mobsP2Any[iCounter2].health);
+        }
+      }
+    }
+
+    if (currentplayer === 2){
+      //In schleife unitPositionPlaceholder mit allen Figuren von Spieler 1 abfragen
+      for (let iCounter3 = 0; iCounter3 < mobsAny.length; iCounter3++){
+        if (mobsP2Any[currentUnitNumber].mtxLocal.equals(mobsAny[iCounter3].mtxLocal)){ //THIS NEEDS FIXING
+          mobsP2Any[currentUnitNumber].mtxLocal.set(possibleLimitReachedCheckStay);
+
+
+          mobsAny[iCounter3].health -= mobsP2Any[currentUnitNumber].dmg;
+          console.log("Health of p1 unit: " + mobsAny[iCounter3].health);
+        }
+      }
+    }
+
   }
 
 

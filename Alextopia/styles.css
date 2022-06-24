@@ -1,193 +1,208 @@
 html,
 body {
-  padding: 0px;
-  margin: 0px;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+    padding: 0px;
+    margin: 0px;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
 dialog {
-  text-align: center;
-  font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
 }
 
 canvas.fullscreen {
-  width: 100vw;
-  height: 100vh;
+    width: 100vw;
+    height: 100vh;
 }
 
 #game-over {
-  z-index: 1000;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background-color: white;
-  height: 100vh;
-  width: 0;
-  overflow: hidden;
-  display: grid;
-  align-items: center;
-  justify-content: center;
-  font-size: 10rem;
-  font-weight: bold;
+    z-index: 1000;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: white;
+    height: 100vh;
+    width: 0;
+    overflow: hidden;
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    font-size: 10rem;
+    font-weight: bold;
 }
+
 #restart {
-  cursor: pointer;
-  font-size: 2rem;
-  text-align: center;
-  font-weight: normal;
+    cursor: pointer;
+    font-size: 2rem;
+    text-align: center;
+    font-weight: normal;
 }
 
 #vui {
-  width: 100vw;
-  height: 100vh;
-  background-color: transparent;
-  
-  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode", Geneva,
-    Verdana, sans-serif;
-  font-size: 10px;
-  visibility:hidden;
+    width: 100vw;
+    height: 100vh;
+    background-color: transparent;
+    font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+    font-size: 10px;
+    visibility: hidden;
 }
 
 .--boxleftdown {
-  bottom: 10px;
-  padding: 10px;
-  position: absolute;
-  background-color: aliceblue;
+    bottom: 10px;
+    padding: 10px;
+    position: absolute;
+    background-color: aliceblue;
 }
 
 .--boxtopleft {
-  top: 10px;
-  padding: 10px;
-  position: absolute;
-  background-color: aliceblue;
-  visibility: hidden;               /*THIS IS THE ADMIN MENU*/
+    top: 10px;
+    padding: 10px;
+    position: absolute;
+    background-color: aliceblue;
+    visibility: hidden;
+    /*THIS IS THE ADMIN MENU*/
 }
 
-.--boxleft{
-  top: 0px;
-  bottom: 0px;
-  margin-top: auto;
-  margin-bottom: auto;
-  height: 365px;
-  position: absolute;
-  background-color: transparent;
+.--boxleft {
+    top: 0px;
+    bottom: 0px;
+    margin-top: auto;
+    margin-bottom: auto;
+    height: 365px;
+    position: absolute;
+    background-color: transparent;
 }
 
 .--boxtopmid {
-  left: 0px;
-  right: 0px;
-  top: 1px;
-  margin-right: auto;
-  margin-left: auto;
-  width: 850px;
-  position: absolute;
-  background-color: transparent;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+    left: 0px;
+    right: 0px;
+    top: 1px;
+    margin-right: auto;
+    margin-left: auto;
+    width: 850px;
+    position: absolute;
+    background-color: transparent;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 
-.--topPlayerInfo{
-  border-radius: 0px 0px 10px 10px;
-  background-color: aliceblue;
-  padding: 10px;
+.--topPlayerInfo {
+    border-radius: 0px 0px 10px 10px;
+    background-color: aliceblue;
+    padding: 10px;
 }
 
-.--topPlayerInfo input{
-  width: 800px;
-  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-  text-align: center;
-  font-size: 200%;
-  font-weight: 600;
-  font-style: italic;
-  color: rgb(14, 14, 14);
+.--topPlayerInfo input {
+    width: 800px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    text-align: center;
+    font-size: 200%;
+    font-weight: 600;
+    font-style: italic;
+    color: rgb(14, 14, 14);
 }
 
-.--boxtopright{
-  width: 150px;
-  top: 0px;
-  right: 0px;
-  bottom: 0px;
-  margin-top: auto;
-  margin-bottom: auto;
-  height: 205px;
-  position: absolute;
-  background-color: transparent;
+.--boxtopright {
+    width: 150px;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    margin-top: auto;
+    margin-bottom: auto;
+    height: 205px;
+    position: absolute;
+    background-color: transparent;
 }
 
-.--element.--ressources{
-  border-radius: 10px 0px 0px 0px;
-  padding: 7px 10px 7px 7px;
+.--element.--ressources {
+    border-radius: 10px 0px 0px 0px;
+    padding: 7px 10px 7px 7px;
 }
 
-.--element.--ressources span{
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 15px;
-  text-shadow: 1px 1px #5a5a5a ;
-  font-weight: bold;
-  color: darkgoldenrod;
+.--element.--ressources span {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    text-shadow: 1px 1px #5a5a5a;
+    font-weight: bold;
+    color: darkgoldenrod;
 }
-.--element.--ressources input{
-  text-align: left;
-  font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-  font-size: 25px;
-  font-weight: bolder;
+
+.--element.--ressources input {
+    text-align: left;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 25px;
+    font-weight: bolder;
 }
 
 button {
-  font-size: 12px;
-  font-weight: bolder;
+    font-size: 12px;
+    font-weight: bolder;
 }
 
-.--element.--citystuff{
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  border-radius: 0px 0px 0px 10px;
+.--element.--citystuff {
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.--infoBuildingMine input {
+    width: 20px;
+}
+
+.--cityInfo {
+    border-radius: 0px 0px 0px 10px;
 }
 
 .--addmC {
-  padding: 3px 3px 3px 3px;
+    padding: 3px 3px 3px 3px;
 }
 
-.--addmobCity .--element span{
-  display: block;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  width: 100px;
+.--addUpgrades {
+    padding: 3px 3px 3px 3px;
 }
 
-.--addmobCityP2 .--element span{
-  display: block;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  width: 100px;
+.--addmobCity .--element span {
+    display: block;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100px;
 }
 
-.--troopborder{
-  background-color: aliceblue;
-  font-size: 24px;
-  padding: 5px 5px 5px 5px;
-  border-radius: 0px 10px 10px 0px;
+.--addmobCityP2 .--element span {
+    display: block;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100px;
+}
+
+.--troopborder {
+    background-color: aliceblue;
+    font-size: 24px;
+    padding: 5px 5px 5px 5px;
+    border-radius: 0px 10px 10px 0px;
 }
 
 .--unitfield {
-  padding: 5px 5px 5px 5px;
+    padding: 5px 5px 5px 5px;
 }
 
-.--unit{
-  border-style: double;  
-  border-radius: 7px;
-  border-color: #048836;
-  display: inline; /* mit -block um an die größe der Span anzupassen*/
-  height: 32px;
-  width: 32px;
-  background-color: aliceblue;
+.--unit {
+    border-style: double;
+    border-radius: 7px;
+    border-color: #048836;
+    display: inline;
+    /* mit -block um an die größe der Span anzupassen*/
+    height: 32px;
+    width: 32px;
+    background-color: aliceblue;
 }
+
+
 /*
 .--unit img{
   display: none;
@@ -199,48 +214,48 @@ Code for a specific unit tile in UI to be adressed
 }*/
 
 .--element {
-  display: flex;
-  align-items: center;
-  margin-bottom: 5px;
-  margin-top: 5px;
-  background-color: aliceblue;
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    background-color: aliceblue;
 }
 
 .element span {
-  width: 50px;
+    width: 50px;
 }
 
 input[type="text"] {
-  border: 0px;
-  background-color: transparent;
-  outline: none;
+    border: 0px;
+    background-color: transparent;
+    outline: none;
 }
 
 input[type="range"] {
-  overflow: hidden;
-  -webkit-appearance: none;
-  background-color: #5a5a5a;
-  width: calc(100% - 60px);
+    overflow: hidden;
+    -webkit-appearance: none;
+    background-color: #5a5a5a;
+    width: calc(100% - 60px);
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
-  height: 15px;
-  -webkit-appearance: none;
-  margin-top: -1px;
+    height: 15px;
+    -webkit-appearance: none;
+    margin-top: -1px;
 }
 
 input[type="range"]::-webkit-slider-thumb {
-  width: 0px;
-  -webkit-appearance: none;
-  height: 0px;
-  background: #5a5a5a;
-  box-shadow: -120px 0 0 120px #048836;
+    width: 0px;
+    -webkit-appearance: none;
+    height: 0px;
+    background: #5a5a5a;
+    box-shadow: -120px 0 0 120px #048836;
 }
 
 #overlay {
-  position: absolute;
-  width: 100vw;
-  height: 100vh;
-  top: 0;
-  transition: box-shadow 5s ease-in;
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    transition: box-shadow 5s ease-in;
 }
