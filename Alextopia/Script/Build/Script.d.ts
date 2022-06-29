@@ -54,6 +54,12 @@ declare namespace Script {
 }
 declare namespace Script {
     import ƒ = FudgeCore;
+    class Light extends ƒ.Node {
+        constructor(_name: string);
+    }
+}
+declare namespace Script {
+    import ƒ = FudgeCore;
     class Mob extends ƒ.Node {
         private health;
         private dmg;

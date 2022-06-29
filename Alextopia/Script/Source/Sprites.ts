@@ -104,6 +104,7 @@ namespace Script {
 
     _node.addChild(spritePaths);
     _node.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
+    //spritePaths.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 1); //FÜR COLORATION BZW TRANSPARENZ DER TILES
     //spritePacman.mtxLocal.rotateZ(90);
   }
   /*export function setSprite(_node: ƒ.Node): void {

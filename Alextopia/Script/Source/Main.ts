@@ -95,15 +95,17 @@ namespace Script {
 
 
   //------------ TO-DO'S -------------------------------------------------------------------
-  // Start on Unit to unit intercation ?? How do they interact, do they have HP or other Stats? -> Do another spawn RANDOM button for enemy units, let every unit move by one and automatically change side when everyone moved/interacted.
-  // ein fking UI <-- Important, less complexity, machen sobald ich kb auf programming aber Zeit habe.
   // Start implementing different rounds in a players turn -> unit moving -> unit producing -> playerswap
-  // Add Gold mechanic -> expand with buying upgrades and getting gold from defeating units
-  // Random Map generator
+  // Add Gold mechanic -> expand with buying upgrades and getting gold from defeating units -> Defeating Units is Missing.
+  // Random Map generator yea fuck that
   // adding all the requirements is more important
-  // work on Networking this gon be fun
-  // Implement light to use as viewing distance
+  // work on Networking this gon be fun, should try this
+  // Implement light to use as viewing distance, dont know how this works
+  // ARRAY KANN NUN MIT GESTORBENER EINHEIT AUF NULL GEHEN -> ausweichtregelung finden! bzw umgehen
   //
+  //
+  // ++ DONE ein fking UI <-- Important, less complexity, machen sobald ich kb auf programming aber Zeit habe.
+  // ++ DONE Start on Unit to unit intercation ?? How do they interact, do they have HP or other Stats? -> Do another spawn RANDOM button for enemy units, let every unit move by one and automatically change side when everyone moved/interacted.
   // ++ DONE Unit should only be able to walk 1 field from starting position, maybe test with random spawnfields for Unit +1 button.
   // ++ DONE but maybe needs rework ++ Graphics, like terrain and Units
   //------------ TO-DO'S End ---------------------------------------------------------------
@@ -252,7 +254,7 @@ namespace Script {
     //Admin Menu End ------------------------------------------------------------------
 
 
-    changeUnit(); //Funktion zum bewegen einer Unit in Main.ts
+    changeUnit(graph); //Funktion zum bewegen einer Unit in Main.ts
 
     water.forEach(function (item, index) { //Loop for all water tiles
       setSprite(water[index]);
@@ -273,15 +275,20 @@ namespace Script {
     creatingMob(3, graph, city, cityP2); //Gibt eine mobP2 - unit zu Stadt von Spieler2
     //skips 2 turns, so players have start gold and some Bugs are shoved away lol 
 
+    unitInteraction(graph);
     logInUnit();
     handleEndOfCityProcedure(currentUnitNumber, 2);
 
+    unitInteraction(graph);
     logInUnitP2();
     handleEndOfCityProcedure(currentUnitNumber, 1);
 
+    console.log("Health of p1 unit: " + mobsAny[0].health);
+
     //console.log("Erster Mob: ");
     //console.log(mobs[0]);
-    
+
+    //mobsAny[0].material.se
 
     //Ende start items ---------------------------------------------------------------------------------------
 
@@ -329,55 +336,64 @@ namespace Script {
 
 
   // ------------- Moving Mob abteil für beide Spieler ---------------------------------------------------
-  function changeUnit(): void { //Is used to track current unit and change values accordingly -> NOT ANYMORE
+  function changeUnit(graph: ƒ.Node): void { //Is used to track current unit and change values accordingly -> NOT ANYMORE
     document.addEventListener('keydown', (event) => {
       var name = event.key;
       if (currentplayer === 1) {
-        if (currentPhase === 1) {
-          //console.log(mobs[currentUnitNumber].mtxLocal + " and " + currentUnitNumber);
+        if (currentPhase === 1) { //&& mobsAny.length > 0) {
+
+          if (mobsAny.length > 0) {
+            //console.log(mobs[currentUnitNumber].mtxLocal + " and " + currentUnitNumber);
 
 
-          if (name === 'd' || name === 'ArrowRight') {
-            //currentMobPosition = new ƒ.Vector3(mobs[currentUnitNumber].mtxLocal.translation.x, mobs[currentUnitNumber].mtxLocal.translation.y, 0);
+            if (name === 'd' || name === 'ArrowRight') {
+              //currentMobPosition = new ƒ.Vector3(mobs[currentUnitNumber].mtxLocal.translation.x, mobs[currentUnitNumber].mtxLocal.translation.y, 0);
 
-            if (checkIfMoveMob("x")) {
-              mobsAny[currentUnitNumber].mtxLocal.translateX(1);
-              //console.log("trying to move right");
+              if (checkIfMoveMob("x")) {
+                mobsAny[currentUnitNumber].mtxLocal.translateX(1);
+                //console.log("trying to move right");
 
+              }
+            }
+            if (name === 'a' || name === 'ArrowLeft') {
+
+              if (checkIfMoveMob("-x")) {
+                mobsAny[currentUnitNumber].mtxLocal.translateX(-1);
+                //console.log("trying to move Left");
+
+              }
+            }
+            if (name === 'w' || name === 'ArrowUp') {
+
+              if (checkIfMoveMob("y")) {
+                mobsAny[currentUnitNumber].mtxLocal.translateY(1);
+                //console.log("trying to move up");
+
+              }
+            }
+            if (name === 's' || name === 'ArrowDown') {
+
+              if (checkIfMoveMob("-y")) {
+                mobsAny[currentUnitNumber].mtxLocal.translateY(-1);
+                //console.log("trying to move down");
+
+              }
+            }
+            if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
+              if (currentplayer === 1) {
+                unitInteraction(graph); //UNIT INTERACTION HERE
+                //currentPhase = 2;
+                logInUnit(); //also end of turn procedure if its not the last unit.
+              }
+              return;
             }
           }
-          if (name === 'a' || name === 'ArrowLeft') {
-
-            if (checkIfMoveMob("-x")) {
-              mobsAny[currentUnitNumber].mtxLocal.translateX(-1);
-              //console.log("trying to move Left");
-
-            }
-          }
-          if (name === 'w' || name === 'ArrowUp') {
-
-            if (checkIfMoveMob("y")) {
-              mobsAny[currentUnitNumber].mtxLocal.translateY(1);
-              //console.log("trying to move up");
-
-            }
-          }
-          if (name === 's' || name === 'ArrowDown') {
-
-            if (checkIfMoveMob("-y")) {
-              mobsAny[currentUnitNumber].mtxLocal.translateY(-1);
-              //console.log("trying to move down");
-
-            }
-          }
-          if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
-            if (currentplayer === 1) {
-              unitInteraction(); //UNIT INTERACTION HERE
-              //currentPhase = 2;
-              logInUnit(); //also end of turn procedure if its not the last unit.
-            }
-            return;
-
+          else {
+            
+            //logInUnit();
+            currentPhase = 2;
+            //handleCityTurnPart(); //WEIRD INTERACTION
+            
           }
         }
         if (currentPhase === 2) { //Shuts down the other key down events, initiates or gives time for phase 2
@@ -402,39 +418,43 @@ namespace Script {
       }
 
       if (currentplayer === 2) {
-        if (currentPhase === 1) {
-
-          if (name === 'd' || name === 'ArrowRight') {
-            if (checkIfMoveMobP2("x")) {
-              mobsP2Any[currentUnitNumberP2].mtxLocal.translateX(1);
-              //console.log("trying to move right");
+        if (currentPhase === 1) { //&& mobsP2Any.length > 0) {
+          if (mobsP2Any.length > 0) {
+            if (name === 'd' || name === 'ArrowRight') {
+              if (checkIfMoveMobP2("x")) {
+                mobsP2Any[currentUnitNumberP2].mtxLocal.translateX(1);
+                //console.log("trying to move right");
+              }
+            }
+            if (name === 'a' || name === 'ArrowLeft') {
+              if (checkIfMoveMobP2("-x")) {
+                mobsP2Any[currentUnitNumberP2].mtxLocal.translateX(-1);
+                //console.log("trying to move Left");
+              }
+            }
+            if (name === 'w' || name === 'ArrowUp') {
+              if (checkIfMoveMobP2("y")) {
+                mobsP2Any[currentUnitNumberP2].mtxLocal.translateY(1);
+                //console.log("trying to move up");
+              }
+            }
+            if (name === 's' || name === 'ArrowDown') {
+              if (checkIfMoveMobP2("-y")) {
+                mobsP2Any[currentUnitNumberP2].mtxLocal.translateY(-1);
+                //console.log("trying to move down");
+              }
+            }
+            if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
+              if (currentplayer === 2) {
+                //currentPhase = 2;
+                unitInteraction(graph); //UNIT INTERACTION HERE
+                logInUnitP2() //also end of turn procedure if its not the last unit.
+              }
+              return;
             }
           }
-          if (name === 'a' || name === 'ArrowLeft') {
-            if (checkIfMoveMobP2("-x")) {
-              mobsP2Any[currentUnitNumberP2].mtxLocal.translateX(-1);
-              //console.log("trying to move Left");
-            }
-          }
-          if (name === 'w' || name === 'ArrowUp') {
-            if (checkIfMoveMobP2("y")) {
-              mobsP2Any[currentUnitNumberP2].mtxLocal.translateY(1);
-              //console.log("trying to move up");
-            }
-          }
-          if (name === 's' || name === 'ArrowDown') {
-            if (checkIfMoveMobP2("-y")) {
-              mobsP2Any[currentUnitNumberP2].mtxLocal.translateY(-1);
-              //console.log("trying to move down");
-            }
-          }
-          if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
-            if (currentplayer === 2) {
-              //currentPhase = 2;
-              unitInteraction(); //UNIT INTERACTION HERE
-              logInUnitP2() //also end of turn procedure if its not the last unit.
-            }
-            return;
+          else {
+            currentPhase = 2;
           }
         }
         if (currentPhase === 2) {
@@ -506,8 +526,8 @@ namespace Script {
 
     if (zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckStay) || zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckX)
       || zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckY) || zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckXMinus) || zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckYMinus)) {
-        //unitPositionPlaceholder.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0); //USED FOR UNIT INTERACTION to get position before it is moved
-        return true;
+      //unitPositionPlaceholder.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0); //USED FOR UNIT INTERACTION to get position before it is moved
+      return true;
     }
     else {
       return false; //Changed this to false since only if mob still in allowed grid it is allowed to move -> allowed to return true
@@ -560,8 +580,8 @@ namespace Script {
 
     if (zwischenSpeicherCoordinateLRCP2.equals(possibleLimitReachedCheckStayP2) || zwischenSpeicherCoordinateLRCP2.equals(possibleLimitReachedCheckXP2)
       || zwischenSpeicherCoordinateLRCP2.equals(possibleLimitReachedCheckYP2) || zwischenSpeicherCoordinateLRCP2.equals(possibleLimitReachedCheckXMinusP2) || zwischenSpeicherCoordinateLRCP2.equals(possibleLimitReachedCheckYMinusP2)) {
-        //unitPositionPlaceholder.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0); //USED FOR UNIT INTERACTION to get position before it is moved
-        return true; //WENN zwischenSpeicher sagt er läuft auf ein feld zu dass aus den possibleLimitReachedCheck feldERN drüber hinausgeht, wirft es return false anstatt true.
+      //unitPositionPlaceholder.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0); //USED FOR UNIT INTERACTION to get position before it is moved
+      return true; //WENN zwischenSpeicher sagt er läuft auf ein feld zu dass aus den possibleLimitReachedCheck feldERN drüber hinausgeht, wirft es return false anstatt true.
     }
     else {
       return false; //Changed this to false since only if mob still in allowed grid it is allowed to move -> allowed to return true
@@ -627,12 +647,15 @@ namespace Script {
       //currentplayer = 1;
       //document.getElementById("--unitdiv1").style.borderColor = "red";
       document.getElementById("--unitdiv" + (currentUnitNumberP2 + 1) + "P2").style.borderColor = "#048836";
+      //console.log("LRCStay before Unit count: " + possibleLimitReachedCheckStayP2);
       currentUnitNumberP2 = 0;
       possibleLimitReachedCheckXP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x + 1, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
       possibleLimitReachedCheckYP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y + 1, 0);
       possibleLimitReachedCheckXMinusP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x - 1, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
       possibleLimitReachedCheckYMinusP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y - 1, 0);
       possibleLimitReachedCheckStayP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
+      //console.log("LRCStay after Unit count: " + possibleLimitReachedCheckStayP2);
+
       //handleUiPlayerswap();
 
       console.log("turnplayer is now: " + currentplayer);
@@ -640,12 +663,14 @@ namespace Script {
       return;
     }
     else {
+      //console.log("LRCStay before Unit count: " + possibleLimitReachedCheckStayP2);
       currentUnitNumberP2++;
       possibleLimitReachedCheckXP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x + 1, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
       possibleLimitReachedCheckYP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y + 1, 0);
       possibleLimitReachedCheckXMinusP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x - 1, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
       possibleLimitReachedCheckYMinusP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y - 1, 0);
       possibleLimitReachedCheckStayP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
+      //console.log("LRCStay after Unit count: " + possibleLimitReachedCheckStayP2);
       document.getElementById("--unitdiv" + (currentUnitNumberP2 + 1) + "P2").style.borderColor = "red"; //--unitdiv1P2 für spieler 2
       document.getElementById("--unitdiv" + currentUnitNumberP2 + "P2").style.borderColor = "#048836";
       return;
@@ -810,7 +835,7 @@ namespace Script {
     document.getElementById("--infoBuildings").style.display = 'none';
     if (roundsPlayed > 2) {
       document.getElementById("--addMob").style.display = 'none';
-      
+
       //console.log("Setze BuildingP1 und MobP1 zu none");
     };
     addMobLimitCounterP2 = mobBuyLimit;
@@ -843,6 +868,7 @@ namespace Script {
     //console.log("ENDING P" + currentplayer);
     currentPhase = 1;
     currentplayer = setPlayer;
+    //console.log(setPlayer);
     document.getElementById("--addMob" + playerPlaceHolder).style.display = 'none';
     document.getElementById("--addBuildings" + playerPlaceHolder).style.display = 'none';
     document.getElementById("--infoBuildings" + playerPlaceHolder).style.display = 'none';
@@ -853,9 +879,9 @@ namespace Script {
     return;
   }
 
-  function creatingBuildings(){ //Handles all Buildings, needs additional parameter if multiple Buildings should be available
+  function creatingBuildings() { //Handles all Buildings, needs additional parameter if multiple Buildings should be available
     if (currentplayer === 1) {
-      if (gold >= costMineBuild){
+      if (gold >= costMineBuild) {
         gold -= costMineBuild;
         document.getElementById("--goldInput").setAttribute('value', gold.toString());
         anzMine++;
@@ -863,7 +889,7 @@ namespace Script {
       }
     }
     if (currentplayer === 2) {
-      if (goldP2 >= costMineBuild){
+      if (goldP2 >= costMineBuild) {
         goldP2 -= costMineBuild;
         document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
         anzMineP2++;
@@ -872,32 +898,48 @@ namespace Script {
     }
   }
 
-  function unitInteraction(){
+  function unitInteraction(graph: ƒ.Node) {
     //auf Placeholder zugreifen zum Vergleich mit ursprünglicher position
     //unitPositionPlaceholder NOT THIS ONE
     //possibleLimitReachedCheckStay IS ACTUALLY THE CORE POSITION FOR THE UNIT.
 
 
-    if (currentplayer === 1){
+    if (currentplayer === 1) {
       //In schleife unitPositionPlaceholder mit allen Figuren von Spieler 2 abfragen
-      for (let iCounter2 = 0; iCounter2 < mobsP2Any.length; iCounter2++){
-        if (mobsAny[currentUnitNumber].mtxLocal === (mobsP2Any[iCounter2].mtxLocal)){ //THIS NEEDS FIXING
-          mobsAny[currentUnitNumber].mtxLocal.set(possibleLimitReachedCheckStay);
+      for (let iCounter2 = 0; iCounter2 < mobsP2Any.length; iCounter2++) {
+        if (mobsAny[currentUnitNumber].mtxLocal.translation.equals(mobsP2Any[iCounter2].mtxLocal.translation)) {
+
+          mobsAny[currentUnitNumber].mtxLocal.translation = (possibleLimitReachedCheckStay);
           mobsP2Any[iCounter2].health -= mobsAny[currentUnitNumber].dmg;
           console.log("Health of p2 unit: " + mobsP2Any[iCounter2].health);
         }
       }
     }
 
-    if (currentplayer === 2){
+    if (currentplayer === 2) {
       //In schleife unitPositionPlaceholder mit allen Figuren von Spieler 1 abfragen
-      for (let iCounter3 = 0; iCounter3 < mobsAny.length; iCounter3++){
-        if (mobsP2Any[currentUnitNumber].mtxLocal.equals(mobsAny[iCounter3].mtxLocal)){ //THIS NEEDS FIXING
-          mobsP2Any[currentUnitNumber].mtxLocal.set(possibleLimitReachedCheckStay);
+      for (let iCounter3 = 0; iCounter3 < mobsAny.length; iCounter3++) {
+        if (mobsP2Any[currentUnitNumberP2].mtxLocal.translation.equals(mobsAny[iCounter3].mtxLocal.translation)) {
 
+          //console.log("" + mobsP2Any[currentUnitNumber].mtxLocal.translation);
+          //console.log("" + possibleLimitReachedCheckStayP2);
 
-          mobsAny[iCounter3].health -= mobsP2Any[currentUnitNumber].dmg;
+          mobsP2Any[currentUnitNumberP2].mtxLocal.translation = (possibleLimitReachedCheckStayP2);
+
+          mobsAny[iCounter3].health -= mobsP2Any[currentUnitNumberP2].dmg;
           console.log("Health of p1 unit: " + mobsAny[iCounter3].health);
+          //console.log("" + mobsP2Any[currentUnitNumber].mtxLocal.translation);
+          //console.log("" + possibleLimitReachedCheckStayP2);
+
+          if (mobsAny[iCounter3].health === 0) {
+            let spliceRemoved: any[] = [];
+            //removeChild(mobsAny[iCounter3]);
+            graph.removeChild(mobsAny[iCounter3]);
+            spliceRemoved = mobsAny.splice(iCounter3, 1);
+            console.log(spliceRemoved);
+            console.log(mobsAny);
+            delete spliceRemoved[0];
+          }
         }
       }
     }

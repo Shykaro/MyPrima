@@ -161,7 +161,7 @@
                             {
                               "ƒ.ComponentMaterial": {
                                 "sortForAlpha": false,
-                                "clrPrimary": "[0.5019607843137255, 0.5019607843137255, 0.5019607843137255, 1]",
+                                "clrPrimary": "[0.43137254901960786, 0.43137254901960786, 0.43137254901960786, 1]",
                                 "clrSecondary": "[1, 1, 1, 1]",
                                 "pivot": {
                                   "translation": "[0, 0]",
@@ -582,7 +582,37 @@
                             }
                           ]
                         },
-                        "children": []
+                        "children": [
+                          {
+                            "ƒ.Node": {
+                              "name": "New Node",
+                              "active": true,
+                              "components": {
+                                "ComponentLight": [
+                                  {
+                                    "ƒ.ComponentLight": {
+                                      "pivot": {
+                                        "translation": "[0, 0, 5]",
+                                        "rotation": "[0, 0, 0]",
+                                        "scaling": "[11, 11, 11]"
+                                      },
+                                      "light": {
+                                        "ƒ.LightSpot": {
+                                          "color": "[1, 1, 1, 1]"
+                                        }
+                                      },
+                                      "Component": {
+                                        "active": true
+                                      }
+                                    }
+                                  }
+                                ],
+                                "ComponentMesh": []
+                              },
+                              "children": []
+                            }
+                          }
+                        ]
                       }
                     },
                     {
