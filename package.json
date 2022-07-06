@@ -22,14 +22,5 @@
         "webrtc-adapter": "^8.1.0",
         "websocket": "^1.0.32",
         "ws": "^7.5.5"
-    },
-    "requires": true,
-    "lockfileVersion": 1,
-    "dependencies": {
-        "@types/node": {
-            "version": "17.0.34",
-            "resolved": "https://registry.npmjs.org/@types/node/-/node-17.0.34.tgz",
-            "integrity": "sha512-XImEz7XwTvDBtzlTnm8YvMqGW/ErMWBsKZ+hMTvnDIjGCKxwK5Xpc+c/oQjOauwq8M4OS11hEkpjX8rrI/eEgA=="
-        }
     }
 }
