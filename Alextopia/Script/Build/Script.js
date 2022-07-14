@@ -3,11 +3,12 @@ var Script;
 (function (Script) {
     var ƒ = FudgeCore;
     ƒ.Project.registerScriptNamespace(Script); // Register the namespace to FUDGE for serialization
-    class CustomComponentScript extends ƒ.ComponentScript {
+    class BackgroundCoinScript extends ƒ.ComponentScript {
         // Register the script as component for use in the editor via drag&drop
-        static iSubclass = ƒ.Component.registerSubclass(CustomComponentScript);
+        static iSubclass = ƒ.Component.registerSubclass(BackgroundCoinScript);
         // Properties may be mutated by users in the editor via the automatically created user interface
-        message = "CustomComponentScript added to ";
+        message = "BackgroundCoinScript added to ";
+        pointInTime = 0;
         constructor() {
             super();
             // Don't start when running in editor
@@ -23,6 +24,7 @@ var Script;
             switch (_event.type) {
                 case "componentAdd" /* COMPONENT_ADD */:
                     ƒ.Debug.log(this.message, this.node);
+                    ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.update);
                     break;
                 case "componentRemove" /* COMPONENT_REMOVE */:
                     this.removeEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
@@ -33,8 +35,19 @@ var Script;
                     break;
             }
         };
+        update = (_event) => {
+            let deltaTime = ƒ.Loop.timeFrameReal / 1000;
+            this.node.mtxLocal.rotateY(180 * deltaTime);
+            this.pointInTime += 1 * deltaTime;
+            let currPos = this.node.mtxLocal.translation;
+            this.node.mtxLocal.translation = new ƒ.Vector3(currPos.x, (this.sin(this.pointInTime) - 1.5), currPos.z);
+            //console.log("sin", this.sin(this.timeStamp));
+        };
+        sin(x) {
+            return Math.sin(Math.PI * x) * 0.3;
+        }
     }
-    Script.CustomComponentScript = CustomComponentScript;
+    Script.BackgroundCoinScript = BackgroundCoinScript;
 })(Script || (Script = {}));
 var Script;
 (function (Script) {
@@ -110,17 +123,18 @@ var Script;
     // adding all the requirements is more important
     // work on Networking this gon be fun, should try this
     // Implement light to use as viewing distance, dont know how this works
-    // ARRAY KANN NUN MIT GESTORBENER EINHEIT AUF NULL GEHEN -> ausweichtregelung finden! bzw umgehen
+    // 
     //
-    //
+    // ++ DONE ARRAY KANN NUN MIT GESTORBENER EINHEIT AUF NULL GEHEN -> ausweichtregelung finden! bzw umgehen
     // ++ DONE ein fking UI <-- Important, less complexity, machen sobald ich kb auf programming aber Zeit habe.
     // ++ DONE Start on Unit to unit intercation ?? How do they interact, do they have HP or other Stats? -> Do another spawn RANDOM button for enemy units, let every unit move by one and automatically change side when everyone moved/interacted.
     // ++ DONE Unit should only be able to walk 1 field from starting position, maybe test with random spawnfields for Unit +1 button.
     // ++ DONE but maybe needs rework ++ Graphics, like terrain and Units
     //------------ TO-DO'S End ---------------------------------------------------------------
     //------------ Notizen -------------------------------------------------------------------
+    // BUGFIX: wenn erste einheit des Arrays getötet wird rutscht es nicht nach wenn der andere Spieler dran ist.
     // Do random maps as external data save and load.
-    // Money Balancing überlegen -> stadt upgradable?
+    // 
     // Ui Zeigt leben der Einheiten wenn diese nicht onehit sterben sollten.
     // Physik einbauen indem man kästchen rumschiebt -> geht nicht wegen tp-ing, eher konfetti oder so einbauen am beginn oder ende der runde
     // SPÄTERES BUG PROBLEM: Unit spawnen während gegnerische einheit auf dem Cityfield steht. -> Unitinteraction nur möglich wenn einheit gemoved wird!!
@@ -173,10 +187,12 @@ var Script;
         document.getElementById("--plusMineP2").innerHTML = "Cost: " + costMineBuild;
         ƒ.AudioManager.default.listenTo(graph);
         sounds = graph.getChildrenByName("Sound")[0].getComponents(ƒ.ComponentAudio);
+        sounds[0].play(true);
+        sounds[3].play(true); //MUSIC CRAZY
         //pacman = graph.getChildrenByName("Pacman")[0];
         water = graph.getChildrenByName("Grid")[0].getChild(1).getChildren();
         Script.paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
-        for (const path of Script.paths) { //Herausfinden was das is
+        for (const path of Script.paths) { //
             //addInteractable(path);
         }
         document.getElementById("vui").style.visibility = 'visible'; //Vui einschalten
@@ -327,6 +343,7 @@ var Script;
                         }
                         if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
                             if (Script.currentplayer === 1) {
+                                sounds[2].play(true);
                                 unitInteraction(graph); //UNIT INTERACTION HERE
                                 //currentPhase = 2;
                                 logInUnit(); //also end of turn procedure if its not the last unit.
@@ -336,8 +353,9 @@ var Script;
                     }
                     else {
                         //logInUnit();
+                        //
+                        handleCityTurnPart(); //WEIRD INTERACTION
                         currentPhase = 2;
-                        //handleCityTurnPart(); //WEIRD INTERACTION
                     }
                 }
                 if (currentPhase === 2) { //Shuts down the other key down events, initiates or gives time for phase 2
@@ -388,6 +406,7 @@ var Script;
                         }
                         if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
                             if (Script.currentplayer === 2) {
+                                sounds[2].play(true);
                                 //currentPhase = 2;
                                 unitInteraction(graph); //UNIT INTERACTION HERE
                                 logInUnitP2(); //also end of turn procedure if its not the last unit.
@@ -396,6 +415,10 @@ var Script;
                         }
                     }
                     else {
+                        //unitInteraction(graph); //UNIT INTERACTION HERE
+                        //logInUnitP2();
+                        //
+                        handleCityTurnPartP2();
                         currentPhase = 2;
                     }
                 }
@@ -828,6 +851,16 @@ var Script;
                     mobsAny[Script.currentUnitNumber].mtxLocal.translation = (possibleLimitReachedCheckStay);
                     mobsP2Any[iCounter2].health -= mobsAny[Script.currentUnitNumber].dmg;
                     console.log("Health of p2 unit: " + mobsP2Any[iCounter2].health);
+                    sounds[1].play(true);
+                    if (mobsP2Any[iCounter2].health === 0) {
+                        let spliceRemoved = [];
+                        //removeChild(mobsAny[iCounter3]);
+                        graph.removeChild(mobsP2Any[iCounter2]);
+                        spliceRemoved = mobsP2Any.splice(iCounter2, 1);
+                        console.log(spliceRemoved);
+                        console.log(mobsP2Any);
+                        delete spliceRemoved[0];
+                    }
                 }
             }
         }
@@ -835,13 +868,10 @@ var Script;
             //In schleife unitPositionPlaceholder mit allen Figuren von Spieler 1 abfragen
             for (let iCounter3 = 0; iCounter3 < mobsAny.length; iCounter3++) {
                 if (mobsP2Any[Script.currentUnitNumberP2].mtxLocal.translation.equals(mobsAny[iCounter3].mtxLocal.translation)) {
-                    //console.log("" + mobsP2Any[currentUnitNumber].mtxLocal.translation);
-                    //console.log("" + possibleLimitReachedCheckStayP2);
                     mobsP2Any[Script.currentUnitNumberP2].mtxLocal.translation = (possibleLimitReachedCheckStayP2);
                     mobsAny[iCounter3].health -= mobsP2Any[Script.currentUnitNumberP2].dmg;
                     console.log("Health of p1 unit: " + mobsAny[iCounter3].health);
-                    //console.log("" + mobsP2Any[currentUnitNumber].mtxLocal.translation);
-                    //console.log("" + possibleLimitReachedCheckStayP2);
+                    sounds[1].play(true);
                     if (mobsAny[iCounter3].health === 0) {
                         let spliceRemoved = [];
                         //removeChild(mobsAny[iCounter3]);

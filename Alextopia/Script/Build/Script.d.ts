@@ -1,10 +1,13 @@
 declare namespace Script {
     import ƒ = FudgeCore;
-    class CustomComponentScript extends ƒ.ComponentScript {
+    class BackgroundCoinScript extends ƒ.ComponentScript {
         static readonly iSubclass: number;
         message: string;
+        pointInTime: number;
         constructor();
         hndEvent: (_event: Event) => void;
+        update: (_event: Event) => void;
+        sin(x: number): number;
     }
 }
 declare namespace Script {

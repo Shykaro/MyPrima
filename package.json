@@ -10,7 +10,7 @@
         "type": "git",
         "url": "git+https://github.com/JirkaDellOro/Prima.git"
     },
-    "author": "Jirka Dell'Oro-Friedl",
+    "author": "Jirka Dell'Oro-Friedl and Alexander Thier",
     "license": "ISC",
     "bugs": {
         "url": "https://github.com/JirkaDellOro/Prima/issues"

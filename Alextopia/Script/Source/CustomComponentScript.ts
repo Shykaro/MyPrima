@@ -2,12 +2,13 @@ namespace Script {
   import ƒ = FudgeCore;
   ƒ.Project.registerScriptNamespace(Script);  // Register the namespace to FUDGE for serialization
 
-  export class CustomComponentScript extends ƒ.ComponentScript {
+  export class BackgroundCoinScript extends ƒ.ComponentScript {
     // Register the script as component for use in the editor via drag&drop
-    public static readonly iSubclass: number = ƒ.Component.registerSubclass(CustomComponentScript);
+    public static readonly iSubclass: number = ƒ.Component.registerSubclass(BackgroundCoinScript);
     // Properties may be mutated by users in the editor via the automatically created user interface
-    public message: string = "CustomComponentScript added to ";
+    public message: string = "BackgroundCoinScript added to ";
 
+    public pointInTime: number = 0;
 
     constructor() {
       super();
@@ -27,6 +28,7 @@ namespace Script {
       switch (_event.type) {
         case ƒ.EVENT.COMPONENT_ADD:
           ƒ.Debug.log(this.message, this.node);
+          ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, this.update);
           break;
         case ƒ.EVENT.COMPONENT_REMOVE:
           this.removeEventListener(ƒ.EVENT.COMPONENT_ADD, this.hndEvent);
@@ -36,6 +38,19 @@ namespace Script {
           // if deserialized the node is now fully reconstructed and access to all its components and children is possible
           break;
       }
+    }
+
+    public update = (_event: Event) => {
+      let deltaTime: number = ƒ.Loop.timeFrameReal / 1000;
+      this.node.mtxLocal.rotateY(180 * deltaTime);
+      this.pointInTime += 1 * deltaTime;
+      let currPos: ƒ.Vector3 = this.node.mtxLocal.translation;
+      this.node.mtxLocal.translation = new ƒ.Vector3(currPos.x,(this.sin(this.pointInTime)-1.5),currPos.z);
+      //console.log("sin", this.sin(this.timeStamp));
+    }
+
+    public sin(x: number): number {
+      return Math.sin(Math.PI*x)*0.3;
     }
 
     // protected reduceMutator(_mutator: ƒ.Mutator): void {

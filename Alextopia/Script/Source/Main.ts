@@ -101,9 +101,9 @@ namespace Script {
   // adding all the requirements is more important
   // work on Networking this gon be fun, should try this
   // Implement light to use as viewing distance, dont know how this works
-  // ARRAY KANN NUN MIT GESTORBENER EINHEIT AUF NULL GEHEN -> ausweichtregelung finden! bzw umgehen
+  // 
   //
-  //
+  // ++ DONE ARRAY KANN NUN MIT GESTORBENER EINHEIT AUF NULL GEHEN -> ausweichtregelung finden! bzw umgehen
   // ++ DONE ein fking UI <-- Important, less complexity, machen sobald ich kb auf programming aber Zeit habe.
   // ++ DONE Start on Unit to unit intercation ?? How do they interact, do they have HP or other Stats? -> Do another spawn RANDOM button for enemy units, let every unit move by one and automatically change side when everyone moved/interacted.
   // ++ DONE Unit should only be able to walk 1 field from starting position, maybe test with random spawnfields for Unit +1 button.
@@ -111,8 +111,9 @@ namespace Script {
   //------------ TO-DO'S End ---------------------------------------------------------------
 
   //------------ Notizen -------------------------------------------------------------------
+  // BUGFIX: wenn erste einheit des Arrays getötet wird rutscht es nicht nach wenn der andere Spieler dran ist.
   // Do random maps as external data save and load.
-  // Money Balancing überlegen -> stadt upgradable?
+  // 
   // Ui Zeigt leben der Einheiten wenn diese nicht onehit sterben sollten.
   // Physik einbauen indem man kästchen rumschiebt -> geht nicht wegen tp-ing, eher konfetti oder so einbauen am beginn oder ende der runde
   // SPÄTERES BUG PROBLEM: Unit spawnen während gegnerische einheit auf dem Cityfield steht. -> Unitinteraction nur möglich wenn einheit gemoved wird!!
@@ -181,11 +182,13 @@ namespace Script {
     ƒ.AudioManager.default.listenTo(graph);
 
     sounds = graph.getChildrenByName("Sound")[0].getComponents(ƒ.ComponentAudio);
+    sounds[0].play(true);
+    sounds[3].play(true); //MUSIC CRAZY
     //pacman = graph.getChildrenByName("Pacman")[0];
     water = graph.getChildrenByName("Grid")[0].getChild(1).getChildren();
     paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
 
-    for (const path of paths) { //Herausfinden was das is
+    for (const path of paths) { //
       //addInteractable(path);
     }
 
@@ -381,6 +384,7 @@ namespace Script {
             }
             if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
               if (currentplayer === 1) {
+                sounds[2].play(true);
                 unitInteraction(graph); //UNIT INTERACTION HERE
                 //currentPhase = 2;
                 logInUnit(); //also end of turn procedure if its not the last unit.
@@ -389,11 +393,11 @@ namespace Script {
             }
           }
           else {
-            
+
             //logInUnit();
+            //
+            handleCityTurnPart(); //WEIRD INTERACTION
             currentPhase = 2;
-            //handleCityTurnPart(); //WEIRD INTERACTION
-            
           }
         }
         if (currentPhase === 2) { //Shuts down the other key down events, initiates or gives time for phase 2
@@ -446,6 +450,7 @@ namespace Script {
             }
             if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
               if (currentplayer === 2) {
+                sounds[2].play(true);
                 //currentPhase = 2;
                 unitInteraction(graph); //UNIT INTERACTION HERE
                 logInUnitP2() //also end of turn procedure if its not the last unit.
@@ -454,7 +459,12 @@ namespace Script {
             }
           }
           else {
+            //unitInteraction(graph); //UNIT INTERACTION HERE
+                //logInUnitP2();
+            //
+            handleCityTurnPartP2()
             currentPhase = 2;
+            
           }
         }
         if (currentPhase === 2) {
@@ -908,10 +918,19 @@ namespace Script {
       //In schleife unitPositionPlaceholder mit allen Figuren von Spieler 2 abfragen
       for (let iCounter2 = 0; iCounter2 < mobsP2Any.length; iCounter2++) {
         if (mobsAny[currentUnitNumber].mtxLocal.translation.equals(mobsP2Any[iCounter2].mtxLocal.translation)) {
-
           mobsAny[currentUnitNumber].mtxLocal.translation = (possibleLimitReachedCheckStay);
           mobsP2Any[iCounter2].health -= mobsAny[currentUnitNumber].dmg;
           console.log("Health of p2 unit: " + mobsP2Any[iCounter2].health);
+          sounds[1].play(true);
+          if (mobsP2Any[iCounter2].health === 0) {
+            let spliceRemoved: any[] = [];
+            //removeChild(mobsAny[iCounter3]);
+            graph.removeChild(mobsP2Any[iCounter2]);
+            spliceRemoved = mobsP2Any.splice(iCounter2, 1);
+            console.log(spliceRemoved);
+            console.log(mobsP2Any);
+            delete spliceRemoved[0];
+          }
         }
       }
     }
@@ -920,17 +939,10 @@ namespace Script {
       //In schleife unitPositionPlaceholder mit allen Figuren von Spieler 1 abfragen
       for (let iCounter3 = 0; iCounter3 < mobsAny.length; iCounter3++) {
         if (mobsP2Any[currentUnitNumberP2].mtxLocal.translation.equals(mobsAny[iCounter3].mtxLocal.translation)) {
-
-          //console.log("" + mobsP2Any[currentUnitNumber].mtxLocal.translation);
-          //console.log("" + possibleLimitReachedCheckStayP2);
-
           mobsP2Any[currentUnitNumberP2].mtxLocal.translation = (possibleLimitReachedCheckStayP2);
-
           mobsAny[iCounter3].health -= mobsP2Any[currentUnitNumberP2].dmg;
           console.log("Health of p1 unit: " + mobsAny[iCounter3].health);
-          //console.log("" + mobsP2Any[currentUnitNumber].mtxLocal.translation);
-          //console.log("" + possibleLimitReachedCheckStayP2);
-
+          sounds[1].play(true);
           if (mobsAny[iCounter3].health === 0) {
             let spliceRemoved: any[] = [];
             //removeChild(mobsAny[iCounter3]);

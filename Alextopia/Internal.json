@@ -39,27 +39,27 @@
       "latitudes": 8
     }
   },
-  "Audio|2022-03-31T12:46:38.736Z|13594": {
+  "Audio|2022-07-13T23:09:42.502Z|07618": {
     "ƒ.Audio": {
-      "url": "Sound\\pacman_beginning.wav",
-      "idResource": "Audio|2022-03-31T12:46:38.736Z|13594",
-      "name": "IntroMusic",
+      "url": "Sound\\Topia_Starter.wav",
+      "idResource": "Audio|2022-07-13T23:09:42.502Z|07618",
+      "name": "Sound\\Topia_Starter.wav",
       "type": "Audio"
     }
   },
-  "Audio|2022-03-31T12:47:36.766Z|52684": {
+  "Audio|2022-07-13T23:16:42.515Z|95521": {
     "ƒ.Audio": {
-      "url": "Sound\\pacman_chomp.wav",
-      "idResource": "Audio|2022-03-31T12:47:36.766Z|52684",
-      "name": "WakaSound",
+      "url": "Sound\\Topia_Punch.wav",
+      "idResource": "Audio|2022-07-13T23:16:42.515Z|95521",
+      "name": "Sound\\Topia_Punch.wav",
       "type": "Audio"
     }
   },
-  "Audio|2022-04-10T15:12:48.953Z|42060": {
+  "Audio|2022-07-13T23:16:54.817Z|53490": {
     "ƒ.Audio": {
-      "url": "Sound\\pacman_death.wav",
-      "idResource": "Audio|2022-04-10T15:12:48.953Z|42060",
-      "name": "Death",
+      "url": "Sound\\Topia_Pop.mp3",
+      "idResource": "Audio|2022-07-13T23:16:54.817Z|53490",
+      "name": "Sound\\Topia_Pop.mp3",
       "type": "Audio"
     }
   },
@@ -582,37 +582,7 @@
                             }
                           ]
                         },
-                        "children": [
-                          {
-                            "ƒ.Node": {
-                              "name": "New Node",
-                              "active": true,
-                              "components": {
-                                "ComponentLight": [
-                                  {
-                                    "ƒ.ComponentLight": {
-                                      "pivot": {
-                                        "translation": "[0, 0, 5]",
-                                        "rotation": "[0, 0, 0]",
-                                        "scaling": "[11, 11, 11]"
-                                      },
-                                      "light": {
-                                        "ƒ.LightSpot": {
-                                          "color": "[1, 1, 1, 1]"
-                                        }
-                                      },
-                                      "Component": {
-                                        "active": true
-                                      }
-                                    }
-                                  }
-                                ],
-                                "ComponentMesh": []
-                              },
-                              "children": []
-                            }
-                          }
-                        ]
+                        "children": []
                       }
                     },
                     {
@@ -3838,28 +3808,102 @@
                 {
                   "ƒ.ComponentAudio": {
                     "active": true,
-                    "idResource": "Audio|2022-03-31T12:46:38.736Z|13594",
+                    "idResource": "Audio|2022-07-13T23:09:42.502Z|07618",
                     "playing": false,
                     "loop": false,
-                    "volume": 0.15000002086162567
+                    "volume": 0.10000000894069672
                   }
                 },
                 {
                   "ƒ.ComponentAudio": {
                     "active": true,
-                    "idResource": "Audio|2022-03-31T12:47:36.766Z|52684",
+                    "idResource": "Audio|2022-07-13T23:16:42.515Z|95521",
+                    "playing": false,
+                    "loop": false,
+                    "volume": 0.6000000238418579
+                  }
+                },
+                {
+                  "ƒ.ComponentAudio": {
+                    "active": true,
+                    "idResource": "Audio|2022-07-13T23:16:54.817Z|53490",
+                    "playing": false,
+                    "loop": false,
+                    "volume": 0.6000000238418579
+                  }
+                },
+                {
+                  "ƒ.ComponentAudio": {
+                    "active": true,
+                    "idResource": "Audio|2022-07-14T23:25:34.879Z|51032",
                     "playing": false,
                     "loop": true,
-                    "volume": 0.15000037848949432
+                    "volume": 0.30000001192092896
                   }
-                },
+                }
+              ]
+            },
+            "children": []
+          }
+        },
+        {
+          "ƒ.Node": {
+            "name": "Custom",
+            "active": true,
+            "components": {
+              "BackgroundCoinScript": [
                 {
-                  "ƒ.ComponentAudio": {
+                  "Script.BackgroundCoinScript": {
                     "active": true,
-                    "idResource": "Audio|2022-04-10T15:12:48.953Z|42060",
-                    "playing": false,
-                    "loop": false,
-                    "volume": 0.15000002086162567
+                    "message": "BackgroundCoinScript added to ",
+                    "pointInTime": 0
+                  }
+                }
+              ],
+              "ComponentTransform": [
+                {
+                  "ƒ.ComponentTransform": {
+                    "local": {
+                      "translation": "[5.5, -4, 0]",
+                      "rotation": "[0, 0, 0]",
+                      "scaling": "[1, 1, 1]"
+                    },
+                    "Component": {
+                      "active": true
+                    }
+                  }
+                }
+              ],
+              "ComponentMesh": [
+                {
+                  "ƒ.ComponentMesh": {
+                    "idMesh": "MeshSphere|2022-03-22T15:25:14.182Z|10687",
+                    "pivot": {
+                      "translation": "[0, 0, 0]",
+                      "rotation": "[0, 0, 0]",
+                      "scaling": "[1, 1, 0.10000000149011612]"
+                    },
+                    "Component": {
+                      "active": true
+                    }
+                  }
+                }
+              ],
+              "ComponentMaterial": [
+                {
+                  "ƒ.ComponentMaterial": {
+                    "sortForAlpha": false,
+                    "clrPrimary": "[1, 1, 1, 1]",
+                    "clrSecondary": "[1, 1, 1, 1]",
+                    "pivot": {
+                      "translation": "[0, 0]",
+                      "rotation": 0,
+                      "scaling": "[1, 1]"
+                    },
+                    "Component": {
+                      "active": true
+                    },
+                    "idMaterial": "Material|2022-03-17T14:08:02.411Z|01721"
                   }
                 }
               ]
@@ -3870,6 +3914,14 @@
       ],
       "idResource": "Graph|2022-03-17T14:08:08.737Z|08207",
       "type": "Graph"
+    }
+  },
+  "Audio|2022-07-14T23:25:34.879Z|51032": {
+    "ƒ.Audio": {
+      "url": "Sound\\Topia_crazySong.mp3",
+      "idResource": "Audio|2022-07-14T23:25:34.879Z|51032",
+      "name": "Sound\\Topia_crazySong.mp3",
+      "type": "Audio"
     }
   }
 }
