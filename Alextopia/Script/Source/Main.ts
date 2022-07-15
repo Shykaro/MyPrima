@@ -101,7 +101,10 @@ namespace Script {
   // adding all the requirements is more important
   // work on Networking this gon be fun, should try this
   // Implement light to use as viewing distance, dont know how this works
-  // 
+  // External Data via Highscore -> Punkte integrieren, oder züge bis zum win -> BRAUCHT WINCONDITION
+  // Eventsystem angucken, kp wie das funktionier
+  // Physics zum Spaß einfügen
+  // State machine für weißgott was, hauptsache kriterien erfüllt.
   //
   // ++ DONE ARRAY KANN NUN MIT GESTORBENER EINHEIT AUF NULL GEHEN -> ausweichtregelung finden! bzw umgehen
   // ++ DONE ein fking UI <-- Important, less complexity, machen sobald ich kb auf programming aber Zeit habe.
@@ -112,7 +115,7 @@ namespace Script {
 
   //------------ Notizen -------------------------------------------------------------------
   // BUGFIX: wenn erste einheit des Arrays getötet wird rutscht es nicht nach wenn der andere Spieler dran ist.
-  // Do random maps as external data save and load.
+  // Do random maps as external data save and load. -> needs random maps and that takes too much time, maybe at the end
   // 
   // Ui Zeigt leben der Einheiten wenn diese nicht onehit sterben sollten.
   // Physik einbauen indem man kästchen rumschiebt -> geht nicht wegen tp-ing, eher konfetti oder so einbauen am beginn oder ende der runde
@@ -182,8 +185,9 @@ namespace Script {
     ƒ.AudioManager.default.listenTo(graph);
 
     sounds = graph.getChildrenByName("Sound")[0].getComponents(ƒ.ComponentAudio);
-    sounds[0].play(true);
-    sounds[3].play(true); //MUSIC CRAZY
+    //sounds[0].play(true);
+    //sounds[3].play(true); //MUSIC CRAZY
+    sounds[4].play(true); //MUSIC Funky
     //pacman = graph.getChildrenByName("Pacman")[0];
     water = graph.getChildrenByName("Grid")[0].getChild(1).getChildren();
     paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
@@ -921,6 +925,8 @@ namespace Script {
           mobsAny[currentUnitNumber].mtxLocal.translation = (possibleLimitReachedCheckStay);
           mobsP2Any[iCounter2].health -= mobsAny[currentUnitNumber].dmg;
           console.log("Health of p2 unit: " + mobsP2Any[iCounter2].health);
+          gold += goldGain/2;
+          document.getElementById("--goldInput").setAttribute('value', gold.toString());
           sounds[1].play(true);
           if (mobsP2Any[iCounter2].health === 0) {
             let spliceRemoved: any[] = [];
@@ -942,6 +948,8 @@ namespace Script {
           mobsP2Any[currentUnitNumberP2].mtxLocal.translation = (possibleLimitReachedCheckStayP2);
           mobsAny[iCounter3].health -= mobsP2Any[currentUnitNumberP2].dmg;
           console.log("Health of p1 unit: " + mobsAny[iCounter3].health);
+          goldP2 += goldGain/2;
+          document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
           sounds[1].play(true);
           if (mobsAny[iCounter3].health === 0) {
             let spliceRemoved: any[] = [];
