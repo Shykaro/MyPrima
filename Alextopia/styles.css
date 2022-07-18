@@ -105,6 +105,55 @@ canvas.fullscreen {
     color: rgb(14, 14, 14);
 }
 
+.--boxtopmidleft {
+    left: 0px;
+    right: 50vw;
+    top: 60px;
+    margin-right: auto;
+    margin-left: auto;
+    width: 200px;
+    position: absolute;
+    background-color: transparent;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.--scorePlayerOne {
+    border-radius: 10px 10px 10px 10px;
+    background-color: aliceblue;
+    padding: 10px;
+}
+
+.--boxtopmidright {
+    left: 50vw;
+    right: 0px;
+    top: 60px;
+    margin-right: auto;
+    margin-left: auto;
+    width: 200px;
+    position: absolute;
+    background-color: transparent;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.--scorePlayerTwo {
+    border-radius: 10px 10px 10px 10px;
+    background-color: aliceblue;
+    padding: 10px;
+}
+
+.--scoreInputs {
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    text-align: center;
+    font-size: 170%;
+    font-weight: 600;
+    font-style: italic;
+    color: rgb(14, 14, 14);
+}
+
 .--boxtopright {
     width: 150px;
     top: 0px;
@@ -115,6 +164,26 @@ canvas.fullscreen {
     height: 205px;
     position: absolute;
     background-color: transparent;
+}
+
+.--boxtopmidlower {
+    left: 0pc;
+    right: 0px;
+    top: 60px;
+    margin-right: auto;
+    margin-left: auto;
+    width: 200px;
+    position: absolute;
+    background-color: transparent;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.--highscore {
+    border-radius: 10px 10px 10px 10px;
+    background-color: aliceblue;
+    padding: 10px;
 }
 
 .--element.--ressources {

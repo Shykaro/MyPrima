@@ -42,10 +42,14 @@ namespace Script {
 
       this.addChild(sprite);
       this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
+
+      this.dispatchEvent(new Event("playSpawnSound", {bubbles: true}));
     }
 
     
-
+    public spawn():void {
+      this.dispatchEvent(new Event("playSpawnSound", {bubbles: true}));
+    }
 
     //Bevor das hier aufgerufen wird MUSS der Lokale vektor gespeichert werden, da man von diesem aus die Position wechselt.
     public move(): void { //move(_paths: ƒ.Node[]) WIRD IN UPDATE MEHRFACH DUERHAFT AUFGERUFEN

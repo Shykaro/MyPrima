@@ -42,6 +42,8 @@ namespace Script {
 
       this.addChild(sprite);
       this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
+
+      
       //sprite.mtxLocal.scale(new ƒ.Vector3(0.5, 0.5, 1));
     }
 
@@ -50,6 +52,10 @@ namespace Script {
     //}
 
     
+    public spawn():void {
+      this.dispatchEvent(new Event("playSpawnSound", {bubbles: true}));
+      //console.log("Iam being dispatched");
+    }
 
 
     //Bevor das hier aufgerufen wird MUSS der Lokale vektor gespeichert werden, da man von diesem aus die Position wechselt.

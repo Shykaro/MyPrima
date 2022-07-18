@@ -67,6 +67,7 @@ declare namespace Script {
         private health;
         private dmg;
         constructor(_name: string);
+        spawn(): void;
         move(): void;
     }
 }
@@ -76,6 +77,7 @@ declare namespace Script {
         private health;
         private dmg;
         constructor(_name: string);
+        spawn(): void;
         move(): void;
     }
 }
@@ -85,6 +87,7 @@ declare namespace Script {
         private health;
         private dmg;
         constructor(_name: string);
+        spawn(): void;
         move(): void;
     }
 }
@@ -94,6 +97,7 @@ declare namespace Script {
         private health;
         private dmg;
         constructor(_name: string);
+        spawn(): void;
         move(): void;
     }
 }

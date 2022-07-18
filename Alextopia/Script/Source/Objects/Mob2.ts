@@ -42,8 +42,13 @@ namespace Script {
 
       this.addChild(sprite);
       this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
+
+      this.dispatchEvent(new Event("playSpawnSound", {bubbles: true}));
     }
 
+    public spawn():void {
+      this.dispatchEvent(new Event("playSpawnSound", {bubbles: true}));
+    }
     
 
 
