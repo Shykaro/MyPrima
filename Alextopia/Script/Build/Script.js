@@ -228,7 +228,7 @@ var Script;
         //cityNode.push(city2);
         //cityNodeP2.push(city2P2);
         //Positions of starting Cities
-        Script.paths[44].addChild(city);
+        Script.paths[15].addChild(city);
         Script.paths[34].addChild(cityP2);
         //paths[1].addChild(city2);
         //paths[2].addChild(city2P2);

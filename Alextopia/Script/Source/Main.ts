@@ -239,7 +239,7 @@ namespace Script {
     //cityNodeP2.push(city2P2);
 
     //Positions of starting Cities
-    paths[44].addChild(city);
+    paths[15].addChild(city);
     paths[34].addChild(cityP2);
 
     //paths[1].addChild(city2);
