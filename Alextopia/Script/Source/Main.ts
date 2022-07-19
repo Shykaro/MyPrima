@@ -335,7 +335,7 @@ namespace Script {
 
 
   function update(_event: Event): void {
-    // ƒ.Physics.simulate();  // if physics is included and used
+    ƒ.Physics.simulate();  // if physics is included and used
 
     //document.getElementById("--goldInput").setAttribute('value', gold.toString());
     //document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
@@ -1047,7 +1047,7 @@ namespace Script {
   }
 
   function handleNPCAction(){ //What does the NPC units
-    
+
   }
 
   /*function useInteractable() { //Search function and how its used before.

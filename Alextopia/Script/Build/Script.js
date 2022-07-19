@@ -302,7 +302,7 @@ var Script;
         //Ende start items ---------------------------------------------------------------------------------------
     } //ENDKLAMMER FÜR START FUNKTION -------------------------------------------------------------------------------------
     function update(_event) {
-        // ƒ.Physics.simulate();  // if physics is included and used
+        ƒ.Physics.simulate(); // if physics is included and used
         //document.getElementById("--goldInput").setAttribute('value', gold.toString());
         //document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
         mobsAny.map((g) => g.move()); //g.move(paths));
