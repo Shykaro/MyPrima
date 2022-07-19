@@ -1047,7 +1047,7 @@ namespace Script {
   }
 
   function handleNPCAction(){ //What does the NPC units
-
+    
   }
 
   /*function useInteractable() { //Search function and how its used before.

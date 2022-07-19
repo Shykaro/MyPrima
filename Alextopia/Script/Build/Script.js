@@ -1204,8 +1204,8 @@ var Script;
             this.addComponent(new ƒ.ComponentMaterial(mtrCity));
             this.addComponent(new ƒ.ComponentTransform());
             this.mtxLocal.scale(new ƒ.Vector3(0.5, 0.5, 0.01));
-            const light = new Script.Light("CityLight");
-            this.addChild(light);
+            //const light = new Light("CityLight"); //FOR LINE OF SIGHT LIGHT I TRIED THIS
+            //this.addChild(light);
         }
     }
     Script.City = City;
