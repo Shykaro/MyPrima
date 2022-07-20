@@ -192,6 +192,7 @@ var Script;
         Script.viewport = _event.detail;
         Script.viewport.camera.mtxPivot.translate(new ƒ.Vector3(5, 2.5, 15));
         Script.viewport.camera.mtxPivot.rotateY(180);
+        //FudgeAid.Viewport.expandCameraToInteractiveOrbit(viewport);
         const graph = Script.viewport.getBranch();
         await loadJSON(); //gets balance adjustements.
         document.getElementById("--plusmob").innerHTML = "Cost: " + Script.Balance.costOfMobs[0].cost;
@@ -309,7 +310,7 @@ var Script;
         //Ende start items ---------------------------------------------------------------------------------------
     } //ENDKLAMMER FÜR START FUNKTION -------------------------------------------------------------------------------------
     function update(_event) {
-        //ƒ.Physics.simulate();  // if physics is included and used
+        ƒ.Physics.simulate(); // if physics is included and used
         //document.getElementById("--goldInput").setAttribute('value', gold.toString());
         //document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
         mobsAny.map((g) => g.move()); //g.move(paths));

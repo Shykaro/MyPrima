@@ -188,6 +188,8 @@ namespace Script {
     viewport.camera.mtxPivot.translate(new ƒ.Vector3(5, 2.5, 15));
     viewport.camera.mtxPivot.rotateY(180);
 
+    //FudgeAid.Viewport.expandCameraToInteractiveOrbit(viewport);
+
     const graph: ƒ.Node = viewport.getBranch();
 
     await loadJSON(); //gets balance adjustements.
