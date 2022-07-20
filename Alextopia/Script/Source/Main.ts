@@ -196,7 +196,6 @@ namespace Script {
     const graph: ƒ.Node = viewport.getBranch();
     await loadJSON(); //gets balance adjustements.
 
-
     document.getElementById("--plusmob").innerHTML = "Cost: " + Balance.costOfMobs[0].cost;
     document.getElementById("--plusmob2").innerHTML = "Cost: " + Balance.costOfMobs[1].cost;
     document.getElementById("--plusmobP2").innerHTML = "Cost: " + Balance.costOfMobs[0].cost;
@@ -226,10 +225,13 @@ namespace Script {
     paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
 
 
-
-    for (const path of paths) { //
-      //addInteractable(path);
-    }
+    //const observer = new ObserverMob("ObserverMob");
+          //console.log(cityPosition)
+          //mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+          //observer.mtxLocal.translate(new ƒ.Vector3(0, 6, 0));
+          //graph.addChild(observer);
+          //mobsAny.push(observer);
+          //observer.spawn();
 
     document.getElementById("vui").style.visibility = 'visible';  //Vui einschalten
     document.getElementById("--addMob").style.display = 'none';   //Mob menü ausschalten
@@ -789,7 +791,7 @@ function creatingMob(whichUnit: number, graph: ƒ.Node, city: City, cityP2: City
           mob.mtxLocal.translate(cityPosition);
           graph.addChild(mob);
           mobsAny.push(mob);
-          mob.spawn(); //Useless stuff
+          mob.spawn();
           for (let iCounter = 0; iCounter < mobsAny.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
             if (iCounter === mobsAny.length) {
               document.getElementById("--" + mobsAny.length + "img1").style.display = null;

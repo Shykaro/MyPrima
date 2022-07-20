@@ -154,6 +154,38 @@
       }
     }
   },
+  "Audio|2022-07-20T16:10:11.093Z|58286": {
+    "ƒ.Audio": {
+      "url": "Sound\\Topia_Coins.wav",
+      "idResource": "Audio|2022-07-20T16:10:11.093Z|58286",
+      "name": "Sound\\Topia_Coins.wav",
+      "type": "Audio"
+    }
+  },
+  "Material|2022-07-20T21:51:39.471Z|46044": {
+    "ƒ.Material": {
+      "name": "ShaderLitTextured",
+      "idResource": "Material|2022-07-20T21:51:39.471Z|46044",
+      "shader": "ShaderLitTextured",
+      "coat": {
+        "ƒ.CoatTextured": {
+          "color": "[1, 1, 1, 1]",
+          "idTexture": "TextureImage|2022-07-20T21:51:07.557Z|90825"
+        }
+      }
+    }
+  },
+  "TextureImage|2022-07-20T21:51:07.557Z|90825": {
+    "ƒ.TextureImage": {
+      "url": "Assets\\Units\\1 Pink_Monster\\Pink_Monster.png",
+      "type": "TextureImage",
+      "Texture": {
+        "idResource": "TextureImage|2022-07-20T21:51:07.557Z|90825",
+        "name": "Assets\\Units\\1 Pink_Monster\\Pink_Monster.png",
+        "mipmap": "CRISP"
+      }
+    }
+  },
   "Graph|2022-03-17T14:08:08.737Z|08207": {
     "ƒ.Graph": {
       "name": "Game",
@@ -6239,6 +6271,71 @@
               }
             ]
           }
+        },
+        {
+          "ƒ.Node": {
+            "name": "StateMachine",
+            "active": true,
+            "components": {
+              "ComponentMesh": [
+                {
+                  "ƒ.ComponentMesh": {
+                    "idMesh": "MeshQuad|2022-03-17T14:08:46.313Z|28860",
+                    "pivot": {
+                      "translation": "[0, 0, 0]",
+                      "rotation": "[0, 0, 0]",
+                      "scaling": "[1, 1, 1]"
+                    },
+                    "Component": {
+                      "active": true
+                    }
+                  }
+                }
+              ],
+              "ComponentMaterial": [
+                {
+                  "ƒ.ComponentMaterial": {
+                    "sortForAlpha": false,
+                    "clrPrimary": "[1, 1, 1, 1]",
+                    "clrSecondary": "[1, 1, 1, 1]",
+                    "pivot": {
+                      "translation": "[0, 0]",
+                      "rotation": 0,
+                      "scaling": "[1, 1]"
+                    },
+                    "Component": {
+                      "active": true
+                    },
+                    "idMaterial": "Material|2022-07-20T21:51:39.471Z|46044"
+                  }
+                }
+              ],
+              "ComponentTransform": [
+                {
+                  "ƒ.ComponentTransform": {
+                    "local": {
+                      "translation": "[0, 6, 0]",
+                      "rotation": "[0, 0, 0]",
+                      "scaling": "[1, 1, 1]"
+                    },
+                    "Component": {
+                      "active": true
+                    }
+                  }
+                }
+              ],
+              "StateMachine": [
+                {
+                  "Script.StateMachine": {
+                    "active": true,
+                    "deltaTime": 0,
+                    "timeStamp": 0
+                  }
+                }
+              ]
+            },
+            "children": []
+          }
         }
       ],
       "idResource": "Graph|2022-03-17T14:08:08.737Z|08207",
@@ -6271,14 +6368,6 @@
           "idTexture": "TextureImage|2022-07-19T19:37:15.240Z|89611"
         }
       }
-    }
-  },
-  "Audio|2022-07-20T16:10:11.093Z|58286": {
-    "ƒ.Audio": {
-      "url": "Sound\\Topia_Coins.wav",
-      "idResource": "Audio|2022-07-20T16:10:11.093Z|58286",
-      "name": "Sound\\Topia_Coins.wav",
-      "type": "Audio"
     }
   }
 }

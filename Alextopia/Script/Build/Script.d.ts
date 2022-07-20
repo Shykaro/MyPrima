@@ -44,6 +44,38 @@ declare namespace Script {
     function setSpritePaths(_node: ƒ.Node): void;
 }
 declare namespace Script {
+    import ƒAid = FudgeAid;
+    enum JOB {
+        SPAWN = 0,
+        IDLE = 1,
+        ESCAPE = 2,
+        STAY = 3
+    }
+    export class StateMachine extends ƒAid.ComponentStateMachine<JOB> {
+        static readonly iSubclass: number;
+        private static instructions;
+        private deltaTime;
+        private timeStamp;
+        private cmpBody;
+        private cmpMaterial;
+        private cmpTransform;
+        constructor();
+        static get(): ƒAid.StateMachineInstructions<JOB>;
+        private static transitDefault;
+        private static actSpawn;
+        private static actDefault;
+        private static actIdle;
+        private static actEscape;
+        private static actDie;
+        private static transitStay;
+        private hndEvent;
+        private update;
+        private static sin;
+        private static sinHorizontal;
+    }
+    export {};
+}
+declare namespace Script {
     import ƒ = FudgeCore;
     class Balance extends ƒ.Node {
         static costOfMobs: any;

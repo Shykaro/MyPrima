@@ -10,7 +10,7 @@ var Script;
         message = "BackgroundCoinScript added to ";
         pointInTime = 0;
         // WELCOME TO THE CRITERIA COIN. HONESTLY JIRKA, IAM SORRY. BUT ALSO, I CAN'T REALLY INCLUDE ALL CRITERIAS IN MY GAME, SO HERE'S THE SOLUTION. 
-        // THE GAME HAS NOW ITS OWN MASCOT. WHICH IS AN INDEFINITLY IMPORTANT PART OF THE CORE GAMEPLAY MECHANIC SINCE IT JUDGES THE PLAYER.
+        // THE GAME HAS NOW ITS OWN MASCOT. WHICH IS AN INDEFINITLY IMPORTANT PART OF THE CORE GAMEPLAY MECHANIC.
         constructor() {
             super();
             // Don't start when running in editor
@@ -221,9 +221,13 @@ var Script;
         //pacman = graph.getChildrenByName("Pacman")[0];
         water = graph.getChildrenByName("Grid")[0].getChild(1).getChildren();
         Script.paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
-        for (const path of Script.paths) { //
-            //addInteractable(path);
-        }
+        //const observer = new ObserverMob("ObserverMob");
+        //console.log(cityPosition)
+        //mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+        //observer.mtxLocal.translate(new ƒ.Vector3(0, 6, 0));
+        //graph.addChild(observer);
+        //mobsAny.push(observer);
+        //observer.spawn();
         document.getElementById("vui").style.visibility = 'visible'; //Vui einschalten
         document.getElementById("--addMob").style.display = 'none'; //Mob menü ausschalten
         document.getElementById("--addMobP2").style.display = 'none'; //Mob menü ausschalten
@@ -693,7 +697,7 @@ var Script;
                         mob.mtxLocal.translate(cityPosition);
                         graph.addChild(mob);
                         mobsAny.push(mob);
-                        mob.spawn(); //Useless stuff
+                        mob.spawn();
                         for (let iCounter = 0; iCounter < mobsAny.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
                             if (iCounter === mobsAny.length) {
                                 document.getElementById("--" + mobsAny.length + "img1").style.display = null;
@@ -1223,6 +1227,152 @@ var Script;
         }
       }
     }*/
+})(Script || (Script = {}));
+var Script;
+(function (Script) {
+    var ƒ = FudgeCore;
+    var ƒAid = FudgeAid;
+    ƒ.Project.registerScriptNamespace(Script); // Register the namespace to FUDGE for serialization
+    let JOB;
+    (function (JOB) {
+        JOB[JOB["SPAWN"] = 0] = "SPAWN";
+        JOB[JOB["IDLE"] = 1] = "IDLE";
+        JOB[JOB["ESCAPE"] = 2] = "ESCAPE";
+        JOB[JOB["STAY"] = 3] = "STAY";
+    })(JOB || (JOB = {}));
+    class StateMachine extends ƒAid.ComponentStateMachine {
+        static iSubclass = ƒ.Component.registerSubclass(StateMachine);
+        static instructions = StateMachine.get();
+        //public forceEscape: number = 25;
+        //public torqueIdle: number = 5;
+        deltaTime = 0;
+        timeStamp = 0;
+        cmpBody;
+        cmpMaterial;
+        cmpTransform;
+        constructor() {
+            super();
+            this.instructions = StateMachine.instructions; // setup instructions with the static set
+            // Don't start when running in editor
+            if (ƒ.Project.mode == ƒ.MODE.EDITOR)
+                return;
+            //const cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
+            //const cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
+            // Listen to this component being added to or removed from a node
+            this.addEventListener("componentAdd" /* ƒ.EVENT.COMPONENT_ADD */, this.hndEvent);
+            this.addEventListener("componentRemove" /* ƒ.EVENT.COMPONENT_REMOVE */, this.hndEvent);
+            this.addEventListener("nodeDeserialized" /* ƒ.EVENT.NODE_DESERIALIZED */, this.hndEvent);
+            /*const sprite: ƒAid.NodeSprite = new ƒAid.NodeSprite("Sprite");
+            sprite.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
+            sprite.setAnimation(<ƒAid.SpriteSheetAnimation>animations["mob"]);
+            sprite.setFrameDirection(1);
+            sprite.mtxLocal.translateZ(0.1);
+            sprite.mtxLocal.translateY(0.1);
+            sprite.framerate = 8;
+            sprite.mtxLocal.scale(new ƒ.Vector3(0.5, 0.5, 1));*/
+            //this.addChild(sprite);
+            //this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
+        }
+        static get() {
+            let setup = new ƒAid.StateMachineInstructions();
+            setup.transitDefault = StateMachine.transitDefault;
+            setup.actDefault = StateMachine.actDefault;
+            setup.setAction(JOB.SPAWN, this.actSpawn);
+            setup.setAction(JOB.IDLE, this.actIdle);
+            setup.setAction(JOB.ESCAPE, this.actEscape);
+            setup.setAction(JOB.STAY, this.actDie);
+            setup.setTransition(JOB.ESCAPE, JOB.STAY, this.transitStay);
+            return setup;
+        }
+        static transitDefault(_machine) {
+            console.log("Transit to", _machine.stateNext);
+        }
+        static async actSpawn(_machine) {
+            //console.log(JOB[_machine.stateCurrent]);
+            //let terrainInfo: ƒ.TerrainInfo = meshTerrain.getTerrainInfo(_machine.node.mtxWorld.translation, mtxTerrain);
+            //if (terrainInfo.distance < 0.5)
+            //  _machine.cmpBody.applyForce(ƒ.Vector3.Y(20));
+            //const enemy = ƒ.Random.default.getElement(ObserverMob.observer);
+            //observer.addChild(new Enemy("Enemy", enemy));
+        }
+        static async actDefault(_machine) {
+            //console.log(JOB[_machine.stateCurrent]);
+            //let terrainInfo: ƒ.TerrainInfo = meshTerrain.getTerrainInfo(_machine.node.mtxWorld.translation, mtxTerrain);
+            //if (terrainInfo.distance < 0.5)
+            //  _machine.cmpBody.applyForce(ƒ.Vector3.Y(20));
+            console.log(JOB[_machine.stateCurrent]);
+        }
+        static async actIdle(_machine) {
+            _machine.cmpMaterial.clrPrimary = ƒ.Color.CSS("magenta");
+            let currPos = _machine.node.mtxLocal.translation;
+            _machine.timeStamp += 1 * _machine.deltaTime;
+            _machine.cmpTransform.mtxLocal.translation = new ƒ.Vector3(StateMachine.sinHorizontal(_machine.timeStamp), StateMachine.sin(_machine.timeStamp) + 0.5, currPos.z);
+            StateMachine.actDefault(_machine);
+        }
+        static async actEscape(_machine) {
+            _machine.cmpMaterial.clrPrimary = ƒ.Color.CSS("white");
+            //let difference: ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(_machine.node.mtxWorld.translation, cart.mtxWorld.translation);
+            //difference.normalize(_machine.forceEscape);
+            //_machine.cmpBody.applyForce(difference);
+            StateMachine.actDefault(_machine);
+        }
+        static async actDie(_machine) {
+            //
+        }
+        static transitStay(_machine) {
+            //_machine.cmpBody.applyLinearImpulse(ƒ.Vector3.Y(5));
+            //let timer: ƒ.Timer = new ƒ.Timer(ƒ.Time.game, 100, 20, (_event: ƒ.EventTimer) => {
+            //  _machine.cmpMaterial.clrPrimary = ƒ.Color.CSS("black", 1 - _event.count / 20);
+            //  if (_event.lastCall)
+            //    _machine.transit(JOB.STAY);
+            //});
+            //console.log(timer);
+        }
+        // Activate the functions of this component as response to events
+        hndEvent = (_event) => {
+            switch (_event.type) {
+                case "componentAdd" /* ƒ.EVENT.COMPONENT_ADD */:
+                    ƒ.Loop.addEventListener("loopFrame" /* ƒ.EVENT.LOOP_FRAME */, this.update);
+                    this.transit(JOB.IDLE);
+                    break;
+                case "componentRemove" /* ƒ.EVENT.COMPONENT_REMOVE */:
+                    this.removeEventListener("componentAdd" /* ƒ.EVENT.COMPONENT_ADD */, this.hndEvent);
+                    this.removeEventListener("componentRemove" /* ƒ.EVENT.COMPONENT_REMOVE */, this.hndEvent);
+                    ƒ.Loop.removeEventListener("loopFrame" /* ƒ.EVENT.LOOP_FRAME */, this.update);
+                    break;
+                case "nodeDeserialized" /* ƒ.EVENT.NODE_DESERIALIZED */:
+                    this.cmpBody = this.node.getComponent(ƒ.ComponentRigidbody);
+                    this.cmpMaterial = this.node.getComponent(ƒ.ComponentMaterial);
+                    this.cmpTransform = this.node.getComponent(ƒ.ComponentTransform);
+                    this.cmpBody.addEventListener("TriggerEnteredCollision" /* ƒ.EVENT_PHYSICS.TRIGGER_ENTER */, (_event) => {
+                        if (_event.cmpRigidbody.node.name == "runner")
+                            this.transit(JOB.STAY);
+                    });
+                    let trigger = this.node.getChildren()[0].getComponent(ƒ.ComponentRigidbody);
+                    trigger.addEventListener("TriggerEnteredCollision" /* ƒ.EVENT_PHYSICS.TRIGGER_ENTER */, (_event) => {
+                        //console.log("TriggerEnter", _event.cmpRigidbody.node.name);
+                        if (_event.cmpRigidbody.node.name == "runner" && this.stateCurrent != JOB.STAY)
+                            this.transit(JOB.ESCAPE);
+                    });
+                    trigger.addEventListener("TriggerLeftCollision" /* ƒ.EVENT_PHYSICS.TRIGGER_EXIT */, (_event) => {
+                        if (this.stateCurrent == JOB.ESCAPE)
+                            this.transit(JOB.IDLE);
+                    });
+                    break;
+            }
+        };
+        update = (_event) => {
+            this.act();
+            this.deltaTime = this.deltaTime = ƒ.Loop.timeFrameReal / 1000;
+        };
+        static sin = (x) => {
+            return Math.sin(Math.PI * x) * 0.3;
+        };
+        static sinHorizontal = (x) => {
+            return Math.sin(1 * x) * 2;
+        };
+    }
+    Script.StateMachine = StateMachine;
 })(Script || (Script = {}));
 var Script;
 (function (Script) {
@@ -2216,4 +2366,56 @@ var Script;
     }
     Script.MobP2 = MobP2;
 })(Script || (Script = {}));
+/*namespace Script {
+    import ƒ = FudgeCore;
+    import ƒAid = FudgeAid;
+  
+    export class ObserverMob extends ƒ.Node {
+      //private movement: ƒ.Vector3 = new ƒ.Vector3(0, -1 / 600, 0);
+      //private lastPath: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
+  
+      private health: number = healthUnitSmall;
+      private dmg: number = dmgUnitSmall;
+      
+  
+      constructor(_name: string) {
+        super(_name);
+  
+        const mesh: ƒ.MeshSphere = new ƒ.MeshSphere();
+        const material: ƒ.Material = new ƒ.Material(
+          "MaterialMobP2",
+          ƒ.ShaderLit,
+          new ƒ.CoatColored()
+        );
+  
+        const cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
+        const cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(mesh);
+        const cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(material);
+        cmpMaterial.clrPrimary = ƒ.Color.CSS("red");
+  
+        this.addComponent(cmpTransform);
+        this.addComponent(cmpMesh);
+        this.addComponent(cmpMaterial);
+  
+        // sprites
+        const sprite: ƒAid.NodeSprite = new ƒAid.NodeSprite("Sprite");
+        sprite.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
+        sprite.setAnimation(<ƒAid.SpriteSheetAnimation>animations["mobP2"]);
+        sprite.setFrameDirection(1);
+        sprite.mtxLocal.translateZ(0.1);
+        sprite.mtxLocal.translateY(0.1);
+        sprite.framerate = 8;
+        sprite.mtxLocal.scale(new ƒ.Vector3(1, 1, 1));
+  
+  
+        this.addChild(sprite);
+        this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
+  
+        this.dispatchEvent(new Event("playSpawnSound", {bubbles: true}));
+      }
+
+
+
+    }
+}*/ 
 //# sourceMappingURL=Script.js.map
