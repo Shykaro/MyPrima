@@ -7,7 +7,7 @@ namespace Script {
 
   window.addEventListener("load", init);
 
-  document.addEventListener("interactiveViewportStarted", <EventListener>start);
+  document.addEventListener("interactiveViewportStarted", <EventListener><unknown>start); //HAD TO MAKE THIS UNKNOWN BECAUSE START IS NOW ASYNC
 
   export let viewport: ƒ.Viewport;
   let sounds: ƒ.ComponentAudio[]; //outdated? i need it for later
@@ -34,8 +34,8 @@ namespace Script {
   
 
   // Balancing Field ############################################################################
-  let costMob: number = 14;   //Kosten für eine normale Einheit
-  let costMob2: number = 26;  //Kosten für eine stärkere Einheit
+  let costMob: number = 14;   //Kosten für eine normale Einheit, NEEDED TO ADJUST PRICES
+  //let costMob2: number = 26;  //Kosten für eine stärkere Einheit
 
   let costMineBuild: number = 10; //Kosten um eine Mine in der Stadt zu bauen, welche extra Gold generiert
   let goldMineOutput: number = 5; //Zusätzlicher Gold output einer Mine pro Runde
@@ -57,13 +57,10 @@ namespace Script {
 
   let score: number = 0 - costMob; //Needs adjust for free first unit
   let scoreP2: number = 0 - costMob; //Needs adjust for free first unit
-  let highscore: number = 0;
 
   let turnPhaseOne = "Bewege deine Einheiten, drücke Enter zum Bestätigen der Position.";
   let turnPhaseTwo = "Produziere Truppen oder rüste deine Stadt auf, drücke Enter zum fortfahren.";
   //document.getElementById("--headingInfo").setAttribute('value', turnPhaseOne/Two);
-
-  let unitPositionPlaceholder: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
 
   let zwischenSpeicherCoordinateLRC: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);    //LRC = LimitReachCheck, used in checking that unit can only work one field from origin.
   let zwischenSpeicherCoordinateLRCP2: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
@@ -107,12 +104,12 @@ namespace Script {
   // adding all the requirements is more important
   // work on Networking this gon be fun, should try this -> aint working
   // Implement light to use as viewing distance, dont know how this works
-  // External Data via Highscore -> Punkte integrieren, oder züge bis zum win -> BRAUCHT WINCONDITION, EXTERNAL DATA AUF BALANCE SHEET ABÄNDERN
-  // Eventsystem angucken, kp wie das funktioniert -> did a thing jirka will kill me for, but its for the criteria nonetheless
+  // Eventsystem angucken, kp wie das funktioniert -> did a thing jirka will very much like me for, but its for the criteria nonetheless
   // Physics zum Spaß einfügen
   // State machine für weißgott was, hauptsache kriterien erfüllt.
   //
   //
+  // ++ DONE External Data via Highscore -> Punkte integrieren, oder züge bis zum win -> BRAUCHT WINCONDITION, EXTERNAL DATA AUF BALANCE SHEET ABÄNDERN -> did a balance json sheet which gets loaded.
   // ++ DONE Start implementing different rounds in a players turn -> unit moving -> unit producing -> playerswap
   // ++ DONE Add Gold mechanic -> expand with buying upgrades and getting gold from defeating units -> Defeating Units is Missing.
   // ++ DONE ARRAY KANN NUN MIT GESTORBENER EINHEIT AUF NULL GEHEN -> ausweichtregelung finden! bzw umgehen
@@ -125,7 +122,8 @@ namespace Script {
   //------------ Notizen -------------------------------------------------------------------
   // BUGFIX: wenn erste einheit des Arrays getötet wird rutscht es nicht nach wenn der andere Spieler dran ist.
   // Do random maps as external data save and load. -> needs random maps and that takes too much time, maybe at the end
-  // 
+  // Definitly should do an VUI update Function instead mentioning everything every time...
+  //
   // Ui Zeigt leben der Einheiten wenn diese nicht onehit sterben sollten.
   // Physik einbauen indem man kästchen rumschiebt -> geht nicht wegen tp-ing, eher konfetti oder so einbauen am beginn oder ende der runde
   // SPÄTERES BUG PROBLEM: Unit spawnen während gegnerische einheit auf dem Cityfield steht. -> Unitinteraction nur möglich wenn einheit gemoved wird!!
@@ -175,19 +173,32 @@ namespace Script {
     );
   }
 
+  async function loadJSON () {
 
+    let costOfMobs: Response = await fetch("./Assets/balancesheet.json");
 
-  function start(_event: CustomEvent): void { //Was beim Start initialisiert werden soll
+    Balance.costOfMobs = (await costOfMobs.json()).costOfMobs;
+
+    //console.log(Balance.costOfMobs[0].cost);
+
+  }
+
+  async function start(_event: CustomEvent) { //Was beim Start initialisiert werden soll
     viewport = _event.detail;
     viewport.camera.mtxPivot.translate(new ƒ.Vector3(5, 2.5, 15));
     viewport.camera.mtxPivot.rotateY(180);
 
     const graph: ƒ.Node = viewport.getBranch();
 
-    document.getElementById("--plusmob").innerHTML = "Cost: " + costMob;
-    document.getElementById("--plusmob2").innerHTML = "Cost: " + costMob2;
-    document.getElementById("--plusmobP2").innerHTML = "Cost: " + costMob;
-    document.getElementById("--plusmob2P2").innerHTML = "Cost: " + costMob2;
+    await loadJSON(); //gets balance adjustements.
+
+
+    
+
+    document.getElementById("--plusmob").innerHTML = "Cost: " + Balance.costOfMobs[0].cost;
+    document.getElementById("--plusmob2").innerHTML = "Cost: " + Balance.costOfMobs[1].cost;
+    document.getElementById("--plusmobP2").innerHTML = "Cost: " + Balance.costOfMobs[0].cost;
+    document.getElementById("--plusmob2P2").innerHTML = "Cost: " + Balance.costOfMobs[1].cost;
     document.getElementById("--plusMine").innerHTML = "Cost: " + costMineBuild;
     document.getElementById("--plusMineP2").innerHTML = "Cost: " + costMineBuild;
 
@@ -335,7 +346,7 @@ namespace Script {
 
 
   function update(_event: Event): void {
-    ƒ.Physics.simulate();  // if physics is included and used
+    //ƒ.Physics.simulate();  // if physics is included and used
 
     //document.getElementById("--goldInput").setAttribute('value', gold.toString());
     //document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
@@ -739,9 +750,9 @@ namespace Script {
     if (whichUnit === 1) {
       if ((mobsAny.length + mobsAny.length) != 9) {
         if (addMobLimitCounter > 0) {
-          if (gold >= costMob) {
-            gold -= costMob;
-            score += costMob;
+          if (gold >= Balance.costOfMobs[0].cost) {
+            gold -= Balance.costOfMobs[0].cost;
+            score += Balance.costOfMobs[0].cost;
             document.getElementById("--score_player_one").setAttribute('value', score.toString());
             document.getElementById("--goldInput").setAttribute('value', gold.toString());
             addMobLimitCounter--
@@ -768,9 +779,9 @@ namespace Script {
     if (whichUnit === 2) {
       if ((mobsAny.length + mobsAny.length) != 9) {
         if (addMobLimitCounter > 0) {
-          if (gold >= costMob2) {
-            gold -= costMob2;
-            score += costMob2;
+          if (gold >= Balance.costOfMobs[1].cost) {
+            gold -= Balance.costOfMobs[1].cost;
+            score += Balance.costOfMobs[1].cost;
             document.getElementById("--score_player_one").setAttribute('value', score.toString());
             document.getElementById("--goldInput").setAttribute('value', gold.toString());
             addMobLimitCounter--
@@ -796,9 +807,9 @@ namespace Script {
     if (whichUnit === 3) {
       if ((mobsP2Any.length + mobsP2Any.length) != 9) {
         if (addMobLimitCounterP2 > 0) {
-          if (goldP2 >= costMob) {
-            goldP2 -= costMob;
-            scoreP2 += costMob;
+          if (goldP2 >= Balance.costOfMobs[0].cost) {
+            goldP2 -= Balance.costOfMobs[0].cost;
+            scoreP2 += Balance.costOfMobs[0].cost;
             document.getElementById("--score_player_two").setAttribute('value', scoreP2.toString());
             document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
             addMobLimitCounterP2--
@@ -825,9 +836,9 @@ namespace Script {
     if (whichUnit === 4) {
       if ((mobsP2Any.length + mobsP2Any.length) != 9) {
         if (addMobLimitCounterP2 > 0) {
-          if (goldP2 >= costMob2) {
-            goldP2 -= costMob2;
-            scoreP2 += costMob2;
+          if (goldP2 >= Balance.costOfMobs[1].cost) {
+            goldP2 -= Balance.costOfMobs[1].cost;
+            scoreP2 += Balance.costOfMobs[1].cost;
             document.getElementById("--score_player_two").setAttribute('value', scoreP2.toString());
             document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
             addMobLimitCounterP2--

@@ -45,6 +45,12 @@ declare namespace Script {
 }
 declare namespace Script {
     import ƒ = FudgeCore;
+    class Balance extends ƒ.Node {
+        static costOfMobs: any;
+    }
+}
+declare namespace Script {
+    import ƒ = FudgeCore;
     class City extends ƒ.Node {
         constructor(_name: string);
     }
@@ -64,8 +70,8 @@ declare namespace Script {
 declare namespace Script {
     import ƒ = FudgeCore;
     class Mob extends ƒ.Node {
-        private health;
-        private dmg;
+        health: number;
+        dmg: number;
         constructor(_name: string);
         spawn(): void;
         move(): void;

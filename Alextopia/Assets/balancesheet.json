@@ -1,0 +1,14 @@
+{
+    "costOfMobs": [
+      {
+        "name": "Mob1",
+        "description": "Cost of the small Mob",
+        "cost": 14
+      },
+      {
+        "name": "Mob2",
+        "description": "Cost of the big Mob",
+        "cost": 26
+      }
+    ]
+}

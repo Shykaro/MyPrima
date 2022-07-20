@@ -1,6 +1,5 @@
 namespace Script {
     import ƒ = FudgeCore;
-    import ƒAid = FudgeAid;
 
     export class City extends ƒ.Node {
 
