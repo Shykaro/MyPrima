@@ -346,7 +346,7 @@ namespace Script {
 
 
   function update(_event: Event): void {
-    //ƒ.Physics.simulate();  // if physics is included and used
+    ƒ.Physics.simulate();  // if physics is included and used
 
     //document.getElementById("--goldInput").setAttribute('value', gold.toString());
     //document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
