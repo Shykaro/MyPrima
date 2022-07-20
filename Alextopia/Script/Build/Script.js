@@ -91,6 +91,9 @@ var Script;
     let scoreP2 = 0 - costMob; //Needs adjust for free first unit
     let turnPhaseOne = "Bewege deine Einheiten, drücke Enter zum Bestätigen der Position.";
     let turnPhaseTwo = "Produziere Truppen oder rüste deine Stadt auf, drücke Enter zum fortfahren.";
+    let turnPhaseWinP1 = "Spieler 1 hat gewonnen! Drücke Enter zum neustarten.";
+    let turnPhaseWinP2 = "Spieler 2 hat gewonnen! Drücke Enter zum neustarten.";
+    let turnPhaseEnd = "Das Spiel ist zu Ende, drücke Enter zum reloaden!";
     //document.getElementById("--headingInfo").setAttribute('value', turnPhaseOne/Two);
     let zwischenSpeicherCoordinateLRC = new ƒ.Vector3(0, 0, 0); //LRC = LimitReachCheck, used in checking that unit can only work one field from origin.
     let zwischenSpeicherCoordinateLRCP2 = new ƒ.Vector3(0, 0, 0);
@@ -237,7 +240,7 @@ var Script;
         //cityNodeP2.push(city2P2);
         //Positions of starting Cities
         Script.paths[15].addChild(city);
-        Script.paths[34].addChild(cityP2);
+        Script.paths[16].addChild(cityP2); //34
         //paths[1].addChild(city2);
         //paths[2].addChild(city2P2);
         //Test console Logs
@@ -334,6 +337,9 @@ var Script;
             document.getElementById("--plusmobP2").removeAttribute('disabled');
             document.getElementById("--plusmob2P2").removeAttribute('disabled');
         }
+        if (Script.currentplayer === 0) {
+            document.getElementById("--headingInfo").setAttribute('value', turnPhaseEnd);
+        }
     }
     /*if(currentplayer === 1){
       document.getElementById("--infoBuiltMines").setAttribute('value', anzMine.toString());
@@ -344,7 +350,24 @@ var Script;
     // ------------- Moving Mob abteil für beide Spieler ---------------------------------------------------
     function changeUnit(graph) {
         document.addEventListener('keydown', (event) => {
+            //console.log(graph.getChildrenByName);
             var name = event.key;
+            console.log("Current phase: " + currentPhase);
+            if (Script.currentplayer === 0) { //STANDBY END OF GAME PROCEDURE
+                if (name === 'Space' || name === 'Enter') {
+                    const balls = graph.getChildrenByName("Physics")[0].getChildrenByName("Balls")[0];
+                    balls.activate(true);
+                    sounds[5].play(true);
+                    if (score >= scoreP2) { }
+                    window.localStorage.setItem("highscore", score.toString());
+                }
+                else {
+                    window.localStorage.setItem("highscore", scoreP2.toString());
+                }
+                setTimeout(() => {
+                    location.reload();
+                }, 5000);
+            }
             if (Script.currentplayer === 1) {
                 if (currentPhase === 1) { //&& mobsAny.length > 0) {
                     if (mobsAny.length > 0) {
@@ -452,8 +475,6 @@ var Script;
                         return;
                     }
                 }
-            }
-            if (Script.currentplayer === 0) { //STANDBY
             }
         });
     }
@@ -902,7 +923,7 @@ var Script;
             if (mobsAny[Script.currentUnitNumber].mtxLocal.translation.equals(Script.cityNodeP2[0].mtxWorld.translation)) { // CITY INTERACTION P1
                 turnsNeededForCapture--;
                 if (turnsNeededForCapture < 1) {
-                    alert("City of P2 has been captured!");
+                    //alert("City of P2 has been captured!");
                     let spliceRemoved = [];
                     graph.removeChild(Script.cityNodeP2[Script.cityNodeP2.length - 1]);
                     spliceRemoved = Script.cityNodeP2.splice(Script.cityNodeP2.length - 1, 1);
@@ -910,9 +931,10 @@ var Script;
                     console.log(Script.cityNodeP2);
                     delete spliceRemoved[0];
                     if (Script.cityNodeP2.length === 0) {
-                        alert("All cities have been captured, Player 1 Wins!");
-                        window.localStorage.setItem("highscore", score.toString());
-                        location.reload();
+                        console.log("bitch1");
+                        currentPhase = 10;
+                        Script.currentplayer = 0;
+                        document.getElementById("--headingInfo").setAttribute('value', turnPhaseWinP1);
                     }
                 }
             }
@@ -943,7 +965,7 @@ var Script;
             if (mobsP2Any[Script.currentUnitNumberP2].mtxLocal.translation.equals(Script.cityNode[0].mtxWorld.translation)) { // CITY INTERACTION P2
                 turnsNeededForCapture--;
                 if (turnsNeededForCapture < 1) { //THIS DOESNT WORK IF THE CAPTURED CITIES ARE RANDOM!!
-                    alert("City of P1 has been captured!");
+                    //alert("City of P1 has been captured!");
                     let spliceRemoved = [];
                     //removeChild(mobsAny[iCounter3]);
                     graph.removeChild(Script.cityNode[Script.cityNode.length - 1]);
@@ -952,9 +974,10 @@ var Script;
                     console.log(Script.cityNode);
                     delete spliceRemoved[0];
                     if (Script.cityNode.length === 0) {
-                        alert("All cities have been captured, Player 2 Wins!");
-                        window.localStorage.setItem("highscore", scoreP2.toString());
-                        location.reload();
+                        console.log("bitch");
+                        currentPhase = 10;
+                        Script.currentplayer = 0;
+                        document.getElementById("--headingInfo").setAttribute('value', turnPhaseWinP2);
                     }
                 }
             }

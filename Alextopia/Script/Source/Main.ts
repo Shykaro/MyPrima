@@ -31,7 +31,7 @@ namespace Script {
   let anzMine: number = 0;
   let anzMineP2: number = 0;
 
-  
+
 
   // Balancing Field ############################################################################
   let costMob: number = 14;   //Kosten für eine normale Einheit, NEEDED TO ADJUST PRICES
@@ -60,6 +60,9 @@ namespace Script {
 
   let turnPhaseOne = "Bewege deine Einheiten, drücke Enter zum Bestätigen der Position.";
   let turnPhaseTwo = "Produziere Truppen oder rüste deine Stadt auf, drücke Enter zum fortfahren.";
+  let turnPhaseWinP1 = "Spieler 1 hat gewonnen! Drücke Enter zum neustarten.";
+  let turnPhaseWinP2 = "Spieler 2 hat gewonnen! Drücke Enter zum neustarten.";
+  let turnPhaseEnd = "Das Spiel ist zu Ende, drücke Enter zum reloaden!";
   //document.getElementById("--headingInfo").setAttribute('value', turnPhaseOne/Two);
 
   let zwischenSpeicherCoordinateLRC: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);    //LRC = LimitReachCheck, used in checking that unit can only work one field from origin.
@@ -173,7 +176,7 @@ namespace Script {
     );
   }
 
-  async function loadJSON () {
+  async function loadJSON() {
 
     let costOfMobs: Response = await fetch("./Assets/balancesheet.json");
 
@@ -191,11 +194,8 @@ namespace Script {
     //FudgeAid.Viewport.expandCameraToInteractiveOrbit(viewport);
 
     const graph: ƒ.Node = viewport.getBranch();
-
     await loadJSON(); //gets balance adjustements.
 
-
-    
 
     document.getElementById("--plusmob").innerHTML = "Cost: " + Balance.costOfMobs[0].cost;
     document.getElementById("--plusmob2").innerHTML = "Cost: " + Balance.costOfMobs[1].cost;
@@ -253,7 +253,7 @@ namespace Script {
 
     //Positions of starting Cities
     paths[15].addChild(city);
-    paths[34].addChild(cityP2);
+    paths[16].addChild(cityP2); //34
 
     //paths[1].addChild(city2);
     //paths[2].addChild(city2P2);
@@ -377,6 +377,9 @@ namespace Script {
       document.getElementById("--plusmobP2").removeAttribute('disabled');
       document.getElementById("--plusmob2P2").removeAttribute('disabled');
     }
+    if (currentplayer === 0) {
+      document.getElementById("--headingInfo").setAttribute('value', turnPhaseEnd);
+    }
   }
 
   /*if(currentplayer === 1){
@@ -390,678 +393,699 @@ namespace Script {
   // ------------- Moving Mob abteil für beide Spieler ---------------------------------------------------
   function changeUnit(graph: ƒ.Node): void { //Is used to track current unit and change values accordingly -> NOT ANYMORE
     document.addEventListener('keydown', (event) => {
+      //console.log(graph.getChildrenByName);
       var name = event.key;
+
+      console.log("Current phase: " + currentPhase);
+
+      if (currentplayer === 0) { //STANDBY END OF GAME PROCEDURE
+        if (name === 'Space' || name === 'Enter') {
+          const balls: ƒ.Node = graph.getChildrenByName("Physics")[0].getChildrenByName("Balls")[0];
+          balls.activate(true);
+          sounds[5].play(true);
+          if (score >= scoreP2) { }
+          window.localStorage.setItem("highscore", score.toString());
+        }
+        else {
+          window.localStorage.setItem("highscore", scoreP2.toString());
+        }
+        setTimeout(() => {
+          location.reload();
+        }, 5000);
+      }
+    
+
       if (currentplayer === 1) {
-        if (currentPhase === 1) { //&& mobsAny.length > 0) {
+      if (currentPhase === 1) { //&& mobsAny.length > 0) {
 
-          if (mobsAny.length > 0) {
-            //console.log(mobs[currentUnitNumber].mtxLocal + " and " + currentUnitNumber);
+        if (mobsAny.length > 0) {
+          //console.log(mobs[currentUnitNumber].mtxLocal + " and " + currentUnitNumber);
 
 
-            if (name === 'd' || name === 'ArrowRight') {
-              //currentMobPosition = new ƒ.Vector3(mobs[currentUnitNumber].mtxLocal.translation.x, mobs[currentUnitNumber].mtxLocal.translation.y, 0);
+          if (name === 'd' || name === 'ArrowRight') {
+            //currentMobPosition = new ƒ.Vector3(mobs[currentUnitNumber].mtxLocal.translation.x, mobs[currentUnitNumber].mtxLocal.translation.y, 0);
 
-              if (checkIfMoveMob("x")) {
-                mobsAny[currentUnitNumber].mtxLocal.translateX(1);
-                //console.log("trying to move right");
+            if (checkIfMoveMob("x")) {
+              mobsAny[currentUnitNumber].mtxLocal.translateX(1);
+              //console.log("trying to move right");
 
-              }
-            }
-            if (name === 'a' || name === 'ArrowLeft') {
-
-              if (checkIfMoveMob("-x")) {
-                mobsAny[currentUnitNumber].mtxLocal.translateX(-1);
-                //console.log("trying to move Left");
-
-              }
-            }
-            if (name === 'w' || name === 'ArrowUp') {
-
-              if (checkIfMoveMob("y")) {
-                mobsAny[currentUnitNumber].mtxLocal.translateY(1);
-                //console.log("trying to move up");
-
-              }
-            }
-            if (name === 's' || name === 'ArrowDown') {
-
-              if (checkIfMoveMob("-y")) {
-                mobsAny[currentUnitNumber].mtxLocal.translateY(-1);
-                //console.log("trying to move down");
-
-              }
-            }
-            if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
-              if (currentplayer === 1) {
-                sounds[2].play(true);
-                unitInteraction(graph); //UNIT INTERACTION HERE
-                //currentPhase = 2;
-                logInUnit(); //also end of turn 1 procedure if its not the last unit.
-              }
-              return;
             }
           }
-          else {
+          if (name === 'a' || name === 'ArrowLeft') {
 
-            //logInUnit();
-            //
-            handleCityTurnPart(); //WEIRD INTERACTION
-            currentPhase = 2;
-          }
-        }
-        if (currentPhase === 2) { //Shuts down the other key down events, initiates or gives time for phase 2
-          if (name === 'Space' || name === 'Enter') {
+            if (checkIfMoveMob("-x")) {
+              mobsAny[currentUnitNumber].mtxLocal.translateX(-1);
+              //console.log("trying to move Left");
 
-            handleEndOfCityProcedure(currentUnitNumber, 2); //Wechselt zu zweitem angegebenen Parameter, aka current player wechselt nun zu 2
-            //ENDING OF PLAYER 1 PHASE 2
-            return;
-          }
-        }
-      }
-
-      if (currentplayer === 2) {
-        if (currentPhase === 1) { //&& mobsP2Any.length > 0) {
-          if (mobsP2Any.length > 0) {
-            if (name === 'd' || name === 'ArrowRight') {
-              if (checkIfMoveMobP2("x")) {
-                mobsP2Any[currentUnitNumberP2].mtxLocal.translateX(1);
-                //console.log("trying to move right");
-              }
-            }
-            if (name === 'a' || name === 'ArrowLeft') {
-              if (checkIfMoveMobP2("-x")) {
-                mobsP2Any[currentUnitNumberP2].mtxLocal.translateX(-1);
-                //console.log("trying to move Left");
-              }
-            }
-            if (name === 'w' || name === 'ArrowUp') {
-              if (checkIfMoveMobP2("y")) {
-                mobsP2Any[currentUnitNumberP2].mtxLocal.translateY(1);
-                //console.log("trying to move up");
-              }
-            }
-            if (name === 's' || name === 'ArrowDown') {
-              if (checkIfMoveMobP2("-y")) {
-                mobsP2Any[currentUnitNumberP2].mtxLocal.translateY(-1);
-                //console.log("trying to move down");
-              }
-            }
-            if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
-              if (currentplayer === 2) {
-                sounds[2].play(true);
-                //currentPhase = 2;
-                unitInteraction(graph); //UNIT INTERACTION HERE
-                logInUnitP2() //also end of turn procedure if its not the last unit.
-              }
-              return;
             }
           }
-          else {
-            //unitInteraction(graph); //UNIT INTERACTION HERE
-            //logInUnitP2();
-            //
-            handleCityTurnPartP2()
-            currentPhase = 2;
+          if (name === 'w' || name === 'ArrowUp') {
 
+            if (checkIfMoveMob("y")) {
+              mobsAny[currentUnitNumber].mtxLocal.translateY(1);
+              //console.log("trying to move up");
+
+            }
           }
-        }
-        if (currentPhase === 2) {
+          if (name === 's' || name === 'ArrowDown') {
+
+            if (checkIfMoveMob("-y")) {
+              mobsAny[currentUnitNumber].mtxLocal.translateY(-1);
+              //console.log("trying to move down");
+
+            }
+          }
           if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
-            handleEndOfCityProcedure(currentUnitNumberP2, 1); //Wechselt zu zweitem angegebenen Parameter, aka current player wechselt nun zu 1
-
-            handleNPCAction();
-            //ENDING OF PLAYER 2 PHASE 2
+            if (currentplayer === 1) {
+              sounds[2].play(true);
+              unitInteraction(graph); //UNIT INTERACTION HERE
+              //currentPhase = 2;
+              logInUnit(); //also end of turn 1 procedure if its not the last unit.
+            }
             return;
           }
         }
+        else {
+
+          //logInUnit();
+          //
+          handleCityTurnPart(); //WEIRD INTERACTION
+          currentPhase = 2;
+        }
       }
-      if (currentplayer === 0){ //STANDBY
-        
+      if (currentPhase === 2) { //Shuts down the other key down events, initiates or gives time for phase 2
+        if (name === 'Space' || name === 'Enter') {
+
+          handleEndOfCityProcedure(currentUnitNumber, 2); //Wechselt zu zweitem angegebenen Parameter, aka current player wechselt nun zu 2
+          //ENDING OF PLAYER 1 PHASE 2
+          return;
+        }
       }
-    })
-  }
-
-  // ------------- Check Moving Mob abteil Anfang für Spieler 1 ---------------------------------------------------
-  export function checkIfMoveMob(_direction?: string): boolean { //checks which directions the CURRENTUNITNUMBER can go, called in changeUnit()
-
-
-    const y: number = mobsAny[currentUnitNumber].mtxLocal.translation.y;
-    const x: number = mobsAny[currentUnitNumber].mtxLocal.translation.x;
-    let newPosition: ƒ.Vector3;
-
-    switch (_direction ?? movingDirection) {
-      case "x":
-        newPosition = new ƒ.Vector3(x + 1, y, 0);
-        zwischenSpeicherCoordinateLRC.set(((mobsAny[currentUnitNumber].mtxLocal.translation.x) + 1), mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
-        break;
-      case "-x":
-        newPosition = new ƒ.Vector3(x - 1, y, 0);
-        zwischenSpeicherCoordinateLRC.set(((mobsAny[currentUnitNumber].mtxLocal.translation.x) - 1), mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
-        break;
-      case "y":
-        newPosition = new ƒ.Vector3(x, y + 1, 0);
-        zwischenSpeicherCoordinateLRC.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, ((mobsAny[currentUnitNumber].mtxLocal.translation.y) + 1), 0);
-        break;
-      case "-y":
-        newPosition = new ƒ.Vector3(x, y - 1, 0);
-        zwischenSpeicherCoordinateLRC.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, ((mobsAny[currentUnitNumber].mtxLocal.translation.y) - 1), 0);
-        break;
-
-      default:
-        break;
     }
 
-    const wall: ƒ.Node = water.find((w) => w.mtxLocal.translation.equals(newPosition, 0));
+    if (currentplayer === 2) {
+      if (currentPhase === 1) { //&& mobsP2Any.length > 0) {
+        if (mobsP2Any.length > 0) {
+          if (name === 'd' || name === 'ArrowRight') {
+            if (checkIfMoveMobP2("x")) {
+              mobsP2Any[currentUnitNumberP2].mtxLocal.translateX(1);
+              //console.log("trying to move right");
+            }
+          }
+          if (name === 'a' || name === 'ArrowLeft') {
+            if (checkIfMoveMobP2("-x")) {
+              mobsP2Any[currentUnitNumberP2].mtxLocal.translateX(-1);
+              //console.log("trying to move Left");
+            }
+          }
+          if (name === 'w' || name === 'ArrowUp') {
+            if (checkIfMoveMobP2("y")) {
+              mobsP2Any[currentUnitNumberP2].mtxLocal.translateY(1);
+              //console.log("trying to move up");
+            }
+          }
+          if (name === 's' || name === 'ArrowDown') {
+            if (checkIfMoveMobP2("-y")) {
+              mobsP2Any[currentUnitNumberP2].mtxLocal.translateY(-1);
+              //console.log("trying to move down");
+            }
+          }
+          if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
+            if (currentplayer === 2) {
+              sounds[2].play(true);
+              //currentPhase = 2;
+              unitInteraction(graph); //UNIT INTERACTION HERE
+              logInUnitP2() //also end of turn procedure if its not the last unit.
+            }
 
-    if (wall) {
-      //sounds[1].play(false);
-      return false;
-    }
+            return;
+          }
+        }
+        else {
+          //unitInteraction(graph); //UNIT INTERACTION HERE
+          //logInUnitP2();
+          //
+          handleCityTurnPartP2()
+          currentPhase = 2;
 
-    const path: ƒ.Node = paths.find((p) => p.mtxLocal.translation.equals(newPosition, 0));
-
-    if (!path) {
-      //sounds[1].play(false);
-      return false;
-    }
-
-    //console.log("x: " + x + " y: " + y);
-
-    if (zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckStay) || zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckX)
-      || zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckY) || zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckXMinus) || zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckYMinus)) {
-      //unitPositionPlaceholder.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0); //USED FOR UNIT INTERACTION to get position before it is moved
-      return true;
-    }
-    else {
-      return false; //Changed this to false since only if mob still in allowed grid it is allowed to move -> allowed to return true
-    }
-  }
-  // ------------- Check Moving Mob abteil END für Spieler 1 ---------------------------------------------------
-
-
-  // ------------- Check Moving Mob abteil Anfang für Spieler 2 ---------------------------------------------------
-  export function checkIfMoveMobP2(_direction?: string): boolean { //checks which directions the CURRENTUNITNUMBER can go, called in changeUnit()
-    const y: number = mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y;
-    const x: number = mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x;
-    let newPosition: ƒ.Vector3;
-
-    switch (_direction ?? movingDirection) {
-      case "x":
-        newPosition = new ƒ.Vector3(x + 1, y, 0);
-        zwischenSpeicherCoordinateLRCP2.set(((mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x) + 1), mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
-        break;
-      case "-x":
-        newPosition = new ƒ.Vector3(x - 1, y, 0);
-        zwischenSpeicherCoordinateLRCP2.set(((mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x) - 1), mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
-        break;
-      case "y":
-        newPosition = new ƒ.Vector3(x, y + 1, 0);
-        zwischenSpeicherCoordinateLRCP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, ((mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y) + 1), 0);
-        break;
-      case "-y":
-        newPosition = new ƒ.Vector3(x, y - 1, 0);
-        zwischenSpeicherCoordinateLRCP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, ((mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y) - 1), 0);
-        break;
-
-      default:
-        break;
-    }
-
-    const wall: ƒ.Node = water.find((w) => w.mtxLocal.translation.equals(newPosition, 0));
-
-    if (wall) {
-      //sounds[1].play(false);
-      return false;
-    }
-
-    const path: ƒ.Node = paths.find((p) => p.mtxLocal.translation.equals(newPosition, 0));
-
-    if (!path) {
-      //sounds[1].play(false);
-      return false;
-    }
-
-    if (zwischenSpeicherCoordinateLRCP2.equals(possibleLimitReachedCheckStayP2) || zwischenSpeicherCoordinateLRCP2.equals(possibleLimitReachedCheckXP2)
-      || zwischenSpeicherCoordinateLRCP2.equals(possibleLimitReachedCheckYP2) || zwischenSpeicherCoordinateLRCP2.equals(possibleLimitReachedCheckXMinusP2) || zwischenSpeicherCoordinateLRCP2.equals(possibleLimitReachedCheckYMinusP2)) {
-      //unitPositionPlaceholder.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0); //USED FOR UNIT INTERACTION to get position before it is moved
-      return true; //WENN zwischenSpeicher sagt er läuft auf ein feld zu dass aus den possibleLimitReachedCheck feldERN drüber hinausgeht, wirft es return false anstatt true.
-    }
-    else {
-      return false; //Changed this to false since only if mob still in allowed grid it is allowed to move -> allowed to return true
-    }
-  }
-  // ------------- Moving Mob abteil END PLAYER 2 ---------------------------------------------------
-
-  // ------------- Handle END TURN abteil Anfang für Spieler 1 ---------------------------------------------------
-  function logInUnit(): void {
-    if ((currentUnitNumber + 1) === mobsAny.length) {
-      document.getElementById("--headingInfo").setAttribute('value', turnPhaseTwo);
-      roundsPlayed++
-
-      if (roundsPlayed > 2) {
-        currentPhase = 2;
+        }
       }
+      if (currentPhase === 2) {
+        if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
+          handleEndOfCityProcedure(currentUnitNumberP2, 1); //Wechselt zu zweitem angegebenen Parameter, aka current player wechselt nun zu 1
 
-
-      handleCityTurnPart();
-      //TURN ENDE (Not actually wenn danach noch city stuff kommt) für player 1 -> moved all pieces ####################################################################
-      //currentplayer = 2;
-      //document.getElementById("--unitdiv1P2").style.borderColor = "red";
-      document.getElementById("--unitdiv" + (currentUnitNumber + 1)).style.borderColor = "#048836";
-      currentUnitNumber = 0;
-      possibleLimitReachedCheckX.set(mobsAny[currentUnitNumber].mtxLocal.translation.x + 1, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckY.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y + 1, 0);
-      possibleLimitReachedCheckXMinus.set(mobsAny[currentUnitNumber].mtxLocal.translation.x - 1, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckYMinus.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y - 1, 0);
-      possibleLimitReachedCheckStay.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
-      //handleUiPlayerswap();
-
-      console.log("turnplayer is now: " + currentplayer);
-      //console.log("turnphase is now: " + currentPhase);
-      return;
+          handleNPCAction();
+          //ENDING OF PLAYER 2 PHASE 2
+          return;
+        }
+      }
     }
-    else {
-      currentUnitNumber++;
-      possibleLimitReachedCheckX.set(mobsAny[currentUnitNumber].mtxLocal.translation.x + 1, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckY.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y + 1, 0);
-      possibleLimitReachedCheckXMinus.set(mobsAny[currentUnitNumber].mtxLocal.translation.x - 1, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckYMinus.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y - 1, 0);
-      possibleLimitReachedCheckStay.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
-      document.getElementById("--unitdiv" + (currentUnitNumber + 1)).style.borderColor = "red"; //--unitdiv1P2 für spieler 2
-      document.getElementById("--unitdiv" + currentUnitNumber).style.borderColor = "#048836";
-      //console.log(currentUnitNumber + " setze diese zahl auf grün");
-      return;
-    }
+  })
+}
+
+// ------------- Check Moving Mob abteil Anfang für Spieler 1 ---------------------------------------------------
+export function checkIfMoveMob(_direction?: string): boolean { //checks which directions the CURRENTUNITNUMBER can go, called in changeUnit()
+
+
+  const y: number = mobsAny[currentUnitNumber].mtxLocal.translation.y;
+  const x: number = mobsAny[currentUnitNumber].mtxLocal.translation.x;
+  let newPosition: ƒ.Vector3;
+
+  switch (_direction ?? movingDirection) {
+    case "x":
+      newPosition = new ƒ.Vector3(x + 1, y, 0);
+      zwischenSpeicherCoordinateLRC.set(((mobsAny[currentUnitNumber].mtxLocal.translation.x) + 1), mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
+      break;
+    case "-x":
+      newPosition = new ƒ.Vector3(x - 1, y, 0);
+      zwischenSpeicherCoordinateLRC.set(((mobsAny[currentUnitNumber].mtxLocal.translation.x) - 1), mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
+      break;
+    case "y":
+      newPosition = new ƒ.Vector3(x, y + 1, 0);
+      zwischenSpeicherCoordinateLRC.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, ((mobsAny[currentUnitNumber].mtxLocal.translation.y) + 1), 0);
+      break;
+    case "-y":
+      newPosition = new ƒ.Vector3(x, y - 1, 0);
+      zwischenSpeicherCoordinateLRC.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, ((mobsAny[currentUnitNumber].mtxLocal.translation.y) - 1), 0);
+      break;
+
+    default:
+      break;
   }
-  // ------------- Handle END TURN abteil END für Spieler 1 ---------------------------------------------------
 
-  // ------------- Handle END TURN abteil Anfang für Spieler 2 ---------------------------------------------------
-  function logInUnitP2(): void {
+  const wall: ƒ.Node = water.find((w) => w.mtxLocal.translation.equals(newPosition, 0));
+
+  if (wall) {
+    //sounds[1].play(false);
+    return false;
+  }
+
+  const path: ƒ.Node = paths.find((p) => p.mtxLocal.translation.equals(newPosition, 0));
+
+  if (!path) {
+    //sounds[1].play(false);
+    return false;
+  }
+
+  //console.log("x: " + x + " y: " + y);
+
+  if (zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckStay) || zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckX)
+    || zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckY) || zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckXMinus) || zwischenSpeicherCoordinateLRC.equals(possibleLimitReachedCheckYMinus)) {
+    //unitPositionPlaceholder.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0); //USED FOR UNIT INTERACTION to get position before it is moved
+    return true;
+  }
+  else {
+    return false; //Changed this to false since only if mob still in allowed grid it is allowed to move -> allowed to return true
+  }
+}
+// ------------- Check Moving Mob abteil END für Spieler 1 ---------------------------------------------------
+
+
+// ------------- Check Moving Mob abteil Anfang für Spieler 2 ---------------------------------------------------
+export function checkIfMoveMobP2(_direction?: string): boolean { //checks which directions the CURRENTUNITNUMBER can go, called in changeUnit()
+  const y: number = mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y;
+  const x: number = mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x;
+  let newPosition: ƒ.Vector3;
+
+  switch (_direction ?? movingDirection) {
+    case "x":
+      newPosition = new ƒ.Vector3(x + 1, y, 0);
+      zwischenSpeicherCoordinateLRCP2.set(((mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x) + 1), mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
+      break;
+    case "-x":
+      newPosition = new ƒ.Vector3(x - 1, y, 0);
+      zwischenSpeicherCoordinateLRCP2.set(((mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x) - 1), mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
+      break;
+    case "y":
+      newPosition = new ƒ.Vector3(x, y + 1, 0);
+      zwischenSpeicherCoordinateLRCP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, ((mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y) + 1), 0);
+      break;
+    case "-y":
+      newPosition = new ƒ.Vector3(x, y - 1, 0);
+      zwischenSpeicherCoordinateLRCP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, ((mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y) - 1), 0);
+      break;
+
+    default:
+      break;
+  }
+
+  const wall: ƒ.Node = water.find((w) => w.mtxLocal.translation.equals(newPosition, 0));
+
+  if (wall) {
+    //sounds[1].play(false);
+    return false;
+  }
+
+  const path: ƒ.Node = paths.find((p) => p.mtxLocal.translation.equals(newPosition, 0));
+
+  if (!path) {
+    //sounds[1].play(false);
+    return false;
+  }
+
+  if (zwischenSpeicherCoordinateLRCP2.equals(possibleLimitReachedCheckStayP2) || zwischenSpeicherCoordinateLRCP2.equals(possibleLimitReachedCheckXP2)
+    || zwischenSpeicherCoordinateLRCP2.equals(possibleLimitReachedCheckYP2) || zwischenSpeicherCoordinateLRCP2.equals(possibleLimitReachedCheckXMinusP2) || zwischenSpeicherCoordinateLRCP2.equals(possibleLimitReachedCheckYMinusP2)) {
+    //unitPositionPlaceholder.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0); //USED FOR UNIT INTERACTION to get position before it is moved
+    return true; //WENN zwischenSpeicher sagt er läuft auf ein feld zu dass aus den possibleLimitReachedCheck feldERN drüber hinausgeht, wirft es return false anstatt true.
+  }
+  else {
+    return false; //Changed this to false since only if mob still in allowed grid it is allowed to move -> allowed to return true
+  }
+}
+// ------------- Moving Mob abteil END PLAYER 2 ---------------------------------------------------
+
+// ------------- Handle END TURN abteil Anfang für Spieler 1 ---------------------------------------------------
+function logInUnit(): void {
+  if ((currentUnitNumber + 1) === mobsAny.length) {
     document.getElementById("--headingInfo").setAttribute('value', turnPhaseTwo);
-    if ((currentUnitNumberP2 + 1) === mobsP2Any.length) { //############### mögliche Bugstelle, ij
-      roundsPlayed++
-      if (roundsPlayed > 2) {
-        currentPhase = 2;
-      }
+    roundsPlayed++
 
-      handleCityTurnPartP2();
-
-      //TURN ENDE (Not actually wenn danach noch city stuff kommt) für player 2 -> moved all pieces #################################################################################
-      //currentplayer = 1;
-      //document.getElementById("--unitdiv1").style.borderColor = "red";
-      document.getElementById("--unitdiv" + (currentUnitNumberP2 + 1) + "P2").style.borderColor = "#048836";
-      //console.log("LRCStay before Unit count: " + possibleLimitReachedCheckStayP2);
-      currentUnitNumberP2 = 0;
-      possibleLimitReachedCheckXP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x + 1, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckYP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y + 1, 0);
-      possibleLimitReachedCheckXMinusP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x - 1, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckYMinusP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y - 1, 0);
-      possibleLimitReachedCheckStayP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
-      //console.log("LRCStay after Unit count: " + possibleLimitReachedCheckStayP2);
-
-      //handleUiPlayerswap();
-
-      console.log("turnplayer is now: " + currentplayer);
-      //console.log("turnphase is now: " + currentPhase);
-      return;
-    }
-    else {
-      //console.log("LRCStay before Unit count: " + possibleLimitReachedCheckStayP2);
-      currentUnitNumberP2++;
-      possibleLimitReachedCheckXP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x + 1, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckYP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y + 1, 0);
-      possibleLimitReachedCheckXMinusP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x - 1, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckYMinusP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y - 1, 0);
-      possibleLimitReachedCheckStayP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
-      //console.log("LRCStay after Unit count: " + possibleLimitReachedCheckStayP2);
-      document.getElementById("--unitdiv" + (currentUnitNumberP2 + 1) + "P2").style.borderColor = "red"; //--unitdiv1P2 für spieler 2
-      document.getElementById("--unitdiv" + currentUnitNumberP2 + "P2").style.borderColor = "#048836";
-      return;
-    }
-  }
-  // ------------- Handle END TURN abteil END für Spieler 2 ---------------------------------------------------
-
-  function handleUiPlayerswap(): void { //Handles player 1 and 2 UI changes when swapping.
-    //console.log(currentplayer + "<- current player -> should be 1 and also gold for p1: " + gold + " p2 gold: " + goldP2);
-
-    if (currentplayer === 1) {
-      //console.log(currentplayer + "<- current player and also gold for p1: " + gold);
-
-      //alle Ui units auf display none machen, damit ich sie nicht einzeln aufzählen muss.
-      for (let i = 1; i < 10; i++) { //goes through all 9 possible Units and makes turnplayer troops invisible
-        document.getElementById("--unitdiv" + i + "P2").style.display = 'none';
-      }
-      for (let i = 1; i < 10; i++) { //goes through all 9 possible Units and makes turnplayer troops visible
-        document.getElementById("--unitdiv" + i).style.display = null;
-      }
-    }
-    else {
-
-      //alle Ui units auf display none machen, damit ich sie nicht einzeln aufzählen muss.
-      for (let i = 1; i < 10; i++) { //goes through all 9 possible Units and makes turnplayer troops invisible
-        document.getElementById("--unitdiv" + i).style.display = 'none';
-      }
-      for (let i = 1; i < 10; i++) { //goes through all 9 possible Units and makes turnplayer troops visible
-        document.getElementById("--unitdiv" + i + "P2").style.display = null;
-      }
-    };
-  }
-
-  // ------------- Creating Mobs, both player ---------------------------------------------------
-  function creatingMob(whichUnit: number, graph: ƒ.Node, city: City, cityP2: City): void {  //1=mobs, 2=mobs2, 3=mobsP2, 4=mobs2P2 für "whichUnit" ---- Benötigt graph, city und cityP2 da diese nicht Global sein können.
-    if (whichUnit === 1) {
-      if ((mobsAny.length + mobsAny.length) != 9) {
-        if (addMobLimitCounter > 0) {
-          if (gold >= Balance.costOfMobs[0].cost) {
-            gold -= Balance.costOfMobs[0].cost;
-            score += Balance.costOfMobs[0].cost;
-            document.getElementById("--score_player_one").setAttribute('value', score.toString());
-            document.getElementById("--goldInput").setAttribute('value', gold.toString());
-            addMobLimitCounter--
-            i++
-            console.log("Gesamte anzahl an Units: Mob" + i)
-            const mob = new Mob("Mob" + i);
-            let cityPosition = new ƒ.Vector3(city.mtxWorld.translation.x, city.mtxWorld.translation.y, 0);
-            //console.log(cityPosition)
-            //mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
-            mob.mtxLocal.translate(cityPosition);
-            graph.addChild(mob);
-            mobsAny.push(mob);
-            mob.spawn(); //Useless stuff
-            for (let iCounter = 0; iCounter < mobsAny.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
-              if (iCounter === mobsAny.length) {
-                document.getElementById("--" + mobsAny.length + "img1").style.display = null;
-                document.getElementById("--" + mobsAny.length + "Filler").style.display = 'none';
-              };
-            };
-          };
-        };
-      }
-    }
-    if (whichUnit === 2) {
-      if ((mobsAny.length + mobsAny.length) != 9) {
-        if (addMobLimitCounter > 0) {
-          if (gold >= Balance.costOfMobs[1].cost) {
-            gold -= Balance.costOfMobs[1].cost;
-            score += Balance.costOfMobs[1].cost;
-            document.getElementById("--score_player_one").setAttribute('value', score.toString());
-            document.getElementById("--goldInput").setAttribute('value', gold.toString());
-            addMobLimitCounter--
-            i++
-            console.log("Gesamte anzahl an Units: Mob" + i)
-            const mob2 = new Mob2("Mob2" + i);
-            let cityPosition = new ƒ.Vector3(city.mtxWorld.translation.x, city.mtxWorld.translation.y, 0);
-            mob2.mtxLocal.translate(cityPosition);
-            graph.addChild(mob2);
-            mobsAny.push(mob2);
-            mob2.spawn();
-            for (let iCounter = 0; iCounter < mobsAny.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
-              if (iCounter === mobsAny.length) {
-                document.getElementById("--" + mobsAny.length + "img3").style.display = null;
-                document.getElementById("--" + mobsAny.length + "Filler").style.display = 'none';
-                //console.log("--" + i + "img3")
-              };
-            };
-          };
-        };
-      }
-    }
-    if (whichUnit === 3) {
-      if ((mobsP2Any.length + mobsP2Any.length) != 9) {
-        if (addMobLimitCounterP2 > 0) {
-          if (goldP2 >= Balance.costOfMobs[0].cost) {
-            goldP2 -= Balance.costOfMobs[0].cost;
-            scoreP2 += Balance.costOfMobs[0].cost;
-            document.getElementById("--score_player_two").setAttribute('value', scoreP2.toString());
-            document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
-            addMobLimitCounterP2--
-            i++
-            console.log("Gesamte anzahl an Units: Mob" + i)
-            const mobP2 = new MobP2("MobP2" + i);
-            mobP2.spawn();
-            let cityPosition = new ƒ.Vector3(cityP2.mtxWorld.translation.x, cityP2.mtxWorld.translation.y, 0);
-            mobP2.mtxLocal.translate(cityPosition);
-            graph.addChild(mobP2);
-            mobsP2Any.push(mobP2);
-            mobP2.spawn();
-            for (let iCounter = 0; iCounter < mobsP2Any.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
-              if (iCounter === mobsP2Any.length) {
-                document.getElementById("--" + mobsP2Any.length + "img2").style.display = null;
-                document.getElementById("--" + mobsP2Any.length + "FillerP2").style.display = 'none';
-                //console.log("--" + i + "img1")
-              };
-            };
-          };
-        };
-      }
-    }
-    if (whichUnit === 4) {
-      if ((mobsP2Any.length + mobsP2Any.length) != 9) {
-        if (addMobLimitCounterP2 > 0) {
-          if (goldP2 >= Balance.costOfMobs[1].cost) {
-            goldP2 -= Balance.costOfMobs[1].cost;
-            scoreP2 += Balance.costOfMobs[1].cost;
-            document.getElementById("--score_player_two").setAttribute('value', scoreP2.toString());
-            document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
-            addMobLimitCounterP2--
-            i++
-            console.log("Gesamte anzahl an Units: Mob" + i)
-            const mob2P2 = new Mob2P2("Mob2P2" + i);
-            let cityPosition = new ƒ.Vector3(cityP2.mtxWorld.translation.x, cityP2.mtxWorld.translation.y, 0);
-            mob2P2.mtxLocal.translate(cityPosition);
-            graph.addChild(mob2P2);
-            mobsP2Any.push(mob2P2);
-            mob2P2.spawn();
-            console.log(mobsP2Any + " :mobsP2 vs mob2P2: " + mob2P2)
-            for (let iCounter = 0; iCounter < mobsP2Any.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
-              if (iCounter === mobsP2Any.length) {
-                document.getElementById("--" + mobsP2Any.length + "img4").style.display = null;
-                document.getElementById("--" + mobsP2Any.length + "FillerP2").style.display = 'none';
-                //console.log("--" + i + "img1")
-              };
-            };
-          };
-        };
-      }
-    }
-  }
-  // ------------- Creating Mobs, both player END ---------------------------------------------------
-
-
-  // ------------- Handles the city part of the turn, after all troops have been moved. ---------------------------------------------------
-  function handleCityTurnPart() {
-    document.getElementById("--addMob").style.display = null;
-    document.getElementById("--addBuildings").style.display = null;
-    document.getElementById("--addBuildingsP2").style.display = 'none';
-    document.getElementById("--infoBuildings").style.display = null;
-    document.getElementById("--infoBuildingsP2").style.display = 'none';
     if (roundsPlayed > 2) {
-      document.getElementById("--addMobP2").style.display = 'none';
-      //console.log("Setze BuildingP2 und MobP2 zu none");
-    };
-    addMobLimitCounter = mobBuyLimit;
-  }
-
-
-  function handleCityTurnPartP2() {
-    document.getElementById("--addBuildingsP2").style.display = null;
-    document.getElementById("--infoBuildingsP2").style.display = null;
-    document.getElementById("--addMobP2").style.display = null;
-    document.getElementById("--addBuildings").style.display = 'none';
-    document.getElementById("--infoBuildings").style.display = 'none';
-    if (roundsPlayed > 2) {
-      document.getElementById("--addMob").style.display = 'none';
-
-      //console.log("Setze BuildingP1 und MobP1 zu none");
-    };
-    addMobLimitCounterP2 = mobBuyLimit;
-  }
-  // ------------- Handles the city part of the turn, after all troops have been moved. END ---------------------------------------------------
-
-
-  function handleEndOfCityProcedure(currentUnitNumb: number, setPlayer: number) {
-    let playerPlaceHolder: string = "";
-    let playerPlaceHolder2: string = "P2";
-    if (setPlayer === 1) { //wenn spieler zu 1 wechseln soll nimm diese modifikatoren
-      playerPlaceHolder = "P2";
-      playerPlaceHolder2 = "";
-      gold += (goldGain + (anzMine * goldMineOutput));
-      score += (goldGain + (anzMine * goldMineOutput));
-      document.getElementById("--score_player_one").setAttribute('value', score.toString());
-      document.getElementById("--goldInput").setAttribute('value', gold.toString());
-      document.getElementById("--gold").style.display = null;
-      document.getElementById("--goldP2").style.display = 'none';
+      currentPhase = 2;
     }
-    else {
-      if (roundsPlayed > 1) { //Fixes a bug, i dont know why p2 gets one tick more than P1 so iam reducing one turn for P2
-        goldP2 += (goldGain + (anzMineP2 * goldMineOutput));
-        scoreP2 += (goldGain + (anzMineP2 * goldMineOutput));
-        document.getElementById("--score_player_two").setAttribute('value', scoreP2.toString());
-      };
-      //console.log("P2 gets money. ")
-      document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
-      document.getElementById("--goldP2").style.display = null;
-      document.getElementById("--gold").style.display = 'none';
-    }
-    document.getElementById("--unitdiv1" + playerPlaceHolder2).style.borderColor = "red";
-    document.getElementById("--unitdiv" + (currentUnitNumb + 1) + "" + playerPlaceHolder).style.borderColor = "#048836";
-    //console.log("ENDING P" + currentplayer);
-    currentPhase = 1;
-    currentplayer = setPlayer;
-    //console.log(setPlayer);
-    document.getElementById("--addMob" + playerPlaceHolder).style.display = 'none';
-    document.getElementById("--addBuildings" + playerPlaceHolder).style.display = 'none';
-    document.getElementById("--infoBuildings" + playerPlaceHolder).style.display = 'none';
-    //document.querySelector("#anz_mine")
-    handleUiPlayerswap();
-    document.getElementById("--headingInfo").setAttribute('value', turnPhaseOne);
 
+
+    handleCityTurnPart();
+    //TURN ENDE (Not actually wenn danach noch city stuff kommt) für player 1 -> moved all pieces ####################################################################
+    //currentplayer = 2;
+    //document.getElementById("--unitdiv1P2").style.borderColor = "red";
+    document.getElementById("--unitdiv" + (currentUnitNumber + 1)).style.borderColor = "#048836";
+    currentUnitNumber = 0;
+    possibleLimitReachedCheckX.set(mobsAny[currentUnitNumber].mtxLocal.translation.x + 1, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
+    possibleLimitReachedCheckY.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y + 1, 0);
+    possibleLimitReachedCheckXMinus.set(mobsAny[currentUnitNumber].mtxLocal.translation.x - 1, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
+    possibleLimitReachedCheckYMinus.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y - 1, 0);
+    possibleLimitReachedCheckStay.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
+    //handleUiPlayerswap();
+
+    console.log("turnplayer is now: " + currentplayer);
+    //console.log("turnphase is now: " + currentPhase);
     return;
   }
+  else {
+    currentUnitNumber++;
+    possibleLimitReachedCheckX.set(mobsAny[currentUnitNumber].mtxLocal.translation.x + 1, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
+    possibleLimitReachedCheckY.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y + 1, 0);
+    possibleLimitReachedCheckXMinus.set(mobsAny[currentUnitNumber].mtxLocal.translation.x - 1, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
+    possibleLimitReachedCheckYMinus.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y - 1, 0);
+    possibleLimitReachedCheckStay.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
+    document.getElementById("--unitdiv" + (currentUnitNumber + 1)).style.borderColor = "red"; //--unitdiv1P2 für spieler 2
+    document.getElementById("--unitdiv" + currentUnitNumber).style.borderColor = "#048836";
+    //console.log(currentUnitNumber + " setze diese zahl auf grün");
+    return;
+  }
+}
+// ------------- Handle END TURN abteil END für Spieler 1 ---------------------------------------------------
 
-  function creatingBuildings() { //Handles all Buildings, needs additional parameter if multiple Buildings should be available
-    if (currentplayer === 1) {
-      if (gold >= costMineBuild) {
-        gold -= costMineBuild;
-        document.getElementById("--goldInput").setAttribute('value', gold.toString());
-        anzMine++;
-        document.querySelector("#anz_mine").setAttribute('value', anzMine.toString());
-      }
+// ------------- Handle END TURN abteil Anfang für Spieler 2 ---------------------------------------------------
+function logInUnitP2(): void {
+  document.getElementById("--headingInfo").setAttribute('value', turnPhaseTwo);
+  if ((currentUnitNumberP2 + 1) === mobsP2Any.length) { //############### mögliche Bugstelle, ij
+    roundsPlayed++
+    if (roundsPlayed > 2) {
+      currentPhase = 2;
     }
-    if (currentplayer === 2) {
-      if (goldP2 >= costMineBuild) {
-        goldP2 -= costMineBuild;
-        document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
-        anzMineP2++;
-        document.querySelector("#anz_minep2").setAttribute('value', anzMineP2.toString());
-      }
+
+    handleCityTurnPartP2();
+
+    //TURN ENDE (Not actually wenn danach noch city stuff kommt) für player 2 -> moved all pieces #################################################################################
+    //currentplayer = 1;
+    //document.getElementById("--unitdiv1").style.borderColor = "red";
+    document.getElementById("--unitdiv" + (currentUnitNumberP2 + 1) + "P2").style.borderColor = "#048836";
+    //console.log("LRCStay before Unit count: " + possibleLimitReachedCheckStayP2);
+    currentUnitNumberP2 = 0;
+    possibleLimitReachedCheckXP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x + 1, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
+    possibleLimitReachedCheckYP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y + 1, 0);
+    possibleLimitReachedCheckXMinusP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x - 1, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
+    possibleLimitReachedCheckYMinusP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y - 1, 0);
+    possibleLimitReachedCheckStayP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
+    //console.log("LRCStay after Unit count: " + possibleLimitReachedCheckStayP2);
+
+    //handleUiPlayerswap();
+
+    console.log("turnplayer is now: " + currentplayer);
+    //console.log("turnphase is now: " + currentPhase);
+    return;
+  }
+  else {
+    //console.log("LRCStay before Unit count: " + possibleLimitReachedCheckStayP2);
+    currentUnitNumberP2++;
+    possibleLimitReachedCheckXP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x + 1, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
+    possibleLimitReachedCheckYP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y + 1, 0);
+    possibleLimitReachedCheckXMinusP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x - 1, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
+    possibleLimitReachedCheckYMinusP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y - 1, 0);
+    possibleLimitReachedCheckStayP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
+    //console.log("LRCStay after Unit count: " + possibleLimitReachedCheckStayP2);
+    document.getElementById("--unitdiv" + (currentUnitNumberP2 + 1) + "P2").style.borderColor = "red"; //--unitdiv1P2 für spieler 2
+    document.getElementById("--unitdiv" + currentUnitNumberP2 + "P2").style.borderColor = "#048836";
+    return;
+  }
+}
+// ------------- Handle END TURN abteil END für Spieler 2 ---------------------------------------------------
+
+function handleUiPlayerswap(): void { //Handles player 1 and 2 UI changes when swapping.
+  //console.log(currentplayer + "<- current player -> should be 1 and also gold for p1: " + gold + " p2 gold: " + goldP2);
+
+  if (currentplayer === 1) {
+    //console.log(currentplayer + "<- current player and also gold for p1: " + gold);
+
+    //alle Ui units auf display none machen, damit ich sie nicht einzeln aufzählen muss.
+    for (let i = 1; i < 10; i++) { //goes through all 9 possible Units and makes turnplayer troops invisible
+      document.getElementById("--unitdiv" + i + "P2").style.display = 'none';
+    }
+    for (let i = 1; i < 10; i++) { //goes through all 9 possible Units and makes turnplayer troops visible
+      document.getElementById("--unitdiv" + i).style.display = null;
     }
   }
+  else {
 
-  function unitInteraction(graph: ƒ.Node) {
-    //auf Placeholder zugreifen zum Vergleich mit ursprünglicher position
-    //unitPositionPlaceholder NOT THIS ONE
-    //possibleLimitReachedCheckStay IS ACTUALLY THE CORE POSITION FOR THE UNIT.
+    //alle Ui units auf display none machen, damit ich sie nicht einzeln aufzählen muss.
+    for (let i = 1; i < 10; i++) { //goes through all 9 possible Units and makes turnplayer troops invisible
+      document.getElementById("--unitdiv" + i).style.display = 'none';
+    }
+    for (let i = 1; i < 10; i++) { //goes through all 9 possible Units and makes turnplayer troops visible
+      document.getElementById("--unitdiv" + i + "P2").style.display = null;
+    }
+  };
+}
 
-
-
-
-    if (currentplayer === 1) {
-      //In schleife unitPositionPlaceholder mit allen Figuren von Spieler 2 abfragen
-      for (let iCounter2 = 0; iCounter2 < mobsP2Any.length; iCounter2++) {
-        if (mobsAny[currentUnitNumber].mtxLocal.translation.equals(mobsP2Any[iCounter2].mtxLocal.translation)) { // UNIT TO UNIT INTERACTION P1
-          mobsAny[currentUnitNumber].mtxLocal.translation = (possibleLimitReachedCheckStay);
-          mobsP2Any[iCounter2].health -= mobsAny[currentUnitNumber].dmg;
-          console.log("Health of p2 unit: " + mobsP2Any[iCounter2].health);
-          gold += goldGain / 2;
-          score += goldGain / 2;
+// ------------- Creating Mobs, both player ---------------------------------------------------
+function creatingMob(whichUnit: number, graph: ƒ.Node, city: City, cityP2: City): void {  //1=mobs, 2=mobs2, 3=mobsP2, 4=mobs2P2 für "whichUnit" ---- Benötigt graph, city und cityP2 da diese nicht Global sein können.
+  if (whichUnit === 1) {
+    if ((mobsAny.length + mobsAny.length) != 9) {
+      if (addMobLimitCounter > 0) {
+        if (gold >= Balance.costOfMobs[0].cost) {
+          gold -= Balance.costOfMobs[0].cost;
+          score += Balance.costOfMobs[0].cost;
           document.getElementById("--score_player_one").setAttribute('value', score.toString());
           document.getElementById("--goldInput").setAttribute('value', gold.toString());
-          sounds[1].play(true);
-          if (mobsP2Any[iCounter2].health < 1) {
-            let spliceRemoved: any[] = [];
-            //removeChild(mobsAny[iCounter3]);
-            graph.removeChild(mobsP2Any[iCounter2]);
-            spliceRemoved = mobsP2Any.splice(iCounter2, 1);
-            console.log(spliceRemoved);
-            console.log(mobsP2Any);
-            delete spliceRemoved[0];
-          }
-        }
-      }
-      if (mobsAny[currentUnitNumber].mtxLocal.translation.equals(cityNodeP2[0].mtxWorld.translation)){ // CITY INTERACTION P1
-        turnsNeededForCapture--;
-        if (turnsNeededForCapture < 1){
-          alert("City of P2 has been captured!");
-          let spliceRemoved: any[] = [];
-            graph.removeChild(cityNodeP2[cityNodeP2.length - 1]);
-            spliceRemoved = cityNodeP2.splice(cityNodeP2.length - 1, 1);
-            console.log(spliceRemoved);
-            console.log(cityNodeP2);
-            delete spliceRemoved[0];
-          if (cityNodeP2.length === 0){
-            alert("All cities have been captured, Player 1 Wins!");
-            window.localStorage.setItem("highscore", score.toString());
-            location.reload();
-          }
-        }
-      }
+          addMobLimitCounter--
+          i++
+          console.log("Gesamte anzahl an Units: Mob" + i)
+          const mob = new Mob("Mob" + i);
+          let cityPosition = new ƒ.Vector3(city.mtxWorld.translation.x, city.mtxWorld.translation.y, 0);
+          //console.log(cityPosition)
+          //mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
+          mob.mtxLocal.translate(cityPosition);
+          graph.addChild(mob);
+          mobsAny.push(mob);
+          mob.spawn(); //Useless stuff
+          for (let iCounter = 0; iCounter < mobsAny.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+            if (iCounter === mobsAny.length) {
+              document.getElementById("--" + mobsAny.length + "img1").style.display = null;
+              document.getElementById("--" + mobsAny.length + "Filler").style.display = 'none';
+            };
+          };
+        };
+      };
     }
-
-    if (currentplayer === 2) {
-      //In schleife unitPositionPlaceholder mit allen Figuren von Spieler 1 abfragen
-      for (let iCounter3 = 0; iCounter3 < mobsAny.length; iCounter3++) {
-        if (mobsP2Any[currentUnitNumberP2].mtxLocal.translation.equals(mobsAny[iCounter3].mtxLocal.translation)) { // UNIT TO UNIT INTERACTION P2
-          mobsP2Any[currentUnitNumberP2].mtxLocal.translation = (possibleLimitReachedCheckStayP2);
-          mobsAny[iCounter3].health -= mobsP2Any[currentUnitNumberP2].dmg;
-          console.log("Health of p1 unit: " + mobsAny[iCounter3].health);
-          goldP2 += goldGain / 2;
-          scoreP2 += goldGain / 2;
+  }
+  if (whichUnit === 2) {
+    if ((mobsAny.length + mobsAny.length) != 9) {
+      if (addMobLimitCounter > 0) {
+        if (gold >= Balance.costOfMobs[1].cost) {
+          gold -= Balance.costOfMobs[1].cost;
+          score += Balance.costOfMobs[1].cost;
+          document.getElementById("--score_player_one").setAttribute('value', score.toString());
+          document.getElementById("--goldInput").setAttribute('value', gold.toString());
+          addMobLimitCounter--
+          i++
+          console.log("Gesamte anzahl an Units: Mob" + i)
+          const mob2 = new Mob2("Mob2" + i);
+          let cityPosition = new ƒ.Vector3(city.mtxWorld.translation.x, city.mtxWorld.translation.y, 0);
+          mob2.mtxLocal.translate(cityPosition);
+          graph.addChild(mob2);
+          mobsAny.push(mob2);
+          mob2.spawn();
+          for (let iCounter = 0; iCounter < mobsAny.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+            if (iCounter === mobsAny.length) {
+              document.getElementById("--" + mobsAny.length + "img3").style.display = null;
+              document.getElementById("--" + mobsAny.length + "Filler").style.display = 'none';
+              //console.log("--" + i + "img3")
+            };
+          };
+        };
+      };
+    }
+  }
+  if (whichUnit === 3) {
+    if ((mobsP2Any.length + mobsP2Any.length) != 9) {
+      if (addMobLimitCounterP2 > 0) {
+        if (goldP2 >= Balance.costOfMobs[0].cost) {
+          goldP2 -= Balance.costOfMobs[0].cost;
+          scoreP2 += Balance.costOfMobs[0].cost;
           document.getElementById("--score_player_two").setAttribute('value', scoreP2.toString());
           document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
-          sounds[1].play(true);
-          if (mobsAny[iCounter3].health < 1) {
-            let spliceRemoved: any[] = [];
-            //removeChild(mobsAny[iCounter3]);
-            graph.removeChild(mobsAny[iCounter3]);
-            spliceRemoved = mobsAny.splice(iCounter3, 1);
-            console.log(spliceRemoved);
-            console.log(mobsAny);
-            delete spliceRemoved[0];
-          }
+          addMobLimitCounterP2--
+          i++
+          console.log("Gesamte anzahl an Units: Mob" + i)
+          const mobP2 = new MobP2("MobP2" + i);
+          mobP2.spawn();
+          let cityPosition = new ƒ.Vector3(cityP2.mtxWorld.translation.x, cityP2.mtxWorld.translation.y, 0);
+          mobP2.mtxLocal.translate(cityPosition);
+          graph.addChild(mobP2);
+          mobsP2Any.push(mobP2);
+          mobP2.spawn();
+          for (let iCounter = 0; iCounter < mobsP2Any.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+            if (iCounter === mobsP2Any.length) {
+              document.getElementById("--" + mobsP2Any.length + "img2").style.display = null;
+              document.getElementById("--" + mobsP2Any.length + "FillerP2").style.display = 'none';
+              //console.log("--" + i + "img1")
+            };
+          };
+        };
+      };
+    }
+  }
+  if (whichUnit === 4) {
+    if ((mobsP2Any.length + mobsP2Any.length) != 9) {
+      if (addMobLimitCounterP2 > 0) {
+        if (goldP2 >= Balance.costOfMobs[1].cost) {
+          goldP2 -= Balance.costOfMobs[1].cost;
+          scoreP2 += Balance.costOfMobs[1].cost;
+          document.getElementById("--score_player_two").setAttribute('value', scoreP2.toString());
+          document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
+          addMobLimitCounterP2--
+          i++
+          console.log("Gesamte anzahl an Units: Mob" + i)
+          const mob2P2 = new Mob2P2("Mob2P2" + i);
+          let cityPosition = new ƒ.Vector3(cityP2.mtxWorld.translation.x, cityP2.mtxWorld.translation.y, 0);
+          mob2P2.mtxLocal.translate(cityPosition);
+          graph.addChild(mob2P2);
+          mobsP2Any.push(mob2P2);
+          mob2P2.spawn();
+          console.log(mobsP2Any + " :mobsP2 vs mob2P2: " + mob2P2)
+          for (let iCounter = 0; iCounter < mobsP2Any.length + 1; iCounter++) { //i ist hier von der function drüber die Zahl des gerade geaddeten mobs, bzw die länge des arrays.
+            if (iCounter === mobsP2Any.length) {
+              document.getElementById("--" + mobsP2Any.length + "img4").style.display = null;
+              document.getElementById("--" + mobsP2Any.length + "FillerP2").style.display = 'none';
+              //console.log("--" + i + "img1")
+            };
+          };
+        };
+      };
+    }
+  }
+}
+// ------------- Creating Mobs, both player END ---------------------------------------------------
+
+
+// ------------- Handles the city part of the turn, after all troops have been moved. ---------------------------------------------------
+function handleCityTurnPart() {
+  document.getElementById("--addMob").style.display = null;
+  document.getElementById("--addBuildings").style.display = null;
+  document.getElementById("--addBuildingsP2").style.display = 'none';
+  document.getElementById("--infoBuildings").style.display = null;
+  document.getElementById("--infoBuildingsP2").style.display = 'none';
+  if (roundsPlayed > 2) {
+    document.getElementById("--addMobP2").style.display = 'none';
+    //console.log("Setze BuildingP2 und MobP2 zu none");
+  };
+  addMobLimitCounter = mobBuyLimit;
+}
+
+
+function handleCityTurnPartP2() {
+  document.getElementById("--addBuildingsP2").style.display = null;
+  document.getElementById("--infoBuildingsP2").style.display = null;
+  document.getElementById("--addMobP2").style.display = null;
+  document.getElementById("--addBuildings").style.display = 'none';
+  document.getElementById("--infoBuildings").style.display = 'none';
+  if (roundsPlayed > 2) {
+    document.getElementById("--addMob").style.display = 'none';
+
+    //console.log("Setze BuildingP1 und MobP1 zu none");
+  };
+  addMobLimitCounterP2 = mobBuyLimit;
+}
+// ------------- Handles the city part of the turn, after all troops have been moved. END ---------------------------------------------------
+
+
+function handleEndOfCityProcedure(currentUnitNumb: number, setPlayer: number) {
+  let playerPlaceHolder: string = "";
+  let playerPlaceHolder2: string = "P2";
+  if (setPlayer === 1) { //wenn spieler zu 1 wechseln soll nimm diese modifikatoren
+    playerPlaceHolder = "P2";
+    playerPlaceHolder2 = "";
+    gold += (goldGain + (anzMine * goldMineOutput));
+    score += (goldGain + (anzMine * goldMineOutput));
+    document.getElementById("--score_player_one").setAttribute('value', score.toString());
+    document.getElementById("--goldInput").setAttribute('value', gold.toString());
+    document.getElementById("--gold").style.display = null;
+    document.getElementById("--goldP2").style.display = 'none';
+  }
+  else {
+    if (roundsPlayed > 1) { //Fixes a bug, i dont know why p2 gets one tick more than P1 so iam reducing one turn for P2
+      goldP2 += (goldGain + (anzMineP2 * goldMineOutput));
+      scoreP2 += (goldGain + (anzMineP2 * goldMineOutput));
+      document.getElementById("--score_player_two").setAttribute('value', scoreP2.toString());
+    };
+    //console.log("P2 gets money. ")
+    document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
+    document.getElementById("--goldP2").style.display = null;
+    document.getElementById("--gold").style.display = 'none';
+  }
+  document.getElementById("--unitdiv1" + playerPlaceHolder2).style.borderColor = "red";
+  document.getElementById("--unitdiv" + (currentUnitNumb + 1) + "" + playerPlaceHolder).style.borderColor = "#048836";
+  //console.log("ENDING P" + currentplayer);
+  currentPhase = 1;
+  currentplayer = setPlayer;
+  //console.log(setPlayer);
+  document.getElementById("--addMob" + playerPlaceHolder).style.display = 'none';
+  document.getElementById("--addBuildings" + playerPlaceHolder).style.display = 'none';
+  document.getElementById("--infoBuildings" + playerPlaceHolder).style.display = 'none';
+  //document.querySelector("#anz_mine")
+  handleUiPlayerswap();
+  document.getElementById("--headingInfo").setAttribute('value', turnPhaseOne);
+
+  return;
+}
+
+function creatingBuildings() { //Handles all Buildings, needs additional parameter if multiple Buildings should be available
+  if (currentplayer === 1) {
+    if (gold >= costMineBuild) {
+      gold -= costMineBuild;
+      document.getElementById("--goldInput").setAttribute('value', gold.toString());
+      anzMine++;
+      document.querySelector("#anz_mine").setAttribute('value', anzMine.toString());
+    }
+  }
+  if (currentplayer === 2) {
+    if (goldP2 >= costMineBuild) {
+      goldP2 -= costMineBuild;
+      document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
+      anzMineP2++;
+      document.querySelector("#anz_minep2").setAttribute('value', anzMineP2.toString());
+    }
+  }
+}
+
+function unitInteraction(graph: ƒ.Node) {
+  //auf Placeholder zugreifen zum Vergleich mit ursprünglicher position
+  //unitPositionPlaceholder NOT THIS ONE
+  //possibleLimitReachedCheckStay IS ACTUALLY THE CORE POSITION FOR THE UNIT.
+
+
+
+
+  if (currentplayer === 1) {
+    //In schleife unitPositionPlaceholder mit allen Figuren von Spieler 2 abfragen
+    for (let iCounter2 = 0; iCounter2 < mobsP2Any.length; iCounter2++) {
+      if (mobsAny[currentUnitNumber].mtxLocal.translation.equals(mobsP2Any[iCounter2].mtxLocal.translation)) { // UNIT TO UNIT INTERACTION P1
+        mobsAny[currentUnitNumber].mtxLocal.translation = (possibleLimitReachedCheckStay);
+        mobsP2Any[iCounter2].health -= mobsAny[currentUnitNumber].dmg;
+        console.log("Health of p2 unit: " + mobsP2Any[iCounter2].health);
+        gold += goldGain / 2;
+        score += goldGain / 2;
+        document.getElementById("--score_player_one").setAttribute('value', score.toString());
+        document.getElementById("--goldInput").setAttribute('value', gold.toString());
+        sounds[1].play(true);
+        if (mobsP2Any[iCounter2].health < 1) {
+          let spliceRemoved: any[] = [];
+          //removeChild(mobsAny[iCounter3]);
+          graph.removeChild(mobsP2Any[iCounter2]);
+          spliceRemoved = mobsP2Any.splice(iCounter2, 1);
+          console.log(spliceRemoved);
+          console.log(mobsP2Any);
+          delete spliceRemoved[0];
         }
       }
+    }
+    if (mobsAny[currentUnitNumber].mtxLocal.translation.equals(cityNodeP2[0].mtxWorld.translation)) { // CITY INTERACTION P1
+      turnsNeededForCapture--;
+      if (turnsNeededForCapture < 1) {
+        //alert("City of P2 has been captured!");
+        let spliceRemoved: any[] = [];
+        graph.removeChild(cityNodeP2[cityNodeP2.length - 1]);
+        spliceRemoved = cityNodeP2.splice(cityNodeP2.length - 1, 1);
+        console.log(spliceRemoved);
+        console.log(cityNodeP2);
+        delete spliceRemoved[0];
+        if (cityNodeP2.length === 0) {
+          console.log("bitch1");
+          currentPhase = 10;
+          currentplayer = 0;
+          document.getElementById("--headingInfo").setAttribute('value', turnPhaseWinP1);
+        }
+      }
+    }
+  }
 
-      if (mobsP2Any[currentUnitNumberP2].mtxLocal.translation.equals(cityNode[0].mtxWorld.translation)){ // CITY INTERACTION P2
-        turnsNeededForCapture--;
-        if (turnsNeededForCapture < 1){ //THIS DOESNT WORK IF THE CAPTURED CITIES ARE RANDOM!!
-          alert("City of P1 has been captured!");
+  if (currentplayer === 2) {
+    //In schleife unitPositionPlaceholder mit allen Figuren von Spieler 1 abfragen
+    for (let iCounter3 = 0; iCounter3 < mobsAny.length; iCounter3++) {
+      if (mobsP2Any[currentUnitNumberP2].mtxLocal.translation.equals(mobsAny[iCounter3].mtxLocal.translation)) { // UNIT TO UNIT INTERACTION P2
+        mobsP2Any[currentUnitNumberP2].mtxLocal.translation = (possibleLimitReachedCheckStayP2);
+        mobsAny[iCounter3].health -= mobsP2Any[currentUnitNumberP2].dmg;
+        console.log("Health of p1 unit: " + mobsAny[iCounter3].health);
+        goldP2 += goldGain / 2;
+        scoreP2 += goldGain / 2;
+        document.getElementById("--score_player_two").setAttribute('value', scoreP2.toString());
+        document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
+        sounds[1].play(true);
+        if (mobsAny[iCounter3].health < 1) {
           let spliceRemoved: any[] = [];
-            //removeChild(mobsAny[iCounter3]);
-            graph.removeChild(cityNode[cityNode.length - 1]);
-            spliceRemoved = cityNode.splice(cityNode.length - 1, 1);
-            console.log(spliceRemoved);
-            console.log(cityNode);
-            delete spliceRemoved[0];
-          if (cityNode.length === 0){
-            alert("All cities have been captured, Player 2 Wins!");
-            window.localStorage.setItem("highscore", scoreP2.toString());
-            location.reload();
-          }
+          //removeChild(mobsAny[iCounter3]);
+          graph.removeChild(mobsAny[iCounter3]);
+          spliceRemoved = mobsAny.splice(iCounter3, 1);
+          console.log(spliceRemoved);
+          console.log(mobsAny);
+          delete spliceRemoved[0];
         }
       }
     }
 
+    if (mobsP2Any[currentUnitNumberP2].mtxLocal.translation.equals(cityNode[0].mtxWorld.translation)) { // CITY INTERACTION P2
+      turnsNeededForCapture--;
+      if (turnsNeededForCapture < 1) { //THIS DOESNT WORK IF THE CAPTURED CITIES ARE RANDOM!!
+        //alert("City of P1 has been captured!");
+        let spliceRemoved: any[] = [];
+        //removeChild(mobsAny[iCounter3]);
+        graph.removeChild(cityNode[cityNode.length - 1]);
+        spliceRemoved = cityNode.splice(cityNode.length - 1, 1);
+        console.log(spliceRemoved);
+        console.log(cityNode);
+        delete spliceRemoved[0];
+        if (cityNode.length === 0) {
+          console.log("bitch");
+          currentPhase = 10;
+          currentplayer = 0;
+          document.getElementById("--headingInfo").setAttribute('value', turnPhaseWinP2);
+        }
+      }
+    }
   }
 
-  function hndPlaySpawnSound() { //Yes iam kind of an useless event, but an event nonetheless. -> Jirka's criteria list made me do this
-    //console.log("I was played");
-    sounds[2].play(true);
-  }
+}
 
-  function handleNPCAction(){ //What does the NPC units
+function hndPlaySpawnSound() { //Yes iam kind of an useless event, but an event nonetheless. -> Jirka's criteria list made me do this
+  //console.log("I was played");
+  sounds[2].play(true);
+}
 
-  }
+function handleNPCAction() { //What does the NPC units
+
+}
 
   /*function useInteractable() { //Search function and how its used before.
     //Spielerfigur == position von interactable, soll dann hochzählen
