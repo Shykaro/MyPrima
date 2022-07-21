@@ -107,7 +107,7 @@ canvas.fullscreen {
 
 .--boxtopmidleft {
     left: 0px;
-    right: 50vw;
+    right: 75vw;
     top: 60px;
     margin-right: auto;
     margin-left: auto;
@@ -126,7 +126,7 @@ canvas.fullscreen {
 }
 
 .--boxtopmidright {
-    left: 50vw;
+    left: 75vw;
     right: 0px;
     top: 60px;
     margin-right: auto;

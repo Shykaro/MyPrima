@@ -60,8 +60,12 @@ var Script;
     document.addEventListener("interactiveViewportStarted", start); //HAD TO MAKE THIS UNKNOWN BECAUSE START IS NOW ASYNC
     let sounds; //outdated? i need it for later
     let water; //Blocks that cant be set foot on with normal units - Beinhaltet jeden Wasserblock in einem Array gespeichert
+    let cat;
+    let catThrow;
     Script.cityNode = []; //City = new ƒ.Node("CityP2");
     Script.cityNodeP2 = []; //City = new ƒ.Node("CityP2");
+    Script.leftRightCoordination = 0;
+    Script.throwBoolean = false;
     //export let mobsAny: Mob[] = [];   //Array for all created mobs/units
     //export let mobsAny: Mob2[] = [];   //Array for all created mobs/units
     Script.mobsAnzPlayer1 = 0; //Ist die länge von beiden Arrays des Spielers zusammen
@@ -221,6 +225,12 @@ var Script;
         //pacman = graph.getChildrenByName("Pacman")[0];
         water = graph.getChildrenByName("Grid")[0].getChild(1).getChildren();
         Script.paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
+        cat = graph.getChildrenByName("StateMachine")[0];
+        await Script.setSpriteCat(cat); //NEEDS TO HABEN BEFORE CATTHROW ASKS FOR THE CHILDREN BECAUSE OTHERWISE IT DOESNT EXIST YET
+        catThrow = graph.getChildrenByName("StateMachine")[0]; //("cat")[0];
+        await Script.setSpriteCatThrow(catThrow);
+        //graph.getChildrenByName("StateMachine")[0].getChild(0).removeAllChildren();
+        console.log(catThrow);
         //const observer = new ObserverMob("ObserverMob");
         //console.log(cityPosition)
         //mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
@@ -885,6 +895,7 @@ var Script;
                 gold -= costMineBuild;
                 document.getElementById("--goldInput").setAttribute('value', gold.toString());
                 anzMine++;
+                Script.throwBoolean = true;
                 document.querySelector("#anz_mine").setAttribute('value', anzMine.toString());
             }
         }
@@ -893,6 +904,7 @@ var Script;
                 goldP2 -= costMineBuild;
                 document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
                 anzMineP2++;
+                Script.throwBoolean = true;
                 document.querySelector("#anz_minep2").setAttribute('value', anzMineP2.toString());
             }
         }
@@ -1127,42 +1139,53 @@ var Script;
     Script.animations = {};
     let spriteWater;
     let spritePaths;
+    let spriteCat;
+    let spriteCatThrow;
     async function loadSprites() {
         let imgSpriteSheet = new ƒ.TextureImage();
         await imgSpriteSheet.load("Assets/3232SpriteTP.png");
         let spriteSheet = new ƒ.CoatTextured(undefined, imgSpriteSheet);
-        generateSprites(spriteSheet);
+        let imgSpriteSheetCAT = new ƒ.TextureImage();
+        await imgSpriteSheetCAT.load("Assets/StateMachine/PMWalk.png");
+        let spriteSheetCAT = new ƒ.CoatTextured(undefined, imgSpriteSheetCAT);
+        let imgSpriteSheetCATThrow = new ƒ.TextureImage();
+        await imgSpriteSheetCATThrow.load("Assets/StateMachine/PMThrow.png");
+        let spriteSheetCATThrow = new ƒ.CoatTextured(undefined, imgSpriteSheetCATThrow);
+        //generateSprites();
+        generateSprites(spriteSheet, spriteSheetCAT, spriteSheetCATThrow);
     }
     Script.loadSprites = loadSprites;
-    function generateSprites(_spritesheet) {
-        //const pacman: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("pacman", _spritesheet);
-        //pacman.generateByGrid(ƒ.Rectangle.GET(0, 0, 32, 32), 3, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
-        const water = new ƒAid.SpriteSheetAnimation("water", _spritesheet);
-        water.generateByGrid(ƒ.Rectangle.GET(0, 0, 32, 32), 3, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
+    function generateSprites(_spritesheet, _spriteSheetCAT, _spriteSheetCATThrow) {
         // ------------------------ Mobs p1 --------------------------------
         const mob = new ƒAid.SpriteSheetAnimation("mob", _spritesheet);
-        //mob.generateByGrid(
         mob.generateByGrid(ƒ.Rectangle.GET(160, 0, 32, 32), 4, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
         const mob2 = new ƒAid.SpriteSheetAnimation("mob2", _spritesheet);
-        //mob2.generateByGrid(
         mob2.generateByGrid(ƒ.Rectangle.GET(288, 0, 32, 32), 4, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
         // ------------------------ Mobs p2 --------------------------------
         const mobP2 = new ƒAid.SpriteSheetAnimation("mobP2", _spritesheet);
-        //mob.generateByGrid(
         mobP2.generateByGrid(ƒ.Rectangle.GET(416, 0, 32, 32), 4, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
         const mob2P2 = new ƒAid.SpriteSheetAnimation("mob2P2", _spritesheet);
-        //mob2.generateByGrid(
         mob2P2.generateByGrid(ƒ.Rectangle.GET(544, 0, 32, 32), 4, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
+        // ------------------------ Water --------------------------------
+        const water = new ƒAid.SpriteSheetAnimation("water", _spritesheet);
+        water.generateByGrid(ƒ.Rectangle.GET(0, 0, 32, 32), 3, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
+        // ------------------------ Statemachine IDLE --------------------------------
+        const cat = new ƒAid.SpriteSheetAnimation("cat", _spriteSheetCAT);
+        cat.generateByGrid(ƒ.Rectangle.GET(0, 0, 32, 32), 6, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
+        // ------------------------ Statemachine THROW --------------------------------
+        const catThrow = new ƒAid.SpriteSheetAnimation("catThrow", _spriteSheetCATThrow);
+        catThrow.generateByGrid(ƒ.Rectangle.GET(0, 0, 32, 32), 4, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
+        // ------------------------ Paths --------------------------------
         const paths = new ƒAid.SpriteSheetAnimation("paths", _spritesheet);
-        //mob.generateByGrid(
         paths.generateByGrid(ƒ.Rectangle.GET(96, 0, 32, 32), 1, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
-        //animations["pacman"] = pacman;
         Script.animations["mob"] = mob;
         Script.animations["mob2"] = mob2;
         Script.animations["mobP2"] = mobP2;
         Script.animations["mob2P2"] = mob2P2;
         Script.animations["paths"] = paths;
         Script.animations["water"] = water;
+        Script.animations["cat"] = cat;
+        Script.animations["catThrow"] = catThrow;
     }
     function setSprite(_node) {
         spriteWater = new ƒAid.NodeSprite("Sprite");
@@ -1173,7 +1196,6 @@ var Script;
         spriteWater.framerate = 2;
         _node.addChild(spriteWater);
         _node.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
-        //spritePacman.mtxLocal.rotateZ(90);
     }
     Script.setSprite = setSprite;
     function setSpritePaths(_node) {
@@ -1185,48 +1207,32 @@ var Script;
         spritePaths.framerate = 1;
         _node.addChild(spritePaths);
         _node.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
-        //spritePaths.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 1); //FÜR COLORATION BZW TRANSPARENZ DER TILES
-        //spritePacman.mtxLocal.rotateZ(90);
     }
     Script.setSpritePaths = setSpritePaths;
-    /*export function setSprite(_node: ƒ.Node): void {
-      spritePacman = new ƒAid.NodeSprite("Sprite");
-      spritePacman.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
-      spritePacman.setAnimation(<ƒAid.SpriteSheetAnimation>animations["water"]);
-      spritePacman.setFrameDirection(1);
-      spritePacman.mtxLocal.translateZ(0.0001);
-      spritePacman.framerate = 1;
-  
-      _node.addChild(spritePacman);
-      _node.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
-      //spritePacman.mtxLocal.rotateZ(90);
-    }*/
-    /*export function rotateSprite(_direction: string): void {
-      if (_direction !== movingDirection) {
-        if (
-          (_direction === "x" && movingDirection === "y") ||
-          (_direction === "-y" && movingDirection === "x") ||
-          (_direction === "-x" && movingDirection === "-y") ||
-          (_direction === "y" && movingDirection === "-x")
-        ) {
-          spritePacman.mtxLocal.rotateZ(-90);
-        } else if (
-          (_direction === "-x" && movingDirection === "y") ||
-          (_direction === "x" && movingDirection === "-y") ||
-          (_direction === "y" && movingDirection === "x") ||
-          (_direction === "-y" && movingDirection === "-x")
-        ) {
-          spritePacman.mtxLocal.rotateZ(90);
-        } else if (
-          (_direction === "-x" && movingDirection === "x") ||
-          (_direction === "x" && movingDirection === "-x") ||
-          (_direction === "y" && movingDirection === "-y") ||
-          (_direction === "-y" && movingDirection === "y")
-        ) {
-          spritePacman.mtxLocal.rotateZ(180);
-        }
-      }
-    }*/
+    function setSpriteCat(_node) {
+        spriteCat = new ƒAid.NodeSprite("SpriteCat");
+        spriteCat.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
+        spriteCat.setAnimation(Script.animations["cat"]);
+        spriteCat.setFrameDirection(1);
+        spriteCat.mtxLocal.translateZ(0.0001);
+        spriteCat.framerate = 5;
+        _node.addChild(spriteCat);
+        _node.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
+        //spriteCat.mtxLocal.rotateZ(90);
+    }
+    Script.setSpriteCat = setSpriteCat;
+    function setSpriteCatThrow(_node) {
+        spriteCatThrow = new ƒAid.NodeSprite("spriteCatThrow");
+        spriteCatThrow.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
+        spriteCatThrow.setAnimation(Script.animations["catThrow"]);
+        spriteCatThrow.setFrameDirection(1);
+        spriteCatThrow.mtxLocal.translateZ(0.0002);
+        spriteCatThrow.framerate = 5;
+        _node.addChild(spriteCatThrow);
+        _node.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
+        //spriteCat.mtxLocal.rotateZ(90);
+    }
+    Script.setSpriteCatThrow = setSpriteCatThrow;
 })(Script || (Script = {}));
 var Script;
 (function (Script) {
@@ -1237,7 +1243,7 @@ var Script;
     (function (JOB) {
         JOB[JOB["SPAWN"] = 0] = "SPAWN";
         JOB[JOB["IDLE"] = 1] = "IDLE";
-        JOB[JOB["ESCAPE"] = 2] = "ESCAPE";
+        JOB[JOB["THROW"] = 2] = "THROW";
         JOB[JOB["STAY"] = 3] = "STAY";
     })(JOB || (JOB = {}));
     class StateMachine extends ƒAid.ComponentStateMachine {
@@ -1246,10 +1252,11 @@ var Script;
         //public forceEscape: number = 25;
         //public torqueIdle: number = 5;
         deltaTime = 0;
-        timeStamp = 0;
+        timeStamp = 1;
         cmpBody;
         cmpMaterial;
         cmpTransform;
+        leftRightCoordination = 0;
         constructor() {
             super();
             this.instructions = StateMachine.instructions; // setup instructions with the static set
@@ -1279,9 +1286,9 @@ var Script;
             setup.actDefault = StateMachine.actDefault;
             setup.setAction(JOB.SPAWN, this.actSpawn);
             setup.setAction(JOB.IDLE, this.actIdle);
-            setup.setAction(JOB.ESCAPE, this.actEscape);
+            setup.setAction(JOB.THROW, this.actThrow);
             setup.setAction(JOB.STAY, this.actDie);
-            setup.setTransition(JOB.ESCAPE, JOB.STAY, this.transitStay);
+            setup.setTransition(JOB.THROW, JOB.STAY, this.transitStay);
             return setup;
         }
         static transitDefault(_machine) {
@@ -1303,18 +1310,39 @@ var Script;
             console.log(JOB[_machine.stateCurrent]);
         }
         static async actIdle(_machine) {
-            _machine.cmpMaterial.clrPrimary = ƒ.Color.CSS("magenta");
             let currPos = _machine.node.mtxLocal.translation;
-            _machine.timeStamp += 1 * _machine.deltaTime;
-            _machine.cmpTransform.mtxLocal.translation = new ƒ.Vector3(StateMachine.sinHorizontal(_machine.timeStamp), StateMachine.sin(_machine.timeStamp) + 0.5, currPos.z);
+            _machine.timeStamp += 1 * _machine.deltaTime / 2;
+            //console.log(leftRightCoordination);
+            if ((StateMachine.sinHorizontal(_machine.timeStamp)) > 1.99 && Script.leftRightCoordination === 0) {
+                //console.log(leftRightCoordination);
+                Script.leftRightCoordination = 1;
+                //console.log(StateMachine.sinHorizontal(_machine.timeStamp));
+                const graph = Script.viewport.getBranch();
+                const catSprite = graph.getChildrenByName("StateMachine")[0].getChildrenByName("SpriteCat")[0];
+                catSprite.mtxLocal.scaleX(-1);
+            }
+            ;
+            if ((StateMachine.sinHorizontal(_machine.timeStamp)) < -1.99 && Script.leftRightCoordination === 1) {
+                Script.leftRightCoordination = 0;
+                const graph = Script.viewport.getBranch();
+                const catSprite = graph.getChildrenByName("StateMachine")[0].getChildrenByName("SpriteCat")[0];
+                catSprite.mtxLocal.scaleX(-1);
+            }
+            ;
+            _machine.cmpTransform.mtxLocal.translation = new ƒ.Vector3(StateMachine.sinHorizontal(_machine.timeStamp) * 2.5 + 5, 6, currPos.z); //( --- , StateMachine.sin(_machine.timeStamp + ???, currPos.z + 0.01)
             StateMachine.actDefault(_machine);
+            if (Script.throwBoolean) {
+                _machine.transit(JOB.THROW);
+            }
         }
-        static async actEscape(_machine) {
-            _machine.cmpMaterial.clrPrimary = ƒ.Color.CSS("white");
+        static async actThrow(_machine) {
+            //_machine.cmpMaterial.clrPrimary = ƒ.Color.CSS("white");
             //let difference: ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(_machine.node.mtxWorld.translation, cart.mtxWorld.translation);
             //difference.normalize(_machine.forceEscape);
             //_machine.cmpBody.applyForce(difference);
+            Script.throwBoolean = false;
             StateMachine.actDefault(_machine);
+            _machine.transit(JOB.IDLE);
         }
         static async actDie(_machine) {
             //
@@ -1352,10 +1380,10 @@ var Script;
                     trigger.addEventListener("TriggerEnteredCollision" /* ƒ.EVENT_PHYSICS.TRIGGER_ENTER */, (_event) => {
                         //console.log("TriggerEnter", _event.cmpRigidbody.node.name);
                         if (_event.cmpRigidbody.node.name == "runner" && this.stateCurrent != JOB.STAY)
-                            this.transit(JOB.ESCAPE);
+                            this.transit(JOB.THROW);
                     });
                     trigger.addEventListener("TriggerLeftCollision" /* ƒ.EVENT_PHYSICS.TRIGGER_EXIT */, (_event) => {
-                        if (this.stateCurrent == JOB.ESCAPE)
+                        if (this.stateCurrent == JOB.THROW)
                             this.transit(JOB.IDLE);
                     });
                     break;

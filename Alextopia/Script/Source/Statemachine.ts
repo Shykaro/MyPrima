@@ -4,7 +4,7 @@ namespace Script {
     ƒ.Project.registerScriptNamespace(Script);  // Register the namespace to FUDGE for serialization
 
     enum JOB {
-        SPAWN, IDLE, ESCAPE, STAY
+        SPAWN, IDLE, THROW, STAY
     }
 
 
@@ -15,11 +15,12 @@ namespace Script {
         //public forceEscape: number = 25;
         //public torqueIdle: number = 5;
         private deltaTime: number = 0;
-        private timeStamp: number = 0;
+        private timeStamp: number = 1;
         private cmpBody: ƒ.ComponentRigidbody;
         private cmpMaterial: ƒ.ComponentMaterial;
         private cmpTransform: ƒ.ComponentTransform;
 
+        public leftRightCoordination: number = 0;
 
 
         constructor() {
@@ -30,8 +31,8 @@ namespace Script {
             if (ƒ.Project.mode == ƒ.MODE.EDITOR)
                 return;
 
-                //const cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
-                //const cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
+            //const cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
+            //const cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
             // Listen to this component being added to or removed from a node
             this.addEventListener(ƒ.EVENT.COMPONENT_ADD, this.hndEvent);
             this.addEventListener(ƒ.EVENT.COMPONENT_REMOVE, this.hndEvent);
@@ -57,9 +58,9 @@ namespace Script {
             setup.actDefault = StateMachine.actDefault;
             setup.setAction(JOB.SPAWN, <ƒ.General>this.actSpawn);
             setup.setAction(JOB.IDLE, <ƒ.General>this.actIdle);
-            setup.setAction(JOB.ESCAPE, <ƒ.General>this.actEscape);
+            setup.setAction(JOB.THROW, <ƒ.General>this.actThrow);
             setup.setAction(JOB.STAY, <ƒ.General>this.actDie);
-            setup.setTransition(JOB.ESCAPE, JOB.STAY, <ƒ.General>this.transitStay);
+            setup.setTransition(JOB.THROW, JOB.STAY, <ƒ.General>this.transitStay);
             return setup;
         }
 
@@ -84,22 +85,44 @@ namespace Script {
             //if (terrainInfo.distance < 0.5)
             //  _machine.cmpBody.applyForce(ƒ.Vector3.Y(20));
             console.log(JOB[_machine.stateCurrent]);
-            
+
         }
 
         private static async actIdle(_machine: StateMachine): Promise<void> { //THIS SOMEWHAT WORKS NOW, GOODLUCKT TOMORROW
-            _machine.cmpMaterial.clrPrimary = ƒ.Color.CSS("magenta");
             let currPos: ƒ.Vector3 = _machine.node.mtxLocal.translation;
-            _machine.timeStamp += 1 * _machine.deltaTime;
-            _machine.cmpTransform.mtxLocal.translation = new ƒ.Vector3(StateMachine.sinHorizontal(_machine.timeStamp), StateMachine.sin(_machine.timeStamp) + 0.5, currPos.z);
+            _machine.timeStamp += 1 * _machine.deltaTime / 2;
+            //console.log(leftRightCoordination);
+            if ((StateMachine.sinHorizontal(_machine.timeStamp)) > 1.99 && leftRightCoordination === 0) {
+                //console.log(leftRightCoordination);
+                leftRightCoordination = 1;
+                //console.log(StateMachine.sinHorizontal(_machine.timeStamp));
+                const graph: ƒ.Node = viewport.getBranch();
+                const catSprite: ƒ.Node = graph.getChildrenByName("StateMachine")[0].getChildrenByName("SpriteCat")[0];
+                catSprite.mtxLocal.scaleX(-1);
+            };
+            if ((StateMachine.sinHorizontal(_machine.timeStamp)) < -1.99 && leftRightCoordination === 1) {
+                leftRightCoordination = 0;
+                const graph: ƒ.Node = viewport.getBranch();
+                const catSprite: ƒ.Node = graph.getChildrenByName("StateMachine")[0].getChildrenByName("SpriteCat")[0];
+                catSprite.mtxLocal.scaleX(-1);
+            };
+            _machine.cmpTransform.mtxLocal.translation = new ƒ.Vector3(StateMachine.sinHorizontal(_machine.timeStamp) * 2.5 + 5, 6, currPos.z); //( --- , StateMachine.sin(_machine.timeStamp + ???, currPos.z + 0.01)
             StateMachine.actDefault(_machine);
+
+            if (throwBoolean) {
+                _machine.transit(JOB.THROW);
+            }
         }
-        private static async actEscape(_machine: StateMachine): Promise<void> {
-            _machine.cmpMaterial.clrPrimary = ƒ.Color.CSS("white");
+        private static async actThrow(_machine: StateMachine): Promise<void> {
+            //_machine.cmpMaterial.clrPrimary = ƒ.Color.CSS("white");
             //let difference: ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(_machine.node.mtxWorld.translation, cart.mtxWorld.translation);
             //difference.normalize(_machine.forceEscape);
             //_machine.cmpBody.applyForce(difference);
+
+            
+            throwBoolean = false;
             StateMachine.actDefault(_machine);
+            _machine.transit(JOB.IDLE);
         }
         private static async actDie(_machine: StateMachine): Promise<void> {
             //
@@ -118,36 +141,36 @@ namespace Script {
         // Activate the functions of this component as response to events
         private hndEvent = (_event: Event): void => {
             switch (_event.type) {
-              case ƒ.EVENT.COMPONENT_ADD:
-                ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, this.update);
-                this.transit(JOB.IDLE);
-                break;
-              case ƒ.EVENT.COMPONENT_REMOVE:
-                this.removeEventListener(ƒ.EVENT.COMPONENT_ADD, this.hndEvent);
-                this.removeEventListener(ƒ.EVENT.COMPONENT_REMOVE, this.hndEvent);
-                ƒ.Loop.removeEventListener(ƒ.EVENT.LOOP_FRAME, this.update);
-                break;
-              case ƒ.EVENT.NODE_DESERIALIZED:
-                this.cmpBody = this.node.getComponent(ƒ.ComponentRigidbody);
-                this.cmpMaterial = this.node.getComponent(ƒ.ComponentMaterial);
-                this.cmpTransform = this.node.getComponent(ƒ.ComponentTransform);
-                this.cmpBody.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
-                  if (_event.cmpRigidbody.node.name == "runner")
-                    this.transit(JOB.STAY);
-                });
-                let trigger: ƒ.ComponentRigidbody = this.node.getChildren()[0].getComponent(ƒ.ComponentRigidbody);
-                trigger.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
-                  //console.log("TriggerEnter", _event.cmpRigidbody.node.name);
-                  if (_event.cmpRigidbody.node.name == "runner" && this.stateCurrent != JOB.STAY)
-                    this.transit(JOB.ESCAPE);
-                });
-                trigger.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_EXIT, (_event: ƒ.EventPhysics) => {
-                  if (this.stateCurrent == JOB.ESCAPE)
+                case ƒ.EVENT.COMPONENT_ADD:
+                    ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, this.update);
                     this.transit(JOB.IDLE);
-                });
-                break;
+                    break;
+                case ƒ.EVENT.COMPONENT_REMOVE:
+                    this.removeEventListener(ƒ.EVENT.COMPONENT_ADD, this.hndEvent);
+                    this.removeEventListener(ƒ.EVENT.COMPONENT_REMOVE, this.hndEvent);
+                    ƒ.Loop.removeEventListener(ƒ.EVENT.LOOP_FRAME, this.update);
+                    break;
+                case ƒ.EVENT.NODE_DESERIALIZED:
+                    this.cmpBody = this.node.getComponent(ƒ.ComponentRigidbody);
+                    this.cmpMaterial = this.node.getComponent(ƒ.ComponentMaterial);
+                    this.cmpTransform = this.node.getComponent(ƒ.ComponentTransform);
+                    this.cmpBody.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
+                        if (_event.cmpRigidbody.node.name == "runner")
+                            this.transit(JOB.STAY);
+                    });
+                    let trigger: ƒ.ComponentRigidbody = this.node.getChildren()[0].getComponent(ƒ.ComponentRigidbody);
+                    trigger.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
+                        //console.log("TriggerEnter", _event.cmpRigidbody.node.name);
+                        if (_event.cmpRigidbody.node.name == "runner" && this.stateCurrent != JOB.STAY)
+                            this.transit(JOB.THROW);
+                    });
+                    trigger.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_EXIT, (_event: ƒ.EventPhysics) => {
+                        if (this.stateCurrent == JOB.THROW)
+                            this.transit(JOB.IDLE);
+                    });
+                    break;
             }
-          }
+        }
 
         private update = (_event: Event): void => {
             this.act();
@@ -161,6 +184,8 @@ namespace Script {
         private static sinHorizontal = (x: number): number => {
             return Math.sin(1 * x) * 2;
         }
+
+
 
 
 

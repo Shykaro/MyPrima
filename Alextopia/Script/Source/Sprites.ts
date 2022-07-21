@@ -4,26 +4,33 @@ namespace Script {
   export let animations: ƒAid.SpriteSheetAnimations = {};
   let spriteWater: ƒAid.NodeSprite;
   let spritePaths: ƒAid.NodeSprite;
+  let spriteCat: ƒAid.NodeSprite;
+  let spriteCatThrow: ƒAid.NodeSprite;
 
   export async function loadSprites(): Promise<void> {
     let imgSpriteSheet: ƒ.TextureImage = new ƒ.TextureImage();
     await imgSpriteSheet.load("Assets/3232SpriteTP.png");
     let spriteSheet: ƒ.CoatTextured = new ƒ.CoatTextured(undefined, imgSpriteSheet);
-    generateSprites(spriteSheet);
+
+    let imgSpriteSheetCAT: ƒ.TextureImage = new ƒ.TextureImage();
+    await imgSpriteSheetCAT.load("Assets/StateMachine/PMWalk.png");
+    let spriteSheetCAT: ƒ.CoatTextured = new ƒ.CoatTextured(undefined, imgSpriteSheetCAT);
+
+    let imgSpriteSheetCATThrow: ƒ.TextureImage = new ƒ.TextureImage();
+    await imgSpriteSheetCATThrow.load("Assets/StateMachine/PMThrow.png");
+    let spriteSheetCATThrow: ƒ.CoatTextured = new ƒ.CoatTextured(undefined, imgSpriteSheetCATThrow);
+    //generateSprites();
+
+    generateSprites(spriteSheet, spriteSheetCAT, spriteSheetCATThrow);
   }
 
-  function generateSprites(_spritesheet: ƒ.CoatTextured): void {
-    //const pacman: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("pacman", _spritesheet);
-    //pacman.generateByGrid(ƒ.Rectangle.GET(0, 0, 32, 32), 3, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
+  function generateSprites(_spritesheet: ƒ.CoatTextured, _spriteSheetCAT: ƒ.CoatTextured, _spriteSheetCATThrow: ƒ.CoatTextured): void {
 
-    const water: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("water", _spritesheet);
-    water.generateByGrid(ƒ.Rectangle.GET(0, 0, 32, 32), 3, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
 
 
     // ------------------------ Mobs p1 --------------------------------
     const mob: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("mob", _spritesheet);
-    //mob.generateByGrid(
-      mob.generateByGrid(
+    mob.generateByGrid(
       ƒ.Rectangle.GET(160, 0, 32, 32),
       4,
       32,
@@ -31,8 +38,7 @@ namespace Script {
       ƒ.Vector2.X(32)
     );
     const mob2: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("mob2", _spritesheet);
-    //mob2.generateByGrid(
-      mob2.generateByGrid(
+    mob2.generateByGrid(
       ƒ.Rectangle.GET(288, 0, 32, 32),
       4,
       32,
@@ -41,10 +47,8 @@ namespace Script {
     );
 
     // ------------------------ Mobs p2 --------------------------------
-
     const mobP2: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("mobP2", _spritesheet);
-    //mob.generateByGrid(
-      mobP2.generateByGrid(
+    mobP2.generateByGrid(
       ƒ.Rectangle.GET(416, 0, 32, 32),
       4,
       32,
@@ -52,8 +56,7 @@ namespace Script {
       ƒ.Vector2.X(32)
     );
     const mob2P2: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("mob2P2", _spritesheet);
-    //mob2.generateByGrid(
-      mob2P2.generateByGrid(
+    mob2P2.generateByGrid(
       ƒ.Rectangle.GET(544, 0, 32, 32),
       4,
       32,
@@ -61,11 +64,33 @@ namespace Script {
       ƒ.Vector2.X(32)
     );
 
+    // ------------------------ Water --------------------------------
+    const water: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("water", _spritesheet);
+    water.generateByGrid(ƒ.Rectangle.GET(0, 0, 32, 32), 3, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
 
+    // ------------------------ Statemachine IDLE --------------------------------
+    const cat: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("cat", _spriteSheetCAT);
+    cat.generateByGrid(
+      ƒ.Rectangle.GET(0, 0, 32, 32),
+      6,
+      32,
+      ƒ.ORIGIN2D.CENTER,
+      ƒ.Vector2.X(32)
+    );
 
+    // ------------------------ Statemachine THROW --------------------------------
+    const catThrow: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("catThrow", _spriteSheetCATThrow);
+    catThrow.generateByGrid(
+      ƒ.Rectangle.GET(0, 0, 32, 32),
+      4,
+      32,
+      ƒ.ORIGIN2D.CENTER,
+      ƒ.Vector2.X(32)
+    );
+
+    // ------------------------ Paths --------------------------------
     const paths: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("paths", _spritesheet);
-    //mob.generateByGrid(
-      paths.generateByGrid(
+    paths.generateByGrid(
       ƒ.Rectangle.GET(96, 0, 32, 32),
       1,
       32,
@@ -73,13 +98,14 @@ namespace Script {
       ƒ.Vector2.X(32)
     );
 
-    //animations["pacman"] = pacman;
     animations["mob"] = mob;
     animations["mob2"] = mob2;
     animations["mobP2"] = mobP2;
     animations["mob2P2"] = mob2P2;
     animations["paths"] = paths;
     animations["water"] = water;
+    animations["cat"] = cat;
+    animations["catThrow"] = catThrow;
   }
 
   export function setSprite(_node: ƒ.Node): void {
@@ -92,7 +118,6 @@ namespace Script {
 
     _node.addChild(spriteWater);
     _node.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
-    //spritePacman.mtxLocal.rotateZ(90);
   }
   export function setSpritePaths(_node: ƒ.Node): void {
     spritePaths = new ƒAid.NodeSprite("Sprite");
@@ -104,46 +129,30 @@ namespace Script {
 
     _node.addChild(spritePaths);
     _node.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
-    //spritePaths.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 1); //FÜR COLORATION BZW TRANSPARENZ DER TILES
-    //spritePacman.mtxLocal.rotateZ(90);
   }
-  /*export function setSprite(_node: ƒ.Node): void {
-    spritePacman = new ƒAid.NodeSprite("Sprite");
-    spritePacman.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
-    spritePacman.setAnimation(<ƒAid.SpriteSheetAnimation>animations["water"]);
-    spritePacman.setFrameDirection(1);
-    spritePacman.mtxLocal.translateZ(0.0001);
-    spritePacman.framerate = 1;
 
-    _node.addChild(spritePacman);
+  export function setSpriteCat(_node: ƒ.Node): void {
+    spriteCat = new ƒAid.NodeSprite("SpriteCat");
+    spriteCat.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
+    spriteCat.setAnimation(<ƒAid.SpriteSheetAnimation>animations["cat"]);
+    spriteCat.setFrameDirection(1);
+    spriteCat.mtxLocal.translateZ(0.0001);
+    spriteCat.framerate = 5;
+
+    _node.addChild(spriteCat);
     _node.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
-    //spritePacman.mtxLocal.rotateZ(90);
-  }*/
+    //spriteCat.mtxLocal.rotateZ(90);
+  }
+  export function setSpriteCatThrow(_node: ƒ.Node): void {
+    spriteCatThrow = new ƒAid.NodeSprite("spriteCatThrow");
+    spriteCatThrow.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
+    spriteCatThrow.setAnimation(<ƒAid.SpriteSheetAnimation>animations["catThrow"]);
+    spriteCatThrow.setFrameDirection(1);
+    spriteCatThrow.mtxLocal.translateZ(0.0002);
+    spriteCatThrow.framerate = 5;
 
-  /*export function rotateSprite(_direction: string): void {
-    if (_direction !== movingDirection) {
-      if (
-        (_direction === "x" && movingDirection === "y") ||
-        (_direction === "-y" && movingDirection === "x") ||
-        (_direction === "-x" && movingDirection === "-y") ||
-        (_direction === "y" && movingDirection === "-x")
-      ) {
-        spritePacman.mtxLocal.rotateZ(-90);
-      } else if (
-        (_direction === "-x" && movingDirection === "y") ||
-        (_direction === "x" && movingDirection === "-y") ||
-        (_direction === "y" && movingDirection === "x") ||
-        (_direction === "-y" && movingDirection === "-x")
-      ) {
-        spritePacman.mtxLocal.rotateZ(90);
-      } else if (
-        (_direction === "-x" && movingDirection === "x") ||
-        (_direction === "x" && movingDirection === "-x") ||
-        (_direction === "y" && movingDirection === "-y") ||
-        (_direction === "-y" && movingDirection === "y")
-      ) {
-        spritePacman.mtxLocal.rotateZ(180);
-      }
-    }
-  }*/
+    _node.addChild(spriteCatThrow);
+    _node.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
+    //spriteCat.mtxLocal.rotateZ(90);
+  }
 }

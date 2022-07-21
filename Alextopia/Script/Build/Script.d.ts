@@ -16,6 +16,8 @@ declare namespace Script {
     let paths: ƒ.Node[];
     let cityNode: City[];
     let cityNodeP2: CityP2[];
+    let leftRightCoordination: number;
+    let throwBoolean: Boolean;
     let mobsAnzPlayer1: number;
     let mobsAnzPlayer2: number;
     let healthUnitSmall: number;
@@ -42,13 +44,15 @@ declare namespace Script {
     function loadSprites(): Promise<void>;
     function setSprite(_node: ƒ.Node): void;
     function setSpritePaths(_node: ƒ.Node): void;
+    function setSpriteCat(_node: ƒ.Node): void;
+    function setSpriteCatThrow(_node: ƒ.Node): void;
 }
 declare namespace Script {
     import ƒAid = FudgeAid;
     enum JOB {
         SPAWN = 0,
         IDLE = 1,
-        ESCAPE = 2,
+        THROW = 2,
         STAY = 3
     }
     export class StateMachine extends ƒAid.ComponentStateMachine<JOB> {
@@ -59,13 +63,14 @@ declare namespace Script {
         private cmpBody;
         private cmpMaterial;
         private cmpTransform;
+        leftRightCoordination: number;
         constructor();
         static get(): ƒAid.StateMachineInstructions<JOB>;
         private static transitDefault;
         private static actSpawn;
         private static actDefault;
         private static actIdle;
-        private static actEscape;
+        private static actThrow;
         private static actDie;
         private static transitStay;
         private hndEvent;

@@ -13,9 +13,12 @@ namespace Script {
   let sounds: ƒ.ComponentAudio[]; //outdated? i need it for later
   let water: ƒ.Node[];    //Blocks that cant be set foot on with normal units - Beinhaltet jeden Wasserblock in einem Array gespeichert
   export let paths: ƒ.Node[];    //Building/Land are, every unit can walk on these - beinhaltet jeden begehbaren block in einem Array gespeichert
+  let cat: ƒ.Node;
+  let catThrow: ƒ.Node;
   export let cityNode: City[] = [];   //City = new ƒ.Node("CityP2");
   export let cityNodeP2: CityP2[] = []; //City = new ƒ.Node("CityP2");
-
+  export let leftRightCoordination = 0;
+  export let throwBoolean: Boolean = false;
   //export let mobsAny: Mob[] = [];   //Array for all created mobs/units
   //export let mobsAny: Mob2[] = [];   //Array for all created mobs/units
   export let mobsAnzPlayer1: number = 0; //Ist die länge von beiden Arrays des Spielers zusammen
@@ -223,6 +226,14 @@ namespace Script {
     //pacman = graph.getChildrenByName("Pacman")[0];
     water = graph.getChildrenByName("Grid")[0].getChild(1).getChildren();
     paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
+    cat = graph.getChildrenByName("StateMachine")[0];
+    await setSpriteCat(cat); //NEEDS TO HABEN BEFORE CATTHROW ASKS FOR THE CHILDREN BECAUSE OTHERWISE IT DOESNT EXIST YET
+
+
+    catThrow = graph.getChildrenByName("StateMachine")[0]; //("cat")[0];
+    await setSpriteCatThrow(catThrow);
+    //graph.getChildrenByName("StateMachine")[0].getChild(0).removeAllChildren();
+    console.log(catThrow);
 
 
     //const observer = new ObserverMob("ObserverMob");
@@ -969,6 +980,7 @@ function creatingBuildings() { //Handles all Buildings, needs additional paramet
       gold -= costMineBuild;
       document.getElementById("--goldInput").setAttribute('value', gold.toString());
       anzMine++;
+      throwBoolean = true;
       document.querySelector("#anz_mine").setAttribute('value', anzMine.toString());
     }
   }
@@ -977,6 +989,7 @@ function creatingBuildings() { //Handles all Buildings, needs additional paramet
       goldP2 -= costMineBuild;
       document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
       anzMineP2++;
+      throwBoolean = true;
       document.querySelector("#anz_minep2").setAttribute('value', anzMineP2.toString());
     }
   }
