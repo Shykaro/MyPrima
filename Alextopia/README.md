@@ -33,7 +33,7 @@ Nothing additional needed.
 
 A copy of the catalogue of criteria above, the right column replaced with very brief explanations and descriptions of the fullfullments of these criteria
 
-Nr	Criterion		Explanation
+| Nr |	Criterion	   |	Explanation													 |
 |---:|---------------------|---------------------------------------------------------------------------------------------------------------------|
 1	Units and Positions	Down left Tile is placed at x=0 y=0 z=0 to have overlookable tilegrid to work with. 
 				Additional assets have been created on top, below and behind to achieve criteria goal. 
