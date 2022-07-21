@@ -1,9 +1,14 @@
 ### INFO #######################################################################################################################################################
 Title: Coinmachine: Alextopia
+
 Author: Alexander Thier
+
 Year: 2022 Sommer 
+
 Semester: OMB6
+
 Course: Prototyping interactive Media and Apps PRIMA
+
 Docent: Jirka Dell'Oro-Friedl
 
 
