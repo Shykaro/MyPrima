@@ -34,11 +34,11 @@ Nothing additional needed.
 A copy of the catalogue of criteria above, the right column replaced with very brief explanations and descriptions of the fullfullments of these criteria
 
 Nr	Criterion		Explanation
-
+|---:|---------------------|---------------------------------------------------------------------------------------------------------------------|
 1	Units and Positions	Down left Tile is placed at x=0 y=0 z=0 to have overlookable tilegrid to work with. 
 				Additional assets have been created on top, below and behind to achieve criteria goal. 
 
-2	Hierarchy		Below the Game graph is the Grid graph which includes both the path and wall nodes, each of those has every single path and wall attached
+2	Hierarchy		Below the Game graph is the Grid graph which includes both the path and wall nodes, each of those has every single path and wall	attached
 				Sounds, Custom(Componentscript) as well as the Statemachine are independent.
 				Light is also independent but has a childnode which helped me orientating the light.
 
