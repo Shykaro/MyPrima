@@ -148,8 +148,8 @@
       "coat": {
         "ƒ.CoatRemissive": {
           "color": "[1, 0.8784313725490196, 0.25882352941176473, 1]",
-          "diffuse": 1,
-          "specular": 0
+          "diffuse": 0.19999999999999996,
+          "specular": 5
         }
       }
     }
@@ -4319,7 +4319,7 @@
               {
                 "ƒ.Node": {
                   "name": "Balls",
-                  "active": false,
+                  "active": true,
                   "components": {},
                   "children": [
                     {
@@ -6329,7 +6329,8 @@
                   "Script.StateMachine": {
                     "active": true,
                     "deltaTime": 0,
-                    "timeStamp": 0
+                    "timeStamp": 0,
+                    "leftRightCoordination": 0
                   }
                 }
               ]

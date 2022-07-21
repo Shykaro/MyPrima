@@ -6,6 +6,7 @@ namespace Script {
   let spritePaths: ƒAid.NodeSprite;
   let spriteCat: ƒAid.NodeSprite;
   let spriteCatThrow: ƒAid.NodeSprite;
+  let spriteCatWin: ƒAid.NodeSprite;
 
   export async function loadSprites(): Promise<void> {
     let imgSpriteSheet: ƒ.TextureImage = new ƒ.TextureImage();
@@ -19,12 +20,16 @@ namespace Script {
     let imgSpriteSheetCATThrow: ƒ.TextureImage = new ƒ.TextureImage();
     await imgSpriteSheetCATThrow.load("Assets/StateMachine/PMThrow.png");
     let spriteSheetCATThrow: ƒ.CoatTextured = new ƒ.CoatTextured(undefined, imgSpriteSheetCATThrow);
+
+    let imgSpriteSheetCATWin: ƒ.TextureImage = new ƒ.TextureImage();
+    await imgSpriteSheetCATWin.load("Assets/StateMachine/PMJump.png");
+    let spriteSheetCATWin: ƒ.CoatTextured = new ƒ.CoatTextured(undefined, imgSpriteSheetCATWin);
     //generateSprites();
 
-    generateSprites(spriteSheet, spriteSheetCAT, spriteSheetCATThrow);
+    generateSprites(spriteSheet, spriteSheetCAT, spriteSheetCATThrow, spriteSheetCATWin);
   }
 
-  function generateSprites(_spritesheet: ƒ.CoatTextured, _spriteSheetCAT: ƒ.CoatTextured, _spriteSheetCATThrow: ƒ.CoatTextured): void {
+  function generateSprites(_spritesheet: ƒ.CoatTextured, _spriteSheetCAT: ƒ.CoatTextured, _spriteSheetCATThrow: ƒ.CoatTextured, _spriteSheetCATWin: ƒ.CoatTextured): void {
 
 
 
@@ -88,6 +93,16 @@ namespace Script {
       ƒ.Vector2.X(32)
     );
 
+    // ------------------------ Statemachine WIN --------------------------------
+    const catWin: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("catWin", _spriteSheetCATWin);
+    catWin.generateByGrid(
+      ƒ.Rectangle.GET(0, 0, 32, 32),
+      8,
+      32,
+      ƒ.ORIGIN2D.CENTER,
+      ƒ.Vector2.X(32)
+    );
+
     // ------------------------ Paths --------------------------------
     const paths: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("paths", _spritesheet);
     paths.generateByGrid(
@@ -106,6 +121,7 @@ namespace Script {
     animations["water"] = water;
     animations["cat"] = cat;
     animations["catThrow"] = catThrow;
+    animations["catWin"] = catWin;
   }
 
   export function setSprite(_node: ƒ.Node): void {
@@ -144,7 +160,7 @@ namespace Script {
     //spriteCat.mtxLocal.rotateZ(90);
   }
   export function setSpriteCatThrow(_node: ƒ.Node): void {
-    spriteCatThrow = new ƒAid.NodeSprite("spriteCatThrow");
+    spriteCatThrow = new ƒAid.NodeSprite("SpriteCatThrow");
     spriteCatThrow.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
     spriteCatThrow.setAnimation(<ƒAid.SpriteSheetAnimation>animations["catThrow"]);
     spriteCatThrow.setFrameDirection(1);
@@ -152,6 +168,18 @@ namespace Script {
     spriteCatThrow.framerate = 5;
 
     _node.addChild(spriteCatThrow);
+    _node.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
+    //spriteCat.mtxLocal.rotateZ(90);
+  }
+  export function setSpriteCatWin(_node: ƒ.Node): void {
+    spriteCatWin = new ƒAid.NodeSprite("SpriteCatWin");
+    spriteCatWin.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
+    spriteCatWin.setAnimation(<ƒAid.SpriteSheetAnimation>animations["catWin"]);
+    spriteCatWin.setFrameDirection(1);
+    spriteCatWin.mtxLocal.translateZ(0.0002);
+    spriteCatWin.framerate = 5;
+
+    _node.addChild(spriteCatWin);
     _node.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
     //spriteCat.mtxLocal.rotateZ(90);
   }

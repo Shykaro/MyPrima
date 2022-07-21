@@ -14,10 +14,14 @@ declare namespace Script {
     import ƒ = FudgeCore;
     let viewport: ƒ.Viewport;
     let paths: ƒ.Node[];
+    let catPH: ƒ.Node;
+    let catThrowPH: ƒ.Node;
+    let catWinPH: ƒ.Node;
     let cityNode: City[];
     let cityNodeP2: CityP2[];
     let leftRightCoordination: number;
     let throwBoolean: Boolean;
+    let wonBoolean: Boolean;
     let mobsAnzPlayer1: number;
     let mobsAnzPlayer2: number;
     let healthUnitSmall: number;
@@ -46,6 +50,7 @@ declare namespace Script {
     function setSpritePaths(_node: ƒ.Node): void;
     function setSpriteCat(_node: ƒ.Node): void;
     function setSpriteCatThrow(_node: ƒ.Node): void;
+    function setSpriteCatWin(_node: ƒ.Node): void;
 }
 declare namespace Script {
     import ƒAid = FudgeAid;
@@ -53,7 +58,7 @@ declare namespace Script {
         SPAWN = 0,
         IDLE = 1,
         THROW = 2,
-        STAY = 3
+        WIN = 3
     }
     export class StateMachine extends ƒAid.ComponentStateMachine<JOB> {
         static readonly iSubclass: number;
@@ -71,8 +76,8 @@ declare namespace Script {
         private static actDefault;
         private static actIdle;
         private static actThrow;
-        private static actDie;
-        private static transitStay;
+        private static actWin;
+        private static transitWin;
         private hndEvent;
         private update;
         private static sin;

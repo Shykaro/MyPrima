@@ -62,10 +62,12 @@ var Script;
     let water; //Blocks that cant be set foot on with normal units - Beinhaltet jeden Wasserblock in einem Array gespeichert
     let cat;
     let catThrow;
+    let catWin;
     Script.cityNode = []; //City = new ƒ.Node("CityP2");
     Script.cityNodeP2 = []; //City = new ƒ.Node("CityP2");
     Script.leftRightCoordination = 0;
     Script.throwBoolean = false;
+    Script.wonBoolean = false;
     //export let mobsAny: Mob[] = [];   //Array for all created mobs/units
     //export let mobsAny: Mob2[] = [];   //Array for all created mobs/units
     Script.mobsAnzPlayer1 = 0; //Ist die länge von beiden Arrays des Spielers zusammen
@@ -226,11 +228,19 @@ var Script;
         water = graph.getChildrenByName("Grid")[0].getChild(1).getChildren();
         Script.paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
         cat = graph.getChildrenByName("StateMachine")[0];
-        await Script.setSpriteCat(cat); //NEEDS TO HABEN BEFORE CATTHROW ASKS FOR THE CHILDREN BECAUSE OTHERWISE IT DOESNT EXIST YET
+        Script.setSpriteCat(cat); //NEEDS TO HAPPEN BEFORE CATTHROW ASKS FOR THE CHILDREN BECAUSE OTHERWISE IT DOESNT EXIST YET
         catThrow = graph.getChildrenByName("StateMachine")[0]; //("cat")[0];
-        await Script.setSpriteCatThrow(catThrow);
+        Script.setSpriteCatThrow(catThrow);
+        catWin = graph.getChildrenByName("StateMachine")[0]; //("cat")[0];
+        Script.setSpriteCatWin(catWin);
         //graph.getChildrenByName("StateMachine")[0].getChild(0).removeAllChildren();
-        console.log(catThrow);
+        //console.log(catThrow.getChild(1));
+        //Needed to directly swap between sprites
+        Script.catPH = cat.getChildrenByName("SpriteCat")[0];
+        Script.catThrowPH = catThrow.getChildrenByName("SpriteCatThrow")[0];
+        Script.catThrowPH.activate(false);
+        Script.catWinPH = catWin.getChildrenByName("SpriteCatWin")[0];
+        Script.catWinPH.activate(false); //Hides the other sprites on the same Branch
         //const observer = new ObserverMob("ObserverMob");
         //console.log(cityPosition)
         //mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
@@ -947,10 +957,10 @@ var Script;
                     console.log(Script.cityNodeP2);
                     delete spliceRemoved[0];
                     if (Script.cityNodeP2.length === 0) {
-                        console.log("bitch1");
                         currentPhase = 10;
                         Script.currentplayer = 0;
                         document.getElementById("--headingInfo").setAttribute('value', turnPhaseWinP1);
+                        Script.wonBoolean = true;
                     }
                 }
             }
@@ -983,17 +993,16 @@ var Script;
                 if (turnsNeededForCapture < 1) { //THIS DOESNT WORK IF THE CAPTURED CITIES ARE RANDOM!!
                     //alert("City of P1 has been captured!");
                     let spliceRemoved = [];
-                    //removeChild(mobsAny[iCounter3]);
                     graph.removeChild(Script.cityNode[Script.cityNode.length - 1]);
                     spliceRemoved = Script.cityNode.splice(Script.cityNode.length - 1, 1);
                     console.log(spliceRemoved);
                     console.log(Script.cityNode);
                     delete spliceRemoved[0];
                     if (Script.cityNode.length === 0) {
-                        console.log("bitch");
                         currentPhase = 10;
                         Script.currentplayer = 0;
                         document.getElementById("--headingInfo").setAttribute('value', turnPhaseWinP2);
+                        Script.wonBoolean = true;
                     }
                 }
             }
@@ -1141,6 +1150,7 @@ var Script;
     let spritePaths;
     let spriteCat;
     let spriteCatThrow;
+    let spriteCatWin;
     async function loadSprites() {
         let imgSpriteSheet = new ƒ.TextureImage();
         await imgSpriteSheet.load("Assets/3232SpriteTP.png");
@@ -1151,11 +1161,14 @@ var Script;
         let imgSpriteSheetCATThrow = new ƒ.TextureImage();
         await imgSpriteSheetCATThrow.load("Assets/StateMachine/PMThrow.png");
         let spriteSheetCATThrow = new ƒ.CoatTextured(undefined, imgSpriteSheetCATThrow);
+        let imgSpriteSheetCATWin = new ƒ.TextureImage();
+        await imgSpriteSheetCATWin.load("Assets/StateMachine/PMJump.png");
+        let spriteSheetCATWin = new ƒ.CoatTextured(undefined, imgSpriteSheetCATWin);
         //generateSprites();
-        generateSprites(spriteSheet, spriteSheetCAT, spriteSheetCATThrow);
+        generateSprites(spriteSheet, spriteSheetCAT, spriteSheetCATThrow, spriteSheetCATWin);
     }
     Script.loadSprites = loadSprites;
-    function generateSprites(_spritesheet, _spriteSheetCAT, _spriteSheetCATThrow) {
+    function generateSprites(_spritesheet, _spriteSheetCAT, _spriteSheetCATThrow, _spriteSheetCATWin) {
         // ------------------------ Mobs p1 --------------------------------
         const mob = new ƒAid.SpriteSheetAnimation("mob", _spritesheet);
         mob.generateByGrid(ƒ.Rectangle.GET(160, 0, 32, 32), 4, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
@@ -1175,6 +1188,9 @@ var Script;
         // ------------------------ Statemachine THROW --------------------------------
         const catThrow = new ƒAid.SpriteSheetAnimation("catThrow", _spriteSheetCATThrow);
         catThrow.generateByGrid(ƒ.Rectangle.GET(0, 0, 32, 32), 4, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
+        // ------------------------ Statemachine WIN --------------------------------
+        const catWin = new ƒAid.SpriteSheetAnimation("catWin", _spriteSheetCATWin);
+        catWin.generateByGrid(ƒ.Rectangle.GET(0, 0, 32, 32), 8, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
         // ------------------------ Paths --------------------------------
         const paths = new ƒAid.SpriteSheetAnimation("paths", _spritesheet);
         paths.generateByGrid(ƒ.Rectangle.GET(96, 0, 32, 32), 1, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(32));
@@ -1186,6 +1202,7 @@ var Script;
         Script.animations["water"] = water;
         Script.animations["cat"] = cat;
         Script.animations["catThrow"] = catThrow;
+        Script.animations["catWin"] = catWin;
     }
     function setSprite(_node) {
         spriteWater = new ƒAid.NodeSprite("Sprite");
@@ -1222,7 +1239,7 @@ var Script;
     }
     Script.setSpriteCat = setSpriteCat;
     function setSpriteCatThrow(_node) {
-        spriteCatThrow = new ƒAid.NodeSprite("spriteCatThrow");
+        spriteCatThrow = new ƒAid.NodeSprite("SpriteCatThrow");
         spriteCatThrow.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
         spriteCatThrow.setAnimation(Script.animations["catThrow"]);
         spriteCatThrow.setFrameDirection(1);
@@ -1233,6 +1250,18 @@ var Script;
         //spriteCat.mtxLocal.rotateZ(90);
     }
     Script.setSpriteCatThrow = setSpriteCatThrow;
+    function setSpriteCatWin(_node) {
+        spriteCatWin = new ƒAid.NodeSprite("SpriteCatWin");
+        spriteCatWin.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
+        spriteCatWin.setAnimation(Script.animations["catWin"]);
+        spriteCatWin.setFrameDirection(1);
+        spriteCatWin.mtxLocal.translateZ(0.0002);
+        spriteCatWin.framerate = 5;
+        _node.addChild(spriteCatWin);
+        _node.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
+        //spriteCat.mtxLocal.rotateZ(90);
+    }
+    Script.setSpriteCatWin = setSpriteCatWin;
 })(Script || (Script = {}));
 var Script;
 (function (Script) {
@@ -1244,7 +1273,7 @@ var Script;
         JOB[JOB["SPAWN"] = 0] = "SPAWN";
         JOB[JOB["IDLE"] = 1] = "IDLE";
         JOB[JOB["THROW"] = 2] = "THROW";
-        JOB[JOB["STAY"] = 3] = "STAY";
+        JOB[JOB["WIN"] = 3] = "WIN";
     })(JOB || (JOB = {}));
     class StateMachine extends ƒAid.ComponentStateMachine {
         static iSubclass = ƒ.Component.registerSubclass(StateMachine);
@@ -1287,8 +1316,8 @@ var Script;
             setup.setAction(JOB.SPAWN, this.actSpawn);
             setup.setAction(JOB.IDLE, this.actIdle);
             setup.setAction(JOB.THROW, this.actThrow);
-            setup.setAction(JOB.STAY, this.actDie);
-            setup.setTransition(JOB.THROW, JOB.STAY, this.transitStay);
+            setup.setAction(JOB.WIN, this.actWin);
+            setup.setTransition(JOB.THROW, JOB.WIN, this.transitWin);
             return setup;
         }
         static transitDefault(_machine) {
@@ -1312,6 +1341,10 @@ var Script;
         static async actIdle(_machine) {
             let currPos = _machine.node.mtxLocal.translation;
             _machine.timeStamp += 1 * _machine.deltaTime / 2;
+            if (Script.catPH.activate) {
+                Script.catPH.activate(true);
+                Script.catThrowPH.activate(false);
+            }
             //console.log(leftRightCoordination);
             if ((StateMachine.sinHorizontal(_machine.timeStamp)) > 1.99 && Script.leftRightCoordination === 0) {
                 //console.log(leftRightCoordination);
@@ -1334,20 +1367,33 @@ var Script;
             if (Script.throwBoolean) {
                 _machine.transit(JOB.THROW);
             }
+            if (Script.wonBoolean) {
+                _machine.transit(JOB.WIN);
+            }
         }
         static async actThrow(_machine) {
             //_machine.cmpMaterial.clrPrimary = ƒ.Color.CSS("white");
             //let difference: ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(_machine.node.mtxWorld.translation, cart.mtxWorld.translation);
             //difference.normalize(_machine.forceEscape);
             //_machine.cmpBody.applyForce(difference);
+            Script.catPH.activate(false);
+            Script.catThrowPH.activate(true);
             Script.throwBoolean = false;
+            setTimeout(() => {
+                StateMachine.actDefault(_machine);
+                _machine.transit(JOB.IDLE);
+            }, 1000);
+        }
+        static async actWin(_machine) {
+            Script.catPH.activate(false);
+            Script.catWinPH.activate(true);
+            Script.wonBoolean = false;
+            //setTimeout(() => {
             StateMachine.actDefault(_machine);
-            _machine.transit(JOB.IDLE);
+            // _machine.transit(JOB.IDLE);
+            // }, 10000);
         }
-        static async actDie(_machine) {
-            //
-        }
-        static transitStay(_machine) {
+        static transitWin(_machine) {
             //_machine.cmpBody.applyLinearImpulse(ƒ.Vector3.Y(5));
             //let timer: ƒ.Timer = new ƒ.Timer(ƒ.Time.game, 100, 20, (_event: ƒ.EventTimer) => {
             //  _machine.cmpMaterial.clrPrimary = ƒ.Color.CSS("black", 1 - _event.count / 20);
@@ -1374,12 +1420,12 @@ var Script;
                     this.cmpTransform = this.node.getComponent(ƒ.ComponentTransform);
                     this.cmpBody.addEventListener("TriggerEnteredCollision" /* ƒ.EVENT_PHYSICS.TRIGGER_ENTER */, (_event) => {
                         if (_event.cmpRigidbody.node.name == "runner")
-                            this.transit(JOB.STAY);
+                            this.transit(JOB.WIN);
                     });
                     let trigger = this.node.getChildren()[0].getComponent(ƒ.ComponentRigidbody);
                     trigger.addEventListener("TriggerEnteredCollision" /* ƒ.EVENT_PHYSICS.TRIGGER_ENTER */, (_event) => {
                         //console.log("TriggerEnter", _event.cmpRigidbody.node.name);
-                        if (_event.cmpRigidbody.node.name == "runner" && this.stateCurrent != JOB.STAY)
+                        if (_event.cmpRigidbody.node.name == "runner" && this.stateCurrent != JOB.WIN)
                             this.transit(JOB.THROW);
                     });
                     trigger.addEventListener("TriggerLeftCollision" /* ƒ.EVENT_PHYSICS.TRIGGER_EXIT */, (_event) => {

@@ -14,11 +14,16 @@ namespace Script {
   let water: ƒ.Node[];    //Blocks that cant be set foot on with normal units - Beinhaltet jeden Wasserblock in einem Array gespeichert
   export let paths: ƒ.Node[];    //Building/Land are, every unit can walk on these - beinhaltet jeden begehbaren block in einem Array gespeichert
   let cat: ƒ.Node;
+  export let catPH: ƒ.Node;
   let catThrow: ƒ.Node;
+  export let catThrowPH: ƒ.Node;
+  let catWin: ƒ.Node;
+  export let catWinPH: ƒ.Node;
   export let cityNode: City[] = [];   //City = new ƒ.Node("CityP2");
   export let cityNodeP2: CityP2[] = []; //City = new ƒ.Node("CityP2");
   export let leftRightCoordination = 0;
   export let throwBoolean: Boolean = false;
+  export let wonBoolean: Boolean = false;
   //export let mobsAny: Mob[] = [];   //Array for all created mobs/units
   //export let mobsAny: Mob2[] = [];   //Array for all created mobs/units
   export let mobsAnzPlayer1: number = 0; //Ist die länge von beiden Arrays des Spielers zusammen
@@ -227,14 +232,20 @@ namespace Script {
     water = graph.getChildrenByName("Grid")[0].getChild(1).getChildren();
     paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
     cat = graph.getChildrenByName("StateMachine")[0];
-    await setSpriteCat(cat); //NEEDS TO HABEN BEFORE CATTHROW ASKS FOR THE CHILDREN BECAUSE OTHERWISE IT DOESNT EXIST YET
-
-
+    setSpriteCat(cat); //NEEDS TO HAPPEN BEFORE CATTHROW ASKS FOR THE CHILDREN BECAUSE OTHERWISE IT DOESNT EXIST YET
     catThrow = graph.getChildrenByName("StateMachine")[0]; //("cat")[0];
-    await setSpriteCatThrow(catThrow);
+    setSpriteCatThrow(catThrow);
+    catWin = graph.getChildrenByName("StateMachine")[0]; //("cat")[0];
+    setSpriteCatWin(catWin);
     //graph.getChildrenByName("StateMachine")[0].getChild(0).removeAllChildren();
-    console.log(catThrow);
+    //console.log(catThrow.getChild(1));
 
+    //Needed to directly swap between sprites
+    catPH = cat.getChildrenByName("SpriteCat")[0];
+    catThrowPH = catThrow.getChildrenByName("SpriteCatThrow")[0];
+    catThrowPH.activate(false);
+    catWinPH = catWin.getChildrenByName("SpriteCatWin")[0];
+    catWinPH.activate(false); //Hides the other sprites on the same Branch
 
     //const observer = new ObserverMob("ObserverMob");
           //console.log(cityPosition)
@@ -1037,10 +1048,10 @@ function unitInteraction(graph: ƒ.Node) {
         console.log(cityNodeP2);
         delete spliceRemoved[0];
         if (cityNodeP2.length === 0) {
-          console.log("bitch1");
           currentPhase = 10;
           currentplayer = 0;
           document.getElementById("--headingInfo").setAttribute('value', turnPhaseWinP1);
+          wonBoolean = true;
         }
       }
     }
@@ -1075,17 +1086,16 @@ function unitInteraction(graph: ƒ.Node) {
       if (turnsNeededForCapture < 1) { //THIS DOESNT WORK IF THE CAPTURED CITIES ARE RANDOM!!
         //alert("City of P1 has been captured!");
         let spliceRemoved: any[] = [];
-        //removeChild(mobsAny[iCounter3]);
         graph.removeChild(cityNode[cityNode.length - 1]);
         spliceRemoved = cityNode.splice(cityNode.length - 1, 1);
         console.log(spliceRemoved);
         console.log(cityNode);
         delete spliceRemoved[0];
         if (cityNode.length === 0) {
-          console.log("bitch");
           currentPhase = 10;
           currentplayer = 0;
           document.getElementById("--headingInfo").setAttribute('value', turnPhaseWinP2);
+          wonBoolean = true;
         }
       }
     }

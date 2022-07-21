@@ -4,7 +4,7 @@ namespace Script {
     ƒ.Project.registerScriptNamespace(Script);  // Register the namespace to FUDGE for serialization
 
     enum JOB {
-        SPAWN, IDLE, THROW, STAY
+        SPAWN, IDLE, THROW, WIN
     }
 
 
@@ -59,8 +59,8 @@ namespace Script {
             setup.setAction(JOB.SPAWN, <ƒ.General>this.actSpawn);
             setup.setAction(JOB.IDLE, <ƒ.General>this.actIdle);
             setup.setAction(JOB.THROW, <ƒ.General>this.actThrow);
-            setup.setAction(JOB.STAY, <ƒ.General>this.actDie);
-            setup.setTransition(JOB.THROW, JOB.STAY, <ƒ.General>this.transitStay);
+            setup.setAction(JOB.WIN, <ƒ.General>this.actWin);
+            setup.setTransition(JOB.THROW, JOB.WIN, <ƒ.General>this.transitWin);
             return setup;
         }
 
@@ -91,6 +91,10 @@ namespace Script {
         private static async actIdle(_machine: StateMachine): Promise<void> { //THIS SOMEWHAT WORKS NOW, GOODLUCKT TOMORROW
             let currPos: ƒ.Vector3 = _machine.node.mtxLocal.translation;
             _machine.timeStamp += 1 * _machine.deltaTime / 2;
+            if(catPH.activate){
+                catPH.activate(true);
+            catThrowPH.activate(false);
+            }
             //console.log(leftRightCoordination);
             if ((StateMachine.sinHorizontal(_machine.timeStamp)) > 1.99 && leftRightCoordination === 0) {
                 //console.log(leftRightCoordination);
@@ -112,23 +116,37 @@ namespace Script {
             if (throwBoolean) {
                 _machine.transit(JOB.THROW);
             }
+            if (wonBoolean){
+                _machine.transit(JOB.WIN);
+            }
         }
         private static async actThrow(_machine: StateMachine): Promise<void> {
             //_machine.cmpMaterial.clrPrimary = ƒ.Color.CSS("white");
             //let difference: ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(_machine.node.mtxWorld.translation, cart.mtxWorld.translation);
             //difference.normalize(_machine.forceEscape);
             //_machine.cmpBody.applyForce(difference);
-
-            
+            catPH.activate(false);
+            catThrowPH.activate(true);
             throwBoolean = false;
-            StateMachine.actDefault(_machine);
-            _machine.transit(JOB.IDLE);
+            
+            setTimeout(() => {
+                StateMachine.actDefault(_machine);
+                _machine.transit(JOB.IDLE);
+              }, 1000);
+            
         }
-        private static async actDie(_machine: StateMachine): Promise<void> {
-            //
+        private static async actWin(_machine: StateMachine): Promise<void> {
+            catPH.activate(false);
+            catWinPH.activate(true);
+            wonBoolean = false;
+            
+            //setTimeout(() => {
+                StateMachine.actDefault(_machine);
+               // _machine.transit(JOB.IDLE);
+             // }, 10000);
         }
 
-        private static transitStay(_machine: StateMachine): void {
+        private static transitWin(_machine: StateMachine): void {
             //_machine.cmpBody.applyLinearImpulse(ƒ.Vector3.Y(5));
             //let timer: ƒ.Timer = new ƒ.Timer(ƒ.Time.game, 100, 20, (_event: ƒ.EventTimer) => {
             //  _machine.cmpMaterial.clrPrimary = ƒ.Color.CSS("black", 1 - _event.count / 20);
@@ -156,12 +174,12 @@ namespace Script {
                     this.cmpTransform = this.node.getComponent(ƒ.ComponentTransform);
                     this.cmpBody.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
                         if (_event.cmpRigidbody.node.name == "runner")
-                            this.transit(JOB.STAY);
+                            this.transit(JOB.WIN);
                     });
                     let trigger: ƒ.ComponentRigidbody = this.node.getChildren()[0].getComponent(ƒ.ComponentRigidbody);
                     trigger.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
                         //console.log("TriggerEnter", _event.cmpRigidbody.node.name);
-                        if (_event.cmpRigidbody.node.name == "runner" && this.stateCurrent != JOB.STAY)
+                        if (_event.cmpRigidbody.node.name == "runner" && this.stateCurrent != JOB.WIN)
                             this.transit(JOB.THROW);
                     });
                     trigger.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_EXIT, (_event: ƒ.EventPhysics) => {
