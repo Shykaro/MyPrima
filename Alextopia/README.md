@@ -5,7 +5,7 @@ Year: 2022 Sommer
 Semester: OMB6
 Course: Prototyping interactive Media and Apps PRIMA
 Docent: Jirka Dell'Oro-Friedl
-##########################################################################################################################################################
+
 
 ### LINKS #######################################################################################################################################################
 Link to the finished and executable application on Github-Pages:
@@ -16,7 +16,7 @@ https://github.com/Shykaro/MyPrima/tree/main/Alextopia/Script/Source
 
 Link to the design document:
 https://github.com/Shykaro/MyPrima/blob/main/Alextopia/styles.css
-##########################################################################################################################################################
+
 
 ### DESCRIPTIONS #######################################################################################################################################################
 Description for users on how to interact:
