@@ -1324,19 +1324,11 @@ var Script;
             console.log("Transit to", _machine.stateNext);
         }
         static async actSpawn(_machine) {
-            //console.log(JOB[_machine.stateCurrent]);
-            //let terrainInfo: ƒ.TerrainInfo = meshTerrain.getTerrainInfo(_machine.node.mtxWorld.translation, mtxTerrain);
-            //if (terrainInfo.distance < 0.5)
-            //  _machine.cmpBody.applyForce(ƒ.Vector3.Y(20));
-            //const enemy = ƒ.Random.default.getElement(ObserverMob.observer);
-            //observer.addChild(new Enemy("Enemy", enemy));
+            _machine.transit(JOB.IDLE);
         }
         static async actDefault(_machine) {
-            //console.log(JOB[_machine.stateCurrent]);
-            //let terrainInfo: ƒ.TerrainInfo = meshTerrain.getTerrainInfo(_machine.node.mtxWorld.translation, mtxTerrain);
-            //if (terrainInfo.distance < 0.5)
-            //  _machine.cmpBody.applyForce(ƒ.Vector3.Y(20));
             console.log(JOB[_machine.stateCurrent]);
+            _machine.transit(JOB.IDLE);
         }
         static async actIdle(_machine) {
             let currPos = _machine.node.mtxLocal.translation;
@@ -1345,11 +1337,8 @@ var Script;
                 Script.catPH.activate(true);
                 Script.catThrowPH.activate(false);
             }
-            //console.log(leftRightCoordination);
             if ((StateMachine.sinHorizontal(_machine.timeStamp)) > 1.99 && Script.leftRightCoordination === 0) {
-                //console.log(leftRightCoordination);
                 Script.leftRightCoordination = 1;
-                //console.log(StateMachine.sinHorizontal(_machine.timeStamp));
                 const graph = Script.viewport.getBranch();
                 const catSprite = graph.getChildrenByName("StateMachine")[0].getChildrenByName("SpriteCat")[0];
                 catSprite.mtxLocal.scaleX(-1);
@@ -1372,12 +1361,10 @@ var Script;
             }
         }
         static async actThrow(_machine) {
-            //_machine.cmpMaterial.clrPrimary = ƒ.Color.CSS("white");
-            //let difference: ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(_machine.node.mtxWorld.translation, cart.mtxWorld.translation);
-            //difference.normalize(_machine.forceEscape);
-            //_machine.cmpBody.applyForce(difference);
-            Script.catPH.activate(false);
-            Script.catThrowPH.activate(true);
+            if (Script.throwBoolean) {
+                Script.catPH.activate(false);
+                Script.catThrowPH.activate(true);
+            }
             Script.throwBoolean = false;
             setTimeout(() => {
                 StateMachine.actDefault(_machine);
@@ -1388,19 +1375,9 @@ var Script;
             Script.catPH.activate(false);
             Script.catWinPH.activate(true);
             Script.wonBoolean = false;
-            //setTimeout(() => {
             StateMachine.actDefault(_machine);
-            // _machine.transit(JOB.IDLE);
-            // }, 10000);
         }
         static transitWin(_machine) {
-            //_machine.cmpBody.applyLinearImpulse(ƒ.Vector3.Y(5));
-            //let timer: ƒ.Timer = new ƒ.Timer(ƒ.Time.game, 100, 20, (_event: ƒ.EventTimer) => {
-            //  _machine.cmpMaterial.clrPrimary = ƒ.Color.CSS("black", 1 - _event.count / 20);
-            //  if (_event.lastCall)
-            //    _machine.transit(JOB.STAY);
-            //});
-            //console.log(timer);
         }
         // Activate the functions of this component as response to events
         hndEvent = (_event) => {

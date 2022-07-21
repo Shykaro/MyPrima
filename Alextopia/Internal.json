@@ -88,8 +88,8 @@
         "ƒ.CoatRemissiveTextured": {
           "color": "[1, 1, 1, 1]",
           "idTexture": "TextureImage|2022-07-19T19:37:15.240Z|89611",
-          "diffuse": 1,
-          "specular": 0
+          "diffuse": 1.5,
+          "specular": 6
         }
       }
     }
@@ -4088,7 +4088,7 @@
                     "pivot": {
                       "translation": "[5.5, -2, 5]",
                       "rotation": "[180, 0, 0]",
-                      "scaling": "[11, 11, 11]"
+                      "scaling": "[15, 15, 11]"
                     },
                     "light": {
                       "ƒ.LightSpot": {
@@ -4166,7 +4166,7 @@
                           "pivot": {
                             "translation": "[5, 1.5, -3]",
                             "rotation": "[170, 0, 0]",
-                            "scaling": "[11, 7, 0.30000001192092896]"
+                            "scaling": "[11, 6, 0.30000001192092896]"
                           },
                           "Component": {
                             "active": true
@@ -4223,7 +4223,7 @@
                           "pivot": {
                             "translation": "[5, 1.5, -3]",
                             "rotation": "[170, 0, 0]",
-                            "scaling": "[11, 6.999999523162842, 0.30000001192092896]"
+                            "scaling": "[11, 6, 0.30000001192092896]"
                           },
                           "Component": {
                             "active": true
@@ -4319,7 +4319,7 @@
               {
                 "ƒ.Node": {
                   "name": "Balls",
-                  "active": true,
+                  "active": false,
                   "components": {},
                   "children": [
                     {

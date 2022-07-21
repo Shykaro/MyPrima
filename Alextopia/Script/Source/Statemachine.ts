@@ -69,37 +69,23 @@ namespace Script {
         }
 
         private static async actSpawn(_machine: StateMachine): Promise<void> {
-            //console.log(JOB[_machine.stateCurrent]);
-            //let terrainInfo: ƒ.TerrainInfo = meshTerrain.getTerrainInfo(_machine.node.mtxWorld.translation, mtxTerrain);
-            //if (terrainInfo.distance < 0.5)
-            //  _machine.cmpBody.applyForce(ƒ.Vector3.Y(20));
-
-            //const enemy = ƒ.Random.default.getElement(ObserverMob.observer);
-            //observer.addChild(new Enemy("Enemy", enemy));
-
+            _machine.transit(JOB.IDLE);
         }
 
         private static async actDefault(_machine: StateMachine): Promise<void> {
-            //console.log(JOB[_machine.stateCurrent]);
-            //let terrainInfo: ƒ.TerrainInfo = meshTerrain.getTerrainInfo(_machine.node.mtxWorld.translation, mtxTerrain);
-            //if (terrainInfo.distance < 0.5)
-            //  _machine.cmpBody.applyForce(ƒ.Vector3.Y(20));
             console.log(JOB[_machine.stateCurrent]);
-
+            _machine.transit(JOB.IDLE);
         }
 
         private static async actIdle(_machine: StateMachine): Promise<void> { //THIS SOMEWHAT WORKS NOW, GOODLUCKT TOMORROW
             let currPos: ƒ.Vector3 = _machine.node.mtxLocal.translation;
             _machine.timeStamp += 1 * _machine.deltaTime / 2;
-            if(catPH.activate){
+            if (catPH.activate) {
                 catPH.activate(true);
-            catThrowPH.activate(false);
+                catThrowPH.activate(false);
             }
-            //console.log(leftRightCoordination);
             if ((StateMachine.sinHorizontal(_machine.timeStamp)) > 1.99 && leftRightCoordination === 0) {
-                //console.log(leftRightCoordination);
                 leftRightCoordination = 1;
-                //console.log(StateMachine.sinHorizontal(_machine.timeStamp));
                 const graph: ƒ.Node = viewport.getBranch();
                 const catSprite: ƒ.Node = graph.getChildrenByName("StateMachine")[0].getChildrenByName("SpriteCat")[0];
                 catSprite.mtxLocal.scaleX(-1);
@@ -116,44 +102,31 @@ namespace Script {
             if (throwBoolean) {
                 _machine.transit(JOB.THROW);
             }
-            if (wonBoolean){
+            if (wonBoolean) {
                 _machine.transit(JOB.WIN);
             }
         }
         private static async actThrow(_machine: StateMachine): Promise<void> {
-            //_machine.cmpMaterial.clrPrimary = ƒ.Color.CSS("white");
-            //let difference: ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(_machine.node.mtxWorld.translation, cart.mtxWorld.translation);
-            //difference.normalize(_machine.forceEscape);
-            //_machine.cmpBody.applyForce(difference);
-            catPH.activate(false);
-            catThrowPH.activate(true);
+            if (throwBoolean) {
+                catPH.activate(false);
+                catThrowPH.activate(true);
+            }
             throwBoolean = false;
-            
+
             setTimeout(() => {
                 StateMachine.actDefault(_machine);
                 _machine.transit(JOB.IDLE);
-              }, 1000);
-            
+            }, 1000);
+
         }
         private static async actWin(_machine: StateMachine): Promise<void> {
             catPH.activate(false);
             catWinPH.activate(true);
             wonBoolean = false;
-            
-            //setTimeout(() => {
-                StateMachine.actDefault(_machine);
-               // _machine.transit(JOB.IDLE);
-             // }, 10000);
+            StateMachine.actDefault(_machine);
         }
 
         private static transitWin(_machine: StateMachine): void {
-            //_machine.cmpBody.applyLinearImpulse(ƒ.Vector3.Y(5));
-            //let timer: ƒ.Timer = new ƒ.Timer(ƒ.Time.game, 100, 20, (_event: ƒ.EventTimer) => {
-            //  _machine.cmpMaterial.clrPrimary = ƒ.Color.CSS("black", 1 - _event.count / 20);
-            //  if (_event.lastCall)
-            //    _machine.transit(JOB.STAY);
-            //});
-            //console.log(timer);
         }
 
         // Activate the functions of this component as response to events
