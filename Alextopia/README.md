@@ -20,7 +20,7 @@ Link to the source code:
 https://github.com/Shykaro/MyPrima/tree/main/Alextopia/Script/Source
 
 Link to the design document:
-https://github.com/Shykaro/MyPrima/blob/main/Alextopia/styles.css
+KANN NACHGEREICHT WERDEN (Liegt leider in physischer Form in Furtwangen, wo ich leider seit ca. einer Woche nichtmehr bin)
 
 
 ### DESCRIPTIONS #######################################################################################################################################################
