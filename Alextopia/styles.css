@@ -49,6 +49,32 @@ canvas.fullscreen {
     visibility: hidden;
 }
 
+h1 {
+    font-size:xx-large;
+    font-weight:bolder;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.controls{
+    
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.controls p {
+    text-align: left;
+    font-family: 'Franklin Gothic light', 'Arial Narrow', Arial, sans-serif;
+}
+
+.description{
+    
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.description p {
+    text-align: left;
+    font-family: 'Franklin Gothic light', 'Arial Narrow', Arial, sans-serif;
+}
+
 #battery{
     
     bottom: 10px;
