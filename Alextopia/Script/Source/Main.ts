@@ -417,6 +417,7 @@ namespace Script {
 
 
       if (currentplayer === 1) {
+        //if (mobsAny.length > 0)
         if (currentPhase === 1) { //&& mobsAny.length > 0) {
 
           if (mobsAny.length > 0) {
@@ -458,24 +459,31 @@ namespace Script {
             }
             if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
               if (currentplayer === 1) {
+                //if(mobsAny.length === 0){
+                  //zwischenSpeicherCoordinateLRCP2.set(((mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x)), mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
+                //  checkIfMoveMob("y");
+                //}
+                console.log("Length??: " + mobsAny.length);
+                if(mobsAny.length > 0){
                 sounds[2].play(true);
                 unitInteraction(graph); //UNIT INTERACTION HERE
                 //currentPhase = 2;
                 logInUnit(); //also end of turn 1 procedure if its not the last unit.
+                }
               }
               return;
             }
           }
           else {
-
-            //logInUnit();
-            //
             handleCityTurnPart(); //WEIRD INTERACTION
             currentPhase = 2;
+            console.log("HandleCityTurnPart wird ausgeführt!");
+            return;
           }
         }
         if (currentPhase === 2) { //Shuts down the other key down events, initiates or gives time for phase 2
           if (name === 'Space' || name === 'Enter') {
+
 
             handleEndOfCityProcedure(currentUnitNumber, 2); //Wechselt zu zweitem angegebenen Parameter, aka current player wechselt nun zu 2
             //ENDING OF PLAYER 1 PHASE 2
@@ -513,10 +521,18 @@ namespace Script {
             }
             if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
               if (currentplayer === 2) {
+                //if(mobsP2Any.length === 0){
+                //  zwischenSpeicherCoordinateLRC.set(((mobsAny[currentUnitNumber].mtxLocal.translation.x)), mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
+                //checkIfMoveMobP2("y");
+                //}
+                console.log("Length??: " + mobsP2Any.length);
+
+                if(mobsP2Any.length > 0){
                 sounds[2].play(true);
                 //currentPhase = 2;
                 unitInteraction(graph); //UNIT INTERACTION HERE
                 logInUnitP2() //also end of turn procedure if its not the last unit.
+              }
               }
 
               return;
@@ -528,7 +544,8 @@ namespace Script {
             //
             handleCityTurnPartP2()
             currentPhase = 2;
-
+            console.log("HandleCityTurnPart wird ausgeführt!");
+            return;
           }
         }
         if (currentPhase === 2) {
@@ -681,6 +698,7 @@ namespace Script {
 
       console.log("turnplayer is now: " + currentplayer);
       //console.log("turnphase is now: " + currentPhase);
+
       return;
     }
     else {
@@ -903,6 +921,7 @@ namespace Script {
       //console.log("Setze BuildingP2 und MobP2 zu none");
     };
     addMobLimitCounter = mobBuyLimit;
+    
   }
 
 
@@ -918,6 +937,7 @@ namespace Script {
       //console.log("Setze BuildingP1 und MobP1 zu none");
     };
     addMobLimitCounterP2 = mobBuyLimit;
+    
   }
   // ------------- Handles the city part of the turn, after all troops have been moved. END ---------------------------------------------------
 
