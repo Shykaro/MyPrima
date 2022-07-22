@@ -53,4 +53,6 @@ A copy of the catalogue of criteria above, the right column replaced with very b
 | B |	Physics (INCLUDED)		|	Added falling rigidbody coins as Coinmachine aesthetic for the game end. They collide with the machine, the Customcomponentscript Coin and each other. (1) |
 | C |	Net		|	- |
 | D |	State Machines (INCLUDED)	|	Added a ComponentStateMachine which additionally interacts visibly with the game by being IDLE, THROWing when something is built and jumps of joy when the game has ended. (1) |
-| E |	Animation (INCLUDED) 	|	I used Sprites to animate all Units, the different tiles on the Grid as well as the ComponentStateMachine on top of the game. (1) |
+| E |	Animation (INCLUDED) 	|	I used Sprites to animate all Units, the different tiles on the Grid as well as the ComponentStateMachine on top of the game. Also added a little animation for the cities to rotate with. (2) |
+
+Combined these are 14 Points.
