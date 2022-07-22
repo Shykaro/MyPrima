@@ -32,7 +32,7 @@ The game consists of two phases, after you moved every unit the current player h
 or build mines to increase gold income every round.
 
 Description on how to install, if applicable (additional services, database etc.)
-Game was created and tested on Google Chrome.
+Game was created and tested on Google Chrome. -> Preferebly use 4:3 aspect ratio.
 FudgePhysics are used but included.
 Nothing additional needed.
 

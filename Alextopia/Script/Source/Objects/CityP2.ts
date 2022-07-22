@@ -11,8 +11,7 @@ namespace Script {
                 ƒ.ShaderLit,
                 new ƒ.CoatColored(ƒ.Color.CSS("#ff6961"))
             );
-
-            //const cityNodeP2 = new ƒ.Node("City");
+            
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
             this.addComponent(new ƒ.ComponentMaterial(mtrCityP2));
             this.addComponent(new ƒ.ComponentTransform());

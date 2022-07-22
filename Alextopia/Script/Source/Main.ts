@@ -11,6 +11,7 @@ namespace Script {
 
   export let viewport: ƒ.Viewport;
   let sounds: ƒ.ComponentAudio[]; //outdated? i need it for later
+
   let water: ƒ.Node[];    //Blocks that cant be set foot on with normal units - Beinhaltet jeden Wasserblock in einem Array gespeichert
   export let paths: ƒ.Node[];    //Building/Land are, every unit can walk on these - beinhaltet jeden begehbaren block in einem Array gespeichert
   let cat: ƒ.Node;
@@ -21,15 +22,12 @@ namespace Script {
   export let catWinPH: ƒ.Node;
   export let cityNode: City[] = [];   //City = new ƒ.Node("CityP2");
   export let cityNodeP2: CityP2[] = []; //City = new ƒ.Node("CityP2");
+
   export let leftRightCoordination = 0;
   export let throwBoolean: Boolean = false;
   export let wonBoolean: Boolean = false;
-  //export let mobsAny: Mob[] = [];   //Array for all created mobs/units
-  //export let mobsAny: Mob2[] = [];   //Array for all created mobs/units
-  export let mobsAnzPlayer1: number = 0; //Ist die länge von beiden Arrays des Spielers zusammen
 
-  //export let mobsP2Any: MobP2[] = [];   //Array for all created mobs/units
-  //export let mobsP2Any: Mob2P2[] = [];   //Array for all created mobs/units
+  export let mobsAnzPlayer1: number = 0; //Ist die länge von beiden Arrays des Spielers zusammen
   export let mobsAnzPlayer2: number = 0; //Ist die länge von beiden Arrays des Spielers zusammen
 
   let mobsAny: any[] = [];
@@ -71,7 +69,6 @@ namespace Script {
   let turnPhaseWinP1 = "Spieler 1 hat gewonnen! Drücke Enter zum neustarten.";
   let turnPhaseWinP2 = "Spieler 2 hat gewonnen! Drücke Enter zum neustarten.";
   let turnPhaseEnd = "Das Spiel ist zu Ende, drücke Enter zum reloaden!";
-  //document.getElementById("--headingInfo").setAttribute('value', turnPhaseOne/Two);
 
   let zwischenSpeicherCoordinateLRC: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);    //LRC = LimitReachCheck, used in checking that unit can only work one field from origin.
   let zwischenSpeicherCoordinateLRCP2: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
@@ -97,29 +94,26 @@ namespace Script {
   let addMobLimitCounterP2: number = mobBuyLimit; //limits how many units per round can be bought for P2. -> adjust mobBuyLimit to change this
   export let currentUnitNumber: number = 0; //taken in account to cycle through the units to move them, used in Mob.move function
   export let currentUnitNumberP2: number = 0; //taken in account to cycle through the units to move them, used in Mob.move function
-  export let iMoveY: number = 0;            //Necessary global variables to limit user to one move per time. ALLE OBSOLET.
-  export let iMoveYMinus: number = 0;       //outdated? yes
-  export let iMoveX: number = 0;            //outdated? yes
-  export let iMoveXMinus: number = 0;       //outdated? yes
   export let iLimitSpaceToOne: number = 0; //does the same as iMove, just only for the Space Enter Mob/Unit switch.
   export let finishedMobPlacement: Boolean = false; //If false, says youre able to move the unit, true says its done.
-
   export let movingDirection: string = "y";
 
   export let movement: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0); //outdated? yes
-
-
+  export let iMoveY: number = 0;            //Necessary global variables to limit user to one move per time. ALLE OBSOLET.
+  export let iMoveYMinus: number = 0;       //outdated? yes
+  export let iMoveX: number = 0;            //outdated? yes
+  export let iMoveXMinus: number = 0; 
 
   //------------ TO-DO'S -------------------------------------------------------------------
-  // Random Map generator -> yea fuck that
-  // adding all the requirements is more important
-  // work on Networking this gon be fun, should try this -> aint working
-  // Implement light to use as viewing distance, dont know how this works
-  // Eventsystem angucken, kp wie das funktioniert -> did a thing jirka will very much like me for, but its for the criteria nonetheless
-  // Physics zum Spaß einfügen
-  // State machine für weißgott was, hauptsache kriterien erfüllt.
-  //
-  //
+  // Bugfixing
+  // VUI anpassen
+  // Email schreiben
+  // Startup menü verändern -> controlls beinhalten
+  // 
+  // ++ DONE adding all the requirements is more important
+  // ++ DONE Eventsystem angucken, kp wie das funktioniert -> Das wird Jirka mögen
+  // ++ DONE Physics zur Erlebnissteigerung einfügen
+  // ++ DONE State machine
   // ++ DONE External Data via Highscore -> Punkte integrieren, oder züge bis zum win -> BRAUCHT WINCONDITION, EXTERNAL DATA AUF BALANCE SHEET ABÄNDERN -> did a balance json sheet which gets loaded.
   // ++ DONE Start implementing different rounds in a players turn -> unit moving -> unit producing -> playerswap
   // ++ DONE Add Gold mechanic -> expand with buying upgrades and getting gold from defeating units -> Defeating Units is Missing.
@@ -128,6 +122,9 @@ namespace Script {
   // ++ DONE Start on Unit to unit intercation ?? How do they interact, do they have HP or other Stats? -> Do another spawn RANDOM button for enemy units, let every unit move by one and automatically change side when everyone moved/interacted.
   // ++ DONE Unit should only be able to walk 1 field from starting position, maybe test with random spawnfields for Unit +1 button.
   // ++ DONE but maybe needs rework ++ Graphics, like terrain and Units
+  // -- CANCELED Implement light to use as viewing distance, dont know how this works -> did spotlight instead
+  // -- CANCELED work on Networking this gon be fun, should try this -> aint working
+  // -- CANCELED at least for Abgabe, will das immernoch danach machen: Random Map generator -> yea fuck that
   //------------ TO-DO'S End ---------------------------------------------------------------
 
   //------------ Notizen -------------------------------------------------------------------
@@ -184,14 +181,9 @@ namespace Script {
     );
   }
 
-  async function loadJSON() {
-
+  async function loadJSON() { //Load balance json external data
     let costOfMobs: Response = await fetch("./Assets/balancesheet.json");
-
     Balance.costOfMobs = (await costOfMobs.json()).costOfMobs;
-
-    //console.log(Balance.costOfMobs[0].cost);
-
   }
 
   async function start(_event: CustomEvent) { //Was beim Start initialisiert werden soll
@@ -217,18 +209,16 @@ namespace Script {
       document.getElementById("--highscore").setAttribute('value', x.toString());
     };
 
-
     document.getElementById("--score_player_one").setAttribute('value', score.toString());
     document.getElementById("--score_player_two").setAttribute('value', scoreP2.toString());
-    //window.localStorage.setItem('highscore', score); BENÖTIGT FÜR DAS ENDE
 
     ƒ.AudioManager.default.listenTo(graph);
 
     sounds = graph.getChildrenByName("Sound")[0].getComponents(ƒ.ComponentAudio);
-    //sounds[0].play(true);
+    sounds[0].play(true);
     //sounds[3].play(true); //MUSIC CRAZY
-    //sounds[4].play(true); //MUSIC Funky
-    //pacman = graph.getChildrenByName("Pacman")[0];
+    sounds[4].play(true); //MUSIC Funky
+
     water = graph.getChildrenByName("Grid")[0].getChild(1).getChildren();
     paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
     cat = graph.getChildrenByName("StateMachine")[0];
@@ -237,8 +227,6 @@ namespace Script {
     setSpriteCatThrow(catThrow);
     catWin = graph.getChildrenByName("StateMachine")[0]; //("cat")[0];
     setSpriteCatWin(catWin);
-    //graph.getChildrenByName("StateMachine")[0].getChild(0).removeAllChildren();
-    //console.log(catThrow.getChild(1));
 
     //Needed to directly swap between sprites
     catPH = cat.getChildrenByName("SpriteCat")[0];
@@ -247,21 +235,11 @@ namespace Script {
     catWinPH = catWin.getChildrenByName("SpriteCatWin")[0];
     catWinPH.activate(false); //Hides the other sprites on the same Branch
 
-    //const observer = new ObserverMob("ObserverMob");
-          //console.log(cityPosition)
-          //mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
-          //observer.mtxLocal.translate(new ƒ.Vector3(0, 6, 0));
-          //graph.addChild(observer);
-          //mobsAny.push(observer);
-          //observer.spawn();
-
     document.getElementById("vui").style.visibility = 'visible';  //Vui einschalten
     document.getElementById("--addMob").style.display = 'none';   //Mob menü ausschalten
     document.getElementById("--addMobP2").style.display = 'none'; //Mob menü ausschalten
     document.getElementById("--addBuildings").style.display = 'none';   //Mob menü ausschalten
     document.getElementById("--addBuildingsP2").style.display = 'none'; //Mob menü ausschalten
-
-    //console.log(document.getElementById("--addBuildingsP2").style.display);
 
     const city = new City("City");
     const cityP2 = new CityP2("CityP2");
@@ -269,8 +247,8 @@ namespace Script {
     //const city2 = new City("City");
     //const city2P2 = new CityP2("CityP2");
 
-    cityNode.push(city);
-    cityNodeP2.push(cityP2);
+    cityNode.push(city); //if multiple cities p1
+    cityNodeP2.push(cityP2); //if multiple cities p2
 
     //cityNode.push(city2);
     //cityNodeP2.push(city2P2);
@@ -279,14 +257,10 @@ namespace Script {
     paths[15].addChild(city);
     paths[16].addChild(cityP2); //34
 
+    //console.log(graph.getChildrenByName("Grid")[0].getChildrenByName("Path")[0].getChild(15).getChildrenByName("City")[0]); //adjust x from getChild(x) to paths[x].addChild(city) and CityP2!! 
+
     //paths[1].addChild(city2);
     //paths[2].addChild(city2P2);
-
-    //Test console Logs
-    //console.log(paths);
-    //console.log(water);
-    //console.log(cityNode);
-    //console.log(cityNodeP2);
 
     //alle Ui units auf display none machen, damit ich sie nicht einzeln aufzählen muss.
     for (let i = 1; i < 10; i++) { //goes through all 9 possible Units
@@ -343,29 +317,19 @@ namespace Script {
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     ƒ.Loop.start(); // start the game loop to continuously draw the viewport, update the audiosystem and drive the physics i/a
 
+    initAnim(graph);
 
     //gebe den Spielern ihre Start-sachen --------------------------------------------------------------------
-
-
     creatingMob(1, graph, city, cityP2); //Gibt eine mob - unit zu Stadt von Spieler1
     creatingMob(3, graph, city, cityP2); //Gibt eine mobP2 - unit zu Stadt von Spieler2
     //skips 2 turns, so players have start gold and some Bugs are shoved away lol 
-
     unitInteraction(graph);
     logInUnit();
     handleEndOfCityProcedure(currentUnitNumber, 2);
-
     unitInteraction(graph);
     logInUnitP2();
     handleEndOfCityProcedure(currentUnitNumber, 1);
-
     console.log("Health of p1 unit: " + mobsAny[0].health);
-
-    //console.log("Erster Mob: ");
-    //console.log(mobs[0]);
-
-    //mobsAny[0].material.se
-
     //Ende start items ---------------------------------------------------------------------------------------
 
   } //ENDKLAMMER FÜR START FUNKTION -------------------------------------------------------------------------------------
@@ -377,10 +341,10 @@ namespace Script {
     //document.getElementById("--goldInput").setAttribute('value', gold.toString());
     //document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
 
-    mobsAny.map((g) => g.move()); //g.move(paths));
-    mobsAny.map((g) => g.move()); //g.move(paths));
-    mobsP2Any.map((g) => g.move()); //g.move(paths));
-    mobsP2Any.map((g) => g.move()); //g.move(paths));
+    //mobsAny.map((g) => g.move()); //g.move(paths));
+    //mobsAny.map((g) => g.move()); //g.move(paths));
+    //mobsP2Any.map((g) => g.move()); //g.move(paths));
+    //mobsP2Any.map((g) => g.move()); //g.move(paths));
 
     viewport.draw();
 
@@ -1010,10 +974,6 @@ function unitInteraction(graph: ƒ.Node) {
   //auf Placeholder zugreifen zum Vergleich mit ursprünglicher position
   //unitPositionPlaceholder NOT THIS ONE
   //possibleLimitReachedCheckStay IS ACTUALLY THE CORE POSITION FOR THE UNIT.
-
-
-
-
   if (currentplayer === 1) {
     //In schleife unitPositionPlaceholder mit allen Figuren von Spieler 2 abfragen
     for (let iCounter2 = 0; iCounter2 < mobsP2Any.length; iCounter2++) {
@@ -1104,143 +1064,59 @@ function unitInteraction(graph: ƒ.Node) {
 }
 
 function hndPlaySpawnSound() { //Yes iam kind of an useless event, but an event nonetheless. -> Jirka's criteria list made me do this
-  //console.log("I was played");
   sounds[2].play(true);
 }
 
 function handleNPCAction() { //What does the NPC units
 
 }
+function initAnim(_graph: ƒ.Node): void {
+  //let animseq: ƒ.AnimationSequence = new ƒ.AnimationSequence(); //Up and down movement
+  //animseq.addKey(new ƒ.AnimationKey(0, 0));
+  //animseq.addKey(new ƒ.AnimationKey(2000, 1));
+  //animseq.addKey(new ƒ.AnimationKey(4000, 0));
 
-  /*function useInteractable() { //Search function and how its used before.
-    //Spielerfigur == position von interactable, soll dann hochzählen
-    const path = paths.find((p) => p.mtxLocal.translation.equals(pacman.mtxLocal.translation, 0.2)); //Pacman ersetzen. sucht interactables auf der selben stelle von pacman
+  let animseq2: ƒ.AnimationSequence = new ƒ.AnimationSequence();  //Rotation
+  animseq2.addKey(new ƒ.AnimationKey(0, 0));
+  animseq2.addKey(new ƒ.AnimationKey(2000, 45));
+  animseq2.addKey(new ƒ.AnimationKey(4000, 90));
 
-    if (path) {
-      const city: ƒ.Node = path.getChild(0);
+  let animStructure: ƒ.AnimationStructure = {
+    components: {
+      ComponentTransform: [
+        {
+          "ƒ.ComponentTransform": {
+            mtxLocal: {
+              translation: {
+                //z: animseq,
+              },
+              rotation: {
+                z: animseq2,
+              },
+            },
+          },
+        },
+      ],
+    },
+  };
+  let animation: ƒ.Animation = new ƒ.Animation("testAnimation", animStructure, 30);
 
-      if (city) {
-        path.removeChild(city); //removes paths[x].addChild(cityNode)
-      }
-    }
-  }*/
-  // Not needed atm, is just for collection
+  let cmpAnimator: ƒ.ComponentAnimator = new ƒ.ComponentAnimator(
+    animation,
+    ƒ.ANIMATION_PLAYMODE.LOOP,
+    ƒ.ANIMATION_PLAYBACK.TIMEBASED_CONTINOUS
+  );
 
-  /*function movePacman(): void {
-      if (
-        ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D]) &&
-        (pacman.mtxLocal.translation.y + 0.025) % 1 < 0.05
-      ) {
-        if (checkIfMove("x")) {
-          movement.set(1 / 60, 0, 0);
-          //rotateSprite("x");
-          movingDirection = "x";
-        }
-      }
+  let cmpAnimator2: ƒ.ComponentAnimator = new ƒ.ComponentAnimator(
+    animation,
+    ƒ.ANIMATION_PLAYMODE.LOOP,
+    ƒ.ANIMATION_PLAYBACK.TIMEBASED_CONTINOUS
+  );
+
   
-      if (
-        ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S]) &&
-        (pacman.mtxLocal.translation.x + 0.025) % 1 < 0.05
-      ) {
-        if (checkIfMove("-y")) {
-          movement.set(0, -1 / 60, 0);
-          //rotateSprite("-y");
-          movingDirection = "-y";
-        }
-      }
-  
-      if (
-        ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A]) &&
-        (pacman.mtxLocal.translation.y + 0.025) % 1 < 0.05
-      ) {
-        if (checkIfMove("-x")) {
-          movement.set(-1 / 60, 0, 0);
-          //rotateSprite("-x");
-          movingDirection = "-x";
-        }
-      }
-  
-      if (
-        ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W]) &&
-        (pacman.mtxLocal.translation.x + 0.025) % 1 < 0.05
-      ) {
-        if (checkIfMove("y")) {
-          movement.set(0, 1 / 60, 0);
-          //rotateSprite("y");
-          movingDirection = "y";
-        }
-      }
-    }*/
-
-  /*
-    export function checkIfMove(_direction?: string): boolean {
-      const y: number = pacman.mtxLocal.translation.y;
-      const x: number = pacman.mtxLocal.translation.x;
-      let newPosition: ƒ.Vector3;
-  
-      switch (_direction ?? movingDirection) {
-        case "x":
-          newPosition = new ƒ.Vector3(x + 1, y, 0);
-          break;
-        case "-x":
-          newPosition = new ƒ.Vector3(x - 1, y, 0);
-          break;
-        case "y":
-          newPosition = new ƒ.Vector3(x, y + 1, 0);
-          break;
-        case "-y":
-          newPosition = new ƒ.Vector3(x, y - 1, 0);
-          break;
-  
-        default:
-          break;
-      }
-  
-      const wall: ƒ.Node = water.find((w) => w.mtxLocal.translation.equals(newPosition, 0.022));
-  
-      if (wall) {
-        sounds[1].play(false);
-        return false;
-      }
-  
-      const path: ƒ.Node = paths.find((p) => p.mtxLocal.translation.equals(newPosition, 1));
-  
-      if (!path) {
-        sounds[1].play(false);
-        return false;
-      }
-  
-      return true;
-    }*/
-
-  /*
-  function checkIfGameOver(): void {
-    for (const mob of mobs) {
-      const isEvenPacman =
-        (Math.round(pacman.mtxLocal.translation.y) + Math.round(pacman.mtxLocal.translation.x)) %
-          2 ===
-        0;
-
-      const isEvenMob =
-        (Math.round(mob.mtxLocal.translation.y) + Math.round(mob.mtxLocal.translation.x)) %
-          2 ===
-        0;
-
-      if (
-        isEvenPacman !== isEvenMob &&
-        pacman.mtxLocal.translation.equals(Mob.mtxLocal.translation, 0.8)
-      ) {
-        document.getElementById("game-over").style.width = "100vw";
-        ƒ.Loop.removeEventListener(ƒ.EVENT.LOOP_FRAME, update);
-
-        sounds[1].play(false);
-        sounds[2].play(true);
-
-        document.getElementById("restart").addEventListener("click", function (_event: Event) {
-          window.location.reload();
-        });
-      }
-    }
-  }*/
-
+  _graph.getChildrenByName("Grid")[0].getChildrenByName("Path")[0].getChild(15).getChildrenByName("City")[0].addComponent(cmpAnimator); //adjust x from getChild(x) to paths[x].addChild(city) and CityP2!! 
+  _graph.getChildrenByName("Grid")[0].getChildrenByName("Path")[0].getChild(16).getChildrenByName("CityP2")[0].addComponent(cmpAnimator2);
+    
+  cmpAnimator.activate(true);
+}
 }

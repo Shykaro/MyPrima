@@ -10,9 +10,6 @@ namespace Script {
 
     public pointInTime: number = 0;
 
-    // WELCOME TO THE CRITERIA COIN. HONESTLY JIRKA, IAM SORRY. BUT ALSO, I CAN'T REALLY INCLUDE ALL CRITERIAS IN MY GAME, SO HERE'S THE SOLUTION. 
-    // THE GAME HAS NOW ITS OWN MASCOT. WHICH IS AN INDEFINITLY IMPORTANT PART OF THE CORE GAMEPLAY MECHANIC.
-
     constructor() {
       super();
 
@@ -49,16 +46,10 @@ namespace Script {
       this.pointInTime += 1 * deltaTime;
       let currPos: ƒ.Vector3 = this.node.mtxLocal.translation;
       this.node.mtxLocal.translation = new ƒ.Vector3(currPos.x,(this.sin(this.pointInTime)-1.5),currPos.z);
-      //console.log("sin", this.sin(this.timeStamp));
     }
 
     public sin(x: number): number {
       return Math.sin(Math.PI*x)*0.3;
     }
-
-    // protected reduceMutator(_mutator: ƒ.Mutator): void {
-    //   // delete properties that should not be mutated
-    //   // undefined properties and private fields (#) will not be included by default
-    // }
   }
 }

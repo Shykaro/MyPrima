@@ -31,14 +31,14 @@ declare namespace Script {
     let currentplayer: number;
     let currentUnitNumber: number;
     let currentUnitNumberP2: number;
-    let iMoveY: number;
-    let iMoveYMinus: number;
-    let iMoveX: number;
-    let iMoveXMinus: number;
     let iLimitSpaceToOne: number;
     let finishedMobPlacement: Boolean;
     let movingDirection: string;
     let movement: ƒ.Vector3;
+    let iMoveY: number;
+    let iMoveYMinus: number;
+    let iMoveX: number;
+    let iMoveXMinus: number;
     function checkIfMoveMob(_direction?: string): boolean;
     function checkIfMoveMobP2(_direction?: string): boolean;
 }
@@ -105,18 +105,11 @@ declare namespace Script {
 }
 declare namespace Script {
     import ƒ = FudgeCore;
-    class Light extends ƒ.Node {
-        constructor(_name: string);
-    }
-}
-declare namespace Script {
-    import ƒ = FudgeCore;
     class Mob extends ƒ.Node {
         health: number;
         dmg: number;
         constructor(_name: string);
         spawn(): void;
-        move(): void;
     }
 }
 declare namespace Script {
@@ -126,7 +119,6 @@ declare namespace Script {
         private dmg;
         constructor(_name: string);
         spawn(): void;
-        move(): void;
     }
 }
 declare namespace Script {
@@ -136,7 +128,6 @@ declare namespace Script {
         private dmg;
         constructor(_name: string);
         spawn(): void;
-        move(): void;
     }
 }
 declare namespace Script {

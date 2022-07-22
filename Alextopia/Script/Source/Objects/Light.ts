@@ -1,18 +1,10 @@
-namespace Script {
+/*namespace Script {
     import ƒ = FudgeCore;
 
     export class Light extends ƒ.Node {
 
         constructor(_name: string) {
             super(_name);
-
-        /*const mtrLight: ƒ.Material = new ƒ.Material(
-                "Light",
-                ƒ.ShaderLit,
-                new ƒ.CoatColored(ƒ.Color.CSS("#90d4ed"))
-            );*/
-
-
 
             this.addComponent(new ƒ.ComponentLight());
             this.addComponent(new ƒ.ComponentTransform());
@@ -21,4 +13,4 @@ namespace Script {
 
         }
     }
-}
+} OBSOLET --- USED FOR EXPERIMENTING WITH LIGHTED SPRITES --- DIDNT WORK // JIRKA HAD NO TIME ---*/

@@ -65,7 +65,7 @@ namespace Script {
         }
 
         private static transitDefault(_machine: StateMachine): void {
-            console.log("Transit to", _machine.stateNext);
+            //console.log("Transit to", _machine.stateNext);
         }
 
         private static async actSpawn(_machine: StateMachine): Promise<void> {
@@ -73,7 +73,7 @@ namespace Script {
         }
 
         private static async actDefault(_machine: StateMachine): Promise<void> {
-            console.log(JOB[_machine.stateCurrent]);
+            //console.log(JOB[_machine.stateCurrent]);
             _machine.transit(JOB.IDLE);
         }
 

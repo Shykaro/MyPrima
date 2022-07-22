@@ -9,8 +9,6 @@ var Script;
         // Properties may be mutated by users in the editor via the automatically created user interface
         message = "BackgroundCoinScript added to ";
         pointInTime = 0;
-        // WELCOME TO THE CRITERIA COIN. HONESTLY JIRKA, IAM SORRY. BUT ALSO, I CAN'T REALLY INCLUDE ALL CRITERIAS IN MY GAME, SO HERE'S THE SOLUTION. 
-        // THE GAME HAS NOW ITS OWN MASCOT. WHICH IS AN INDEFINITLY IMPORTANT PART OF THE CORE GAMEPLAY MECHANIC.
         constructor() {
             super();
             // Don't start when running in editor
@@ -43,7 +41,6 @@ var Script;
             this.pointInTime += 1 * deltaTime;
             let currPos = this.node.mtxLocal.translation;
             this.node.mtxLocal.translation = new ƒ.Vector3(currPos.x, (this.sin(this.pointInTime) - 1.5), currPos.z);
-            //console.log("sin", this.sin(this.timeStamp));
         };
         sin(x) {
             return Math.sin(Math.PI * x) * 0.3;
@@ -68,11 +65,7 @@ var Script;
     Script.leftRightCoordination = 0;
     Script.throwBoolean = false;
     Script.wonBoolean = false;
-    //export let mobsAny: Mob[] = [];   //Array for all created mobs/units
-    //export let mobsAny: Mob2[] = [];   //Array for all created mobs/units
     Script.mobsAnzPlayer1 = 0; //Ist die länge von beiden Arrays des Spielers zusammen
-    //export let mobsP2Any: MobP2[] = [];   //Array for all created mobs/units
-    //export let mobsP2Any: Mob2P2[] = [];   //Array for all created mobs/units
     Script.mobsAnzPlayer2 = 0; //Ist die länge von beiden Arrays des Spielers zusammen
     let mobsAny = [];
     let mobsP2Any = [];
@@ -100,7 +93,6 @@ var Script;
     let turnPhaseWinP1 = "Spieler 1 hat gewonnen! Drücke Enter zum neustarten.";
     let turnPhaseWinP2 = "Spieler 2 hat gewonnen! Drücke Enter zum neustarten.";
     let turnPhaseEnd = "Das Spiel ist zu Ende, drücke Enter zum reloaden!";
-    //document.getElementById("--headingInfo").setAttribute('value', turnPhaseOne/Two);
     let zwischenSpeicherCoordinateLRC = new ƒ.Vector3(0, 0, 0); //LRC = LimitReachCheck, used in checking that unit can only work one field from origin.
     let zwischenSpeicherCoordinateLRCP2 = new ƒ.Vector3(0, 0, 0);
     let possibleLimitReachedCheckX = new ƒ.Vector3(0, 0, 0);
@@ -121,24 +113,24 @@ var Script;
     let addMobLimitCounterP2 = mobBuyLimit; //limits how many units per round can be bought for P2. -> adjust mobBuyLimit to change this
     Script.currentUnitNumber = 0; //taken in account to cycle through the units to move them, used in Mob.move function
     Script.currentUnitNumberP2 = 0; //taken in account to cycle through the units to move them, used in Mob.move function
-    Script.iMoveY = 0; //Necessary global variables to limit user to one move per time. ALLE OBSOLET.
-    Script.iMoveYMinus = 0; //outdated? yes
-    Script.iMoveX = 0; //outdated? yes
-    Script.iMoveXMinus = 0; //outdated? yes
     Script.iLimitSpaceToOne = 0; //does the same as iMove, just only for the Space Enter Mob/Unit switch.
     Script.finishedMobPlacement = false; //If false, says youre able to move the unit, true says its done.
     Script.movingDirection = "y";
     Script.movement = new ƒ.Vector3(0, 0, 0); //outdated? yes
+    Script.iMoveY = 0; //Necessary global variables to limit user to one move per time. ALLE OBSOLET.
+    Script.iMoveYMinus = 0; //outdated? yes
+    Script.iMoveX = 0; //outdated? yes
+    Script.iMoveXMinus = 0;
     //------------ TO-DO'S -------------------------------------------------------------------
-    // Random Map generator -> yea fuck that
-    // adding all the requirements is more important
-    // work on Networking this gon be fun, should try this -> aint working
-    // Implement light to use as viewing distance, dont know how this works
-    // Eventsystem angucken, kp wie das funktioniert -> did a thing jirka will very much like me for, but its for the criteria nonetheless
-    // Physics zum Spaß einfügen
-    // State machine für weißgott was, hauptsache kriterien erfüllt.
-    //
-    //
+    // Bugfixing
+    // VUI anpassen
+    // Email schreiben
+    // Startup menü verändern -> controlls beinhalten
+    // 
+    // ++ DONE adding all the requirements is more important
+    // ++ DONE Eventsystem angucken, kp wie das funktioniert -> Das wird Jirka mögen
+    // ++ DONE Physics zur Erlebnissteigerung einfügen
+    // ++ DONE State machine
     // ++ DONE External Data via Highscore -> Punkte integrieren, oder züge bis zum win -> BRAUCHT WINCONDITION, EXTERNAL DATA AUF BALANCE SHEET ABÄNDERN -> did a balance json sheet which gets loaded.
     // ++ DONE Start implementing different rounds in a players turn -> unit moving -> unit producing -> playerswap
     // ++ DONE Add Gold mechanic -> expand with buying upgrades and getting gold from defeating units -> Defeating Units is Missing.
@@ -147,6 +139,9 @@ var Script;
     // ++ DONE Start on Unit to unit intercation ?? How do they interact, do they have HP or other Stats? -> Do another spawn RANDOM button for enemy units, let every unit move by one and automatically change side when everyone moved/interacted.
     // ++ DONE Unit should only be able to walk 1 field from starting position, maybe test with random spawnfields for Unit +1 button.
     // ++ DONE but maybe needs rework ++ Graphics, like terrain and Units
+    // -- CANCELED Implement light to use as viewing distance, dont know how this works -> did spotlight instead
+    // -- CANCELED work on Networking this gon be fun, should try this -> aint working
+    // -- CANCELED at least for Abgabe, will das immernoch danach machen: Random Map generator -> yea fuck that
     //------------ TO-DO'S End ---------------------------------------------------------------
     //------------ Notizen -------------------------------------------------------------------
     // BUGFIX: wenn erste einheit des Arrays getötet wird rutscht es nicht nach wenn der andere Spieler dran ist.
@@ -195,7 +190,6 @@ var Script;
     async function loadJSON() {
         let costOfMobs = await fetch("./Assets/balancesheet.json");
         Script.Balance.costOfMobs = (await costOfMobs.json()).costOfMobs;
-        //console.log(Balance.costOfMobs[0].cost);
     }
     async function start(_event) {
         Script.viewport = _event.detail;
@@ -218,13 +212,11 @@ var Script;
         ;
         document.getElementById("--score_player_one").setAttribute('value', score.toString());
         document.getElementById("--score_player_two").setAttribute('value', scoreP2.toString());
-        //window.localStorage.setItem('highscore', score); BENÖTIGT FÜR DAS ENDE
         ƒ.AudioManager.default.listenTo(graph);
         sounds = graph.getChildrenByName("Sound")[0].getComponents(ƒ.ComponentAudio);
-        //sounds[0].play(true);
+        sounds[0].play(true);
         //sounds[3].play(true); //MUSIC CRAZY
-        //sounds[4].play(true); //MUSIC Funky
-        //pacman = graph.getChildrenByName("Pacman")[0];
+        sounds[4].play(true); //MUSIC Funky
         water = graph.getChildrenByName("Grid")[0].getChild(1).getChildren();
         Script.paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
         cat = graph.getChildrenByName("StateMachine")[0];
@@ -233,45 +225,31 @@ var Script;
         Script.setSpriteCatThrow(catThrow);
         catWin = graph.getChildrenByName("StateMachine")[0]; //("cat")[0];
         Script.setSpriteCatWin(catWin);
-        //graph.getChildrenByName("StateMachine")[0].getChild(0).removeAllChildren();
-        //console.log(catThrow.getChild(1));
         //Needed to directly swap between sprites
         Script.catPH = cat.getChildrenByName("SpriteCat")[0];
         Script.catThrowPH = catThrow.getChildrenByName("SpriteCatThrow")[0];
         Script.catThrowPH.activate(false);
         Script.catWinPH = catWin.getChildrenByName("SpriteCatWin")[0];
         Script.catWinPH.activate(false); //Hides the other sprites on the same Branch
-        //const observer = new ObserverMob("ObserverMob");
-        //console.log(cityPosition)
-        //mob.mtxLocal.translate(new ƒ.Vector3(4, 3, 0));
-        //observer.mtxLocal.translate(new ƒ.Vector3(0, 6, 0));
-        //graph.addChild(observer);
-        //mobsAny.push(observer);
-        //observer.spawn();
         document.getElementById("vui").style.visibility = 'visible'; //Vui einschalten
         document.getElementById("--addMob").style.display = 'none'; //Mob menü ausschalten
         document.getElementById("--addMobP2").style.display = 'none'; //Mob menü ausschalten
         document.getElementById("--addBuildings").style.display = 'none'; //Mob menü ausschalten
         document.getElementById("--addBuildingsP2").style.display = 'none'; //Mob menü ausschalten
-        //console.log(document.getElementById("--addBuildingsP2").style.display);
         const city = new Script.City("City");
         const cityP2 = new Script.CityP2("CityP2");
         //const city2 = new City("City");
         //const city2P2 = new CityP2("CityP2");
-        Script.cityNode.push(city);
-        Script.cityNodeP2.push(cityP2);
+        Script.cityNode.push(city); //if multiple cities p1
+        Script.cityNodeP2.push(cityP2); //if multiple cities p2
         //cityNode.push(city2);
         //cityNodeP2.push(city2P2);
         //Positions of starting Cities
         Script.paths[15].addChild(city);
         Script.paths[16].addChild(cityP2); //34
+        //console.log(graph.getChildrenByName("Grid")[0].getChildrenByName("Path")[0].getChild(15).getChildrenByName("City")[0]); //adjust x from getChild(x) to paths[x].addChild(city) and CityP2!! 
         //paths[1].addChild(city2);
         //paths[2].addChild(city2P2);
-        //Test console Logs
-        //console.log(paths);
-        //console.log(water);
-        //console.log(cityNode);
-        //console.log(cityNodeP2);
         //alle Ui units auf display none machen, damit ich sie nicht einzeln aufzählen muss.
         for (let i = 1; i < 10; i++) { //goes through all 9 possible Units
             for (let ii = 1; ii < 5; ii++) { //goes through all 4 possible unit variations
@@ -320,6 +298,7 @@ var Script;
         });
         ƒ.Loop.addEventListener("loopFrame" /* ƒ.EVENT.LOOP_FRAME */, update);
         ƒ.Loop.start(); // start the game loop to continuously draw the viewport, update the audiosystem and drive the physics i/a
+        initAnim(graph);
         //gebe den Spielern ihre Start-sachen --------------------------------------------------------------------
         creatingMob(1, graph, city, cityP2); //Gibt eine mob - unit zu Stadt von Spieler1
         creatingMob(3, graph, city, cityP2); //Gibt eine mobP2 - unit zu Stadt von Spieler2
@@ -331,19 +310,16 @@ var Script;
         logInUnitP2();
         handleEndOfCityProcedure(Script.currentUnitNumber, 1);
         console.log("Health of p1 unit: " + mobsAny[0].health);
-        //console.log("Erster Mob: ");
-        //console.log(mobs[0]);
-        //mobsAny[0].material.se
         //Ende start items ---------------------------------------------------------------------------------------
     } //ENDKLAMMER FÜR START FUNKTION -------------------------------------------------------------------------------------
     function update(_event) {
         ƒ.Physics.simulate(); // if physics is included and used
         //document.getElementById("--goldInput").setAttribute('value', gold.toString());
         //document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
-        mobsAny.map((g) => g.move()); //g.move(paths));
-        mobsAny.map((g) => g.move()); //g.move(paths));
-        mobsP2Any.map((g) => g.move()); //g.move(paths));
-        mobsP2Any.map((g) => g.move()); //g.move(paths));
+        //mobsAny.map((g) => g.move()); //g.move(paths));
+        //mobsAny.map((g) => g.move()); //g.move(paths));
+        //mobsP2Any.map((g) => g.move()); //g.move(paths));
+        //mobsP2Any.map((g) => g.move()); //g.move(paths));
         Script.viewport.draw();
         if (addMobLimitCounter == 0) {
             document.getElementById("--plusmob").setAttribute('disabled', "");
@@ -1009,138 +985,44 @@ var Script;
         }
     }
     function hndPlaySpawnSound() {
-        //console.log("I was played");
         sounds[2].play(true);
     }
     function handleNPCAction() {
     }
-    /*function useInteractable() { //Search function and how its used before.
-      //Spielerfigur == position von interactable, soll dann hochzählen
-      const path = paths.find((p) => p.mtxLocal.translation.equals(pacman.mtxLocal.translation, 0.2)); //Pacman ersetzen. sucht interactables auf der selben stelle von pacman
-  
-      if (path) {
-        const city: ƒ.Node = path.getChild(0);
-  
-        if (city) {
-          path.removeChild(city); //removes paths[x].addChild(cityNode)
-        }
-      }
-    }*/
-    // Not needed atm, is just for collection
-    /*function movePacman(): void {
-        if (
-          ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D]) &&
-          (pacman.mtxLocal.translation.y + 0.025) % 1 < 0.05
-        ) {
-          if (checkIfMove("x")) {
-            movement.set(1 / 60, 0, 0);
-            //rotateSprite("x");
-            movingDirection = "x";
-          }
-        }
-    
-        if (
-          ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S]) &&
-          (pacman.mtxLocal.translation.x + 0.025) % 1 < 0.05
-        ) {
-          if (checkIfMove("-y")) {
-            movement.set(0, -1 / 60, 0);
-            //rotateSprite("-y");
-            movingDirection = "-y";
-          }
-        }
-    
-        if (
-          ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A]) &&
-          (pacman.mtxLocal.translation.y + 0.025) % 1 < 0.05
-        ) {
-          if (checkIfMove("-x")) {
-            movement.set(-1 / 60, 0, 0);
-            //rotateSprite("-x");
-            movingDirection = "-x";
-          }
-        }
-    
-        if (
-          ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W]) &&
-          (pacman.mtxLocal.translation.x + 0.025) % 1 < 0.05
-        ) {
-          if (checkIfMove("y")) {
-            movement.set(0, 1 / 60, 0);
-            //rotateSprite("y");
-            movingDirection = "y";
-          }
-        }
-      }*/
-    /*
-      export function checkIfMove(_direction?: string): boolean {
-        const y: number = pacman.mtxLocal.translation.y;
-        const x: number = pacman.mtxLocal.translation.x;
-        let newPosition: ƒ.Vector3;
-    
-        switch (_direction ?? movingDirection) {
-          case "x":
-            newPosition = new ƒ.Vector3(x + 1, y, 0);
-            break;
-          case "-x":
-            newPosition = new ƒ.Vector3(x - 1, y, 0);
-            break;
-          case "y":
-            newPosition = new ƒ.Vector3(x, y + 1, 0);
-            break;
-          case "-y":
-            newPosition = new ƒ.Vector3(x, y - 1, 0);
-            break;
-    
-          default:
-            break;
-        }
-    
-        const wall: ƒ.Node = water.find((w) => w.mtxLocal.translation.equals(newPosition, 0.022));
-    
-        if (wall) {
-          sounds[1].play(false);
-          return false;
-        }
-    
-        const path: ƒ.Node = paths.find((p) => p.mtxLocal.translation.equals(newPosition, 1));
-    
-        if (!path) {
-          sounds[1].play(false);
-          return false;
-        }
-    
-        return true;
-      }*/
-    /*
-    function checkIfGameOver(): void {
-      for (const mob of mobs) {
-        const isEvenPacman =
-          (Math.round(pacman.mtxLocal.translation.y) + Math.round(pacman.mtxLocal.translation.x)) %
-            2 ===
-          0;
-  
-        const isEvenMob =
-          (Math.round(mob.mtxLocal.translation.y) + Math.round(mob.mtxLocal.translation.x)) %
-            2 ===
-          0;
-  
-        if (
-          isEvenPacman !== isEvenMob &&
-          pacman.mtxLocal.translation.equals(Mob.mtxLocal.translation, 0.8)
-        ) {
-          document.getElementById("game-over").style.width = "100vw";
-          ƒ.Loop.removeEventListener(ƒ.EVENT.LOOP_FRAME, update);
-  
-          sounds[1].play(false);
-          sounds[2].play(true);
-  
-          document.getElementById("restart").addEventListener("click", function (_event: Event) {
-            window.location.reload();
-          });
-        }
-      }
-    }*/
+    function initAnim(_graph) {
+        //let animseq: ƒ.AnimationSequence = new ƒ.AnimationSequence(); //Up and down movement
+        //animseq.addKey(new ƒ.AnimationKey(0, 0));
+        //animseq.addKey(new ƒ.AnimationKey(2000, 1));
+        //animseq.addKey(new ƒ.AnimationKey(4000, 0));
+        let animseq2 = new ƒ.AnimationSequence(); //Rotation
+        animseq2.addKey(new ƒ.AnimationKey(0, 0));
+        animseq2.addKey(new ƒ.AnimationKey(2000, 45));
+        animseq2.addKey(new ƒ.AnimationKey(4000, 90));
+        let animStructure = {
+            components: {
+                ComponentTransform: [
+                    {
+                        "ƒ.ComponentTransform": {
+                            mtxLocal: {
+                                translation: {
+                                //z: animseq,
+                                },
+                                rotation: {
+                                    z: animseq2,
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
+        };
+        let animation = new ƒ.Animation("testAnimation", animStructure, 30);
+        let cmpAnimator = new ƒ.ComponentAnimator(animation, ƒ.ANIMATION_PLAYMODE.LOOP, ƒ.ANIMATION_PLAYBACK.TIMEBASED_CONTINOUS);
+        let cmpAnimator2 = new ƒ.ComponentAnimator(animation, ƒ.ANIMATION_PLAYMODE.LOOP, ƒ.ANIMATION_PLAYBACK.TIMEBASED_CONTINOUS);
+        _graph.getChildrenByName("Grid")[0].getChildrenByName("Path")[0].getChild(15).getChildrenByName("City")[0].addComponent(cmpAnimator); //adjust x from getChild(x) to paths[x].addChild(city) and CityP2!! 
+        _graph.getChildrenByName("Grid")[0].getChildrenByName("Path")[0].getChild(16).getChildrenByName("CityP2")[0].addComponent(cmpAnimator2);
+        cmpAnimator.activate(true);
+    }
 })(Script || (Script = {}));
 var Script;
 (function (Script) {
@@ -1321,13 +1203,13 @@ var Script;
             return setup;
         }
         static transitDefault(_machine) {
-            console.log("Transit to", _machine.stateNext);
+            //console.log("Transit to", _machine.stateNext);
         }
         static async actSpawn(_machine) {
             _machine.transit(JOB.IDLE);
         }
         static async actDefault(_machine) {
-            console.log(JOB[_machine.stateCurrent]);
+            //console.log(JOB[_machine.stateCurrent]);
             _machine.transit(JOB.IDLE);
         }
         static async actIdle(_machine) {
@@ -1444,8 +1326,6 @@ var Script;
             this.addComponent(new ƒ.ComponentMaterial(mtrCity));
             this.addComponent(new ƒ.ComponentTransform());
             this.mtxLocal.scale(new ƒ.Vector3(0.5, 0.5, 0.01));
-            //const light = new Light("CityLight"); //FOR LINE OF SIGHT LIGHT I TRIED THIS
-            //this.addChild(light);
         }
     }
     Script.City = City;
@@ -1457,7 +1337,6 @@ var Script;
         constructor(_name) {
             super(_name);
             const mtrCityP2 = new ƒ.Material("CityP2", ƒ.ShaderLit, new ƒ.CoatColored(ƒ.Color.CSS("#ff6961")));
-            //const cityNodeP2 = new ƒ.Node("City");
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
             this.addComponent(new ƒ.ComponentMaterial(mtrCityP2));
             this.addComponent(new ƒ.ComponentTransform());
@@ -1466,32 +1345,27 @@ var Script;
     }
     Script.CityP2 = CityP2;
 })(Script || (Script = {}));
-var Script;
-(function (Script) {
-    var ƒ = FudgeCore;
-    class Light extends ƒ.Node {
-        constructor(_name) {
+/*namespace Script {
+    import ƒ = FudgeCore;
+
+    export class Light extends ƒ.Node {
+
+        constructor(_name: string) {
             super(_name);
-            /*const mtrLight: ƒ.Material = new ƒ.Material(
-                    "Light",
-                    ƒ.ShaderLit,
-                    new ƒ.CoatColored(ƒ.Color.CSS("#90d4ed"))
-                );*/
+
             this.addComponent(new ƒ.ComponentLight());
             this.addComponent(new ƒ.ComponentTransform());
             this.mtxLocal.scale(new ƒ.Vector3(5, 5, 5));
             this.mtxLocal.translateZ(3);
+
         }
     }
-    Script.Light = Light;
-})(Script || (Script = {}));
+} OBSOLET --- USED FOR EXPERIMENTING WITH LIGHTED SPRITES --- DIDNT WORK // JIRKA HAD NO TIME ---*/ 
 var Script;
 (function (Script) {
     var ƒ = FudgeCore;
     var ƒAid = FudgeAid;
     class Mob extends ƒ.Node {
-        //private movement: ƒ.Vector3 = new ƒ.Vector3(0, -1 / 600, 0);
-        //private lastPath: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
         health = Script.healthUnitSmall;
         dmg = Script.dmgUnitSmall;
         constructor(_name) {
@@ -1505,7 +1379,6 @@ var Script;
             this.addComponent(cmpTransform);
             this.addComponent(cmpMesh);
             this.addComponent(cmpMaterial);
-            //this.addChild(stats);
             // sprites
             const sprite = new ƒAid.NodeSprite("Sprite");
             sprite.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
@@ -1517,206 +1390,9 @@ var Script;
             sprite.mtxLocal.scale(new ƒ.Vector3(0.5, 0.5, 1));
             this.addChild(sprite);
             this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
-            //sprite.mtxLocal.scale(new ƒ.Vector3(0.5, 0.5, 1));
         }
-        //public getHealth(){
-        //}
         spawn() {
             this.dispatchEvent(new Event("playSpawnSound", { bubbles: true }));
-            //console.log("Iam being dispatched");
-        }
-        //Bevor das hier aufgerufen wird MUSS der Lokale vektor gespeichert werden, da man von diesem aus die Position wechselt.
-        move() {
-            //Press Key for move into direction once
-            /*if (
-              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D,])
-            ) {
-               //Adjust this to max out for one field
-              //if (iMoveX == 0 && !finishedMobPlacement){
-                //iMoveX = 1;
-              //mobs[currentUnitNumber].mtxLocal.translateX(1);
-              //console.log("trying to move right");
-      
-            //}
-            }
-        
-            if (
-              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S])
-            ) {
-              if (iMoveYMinus == 0 && !finishedMobPlacement){
-                iMoveYMinus = 1;
-                mobs[currentUnitNumber].mtxLocal.translateY(-1);
-              }
-            }
-        
-            if (
-              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A])
-            )  {
-              if (iMoveXMinus == 0 && !finishedMobPlacement){
-                iMoveXMinus = 1;
-                mobs[currentUnitNumber].mtxLocal.translateX(-1);
-            }
-            }
-        
-            if (
-              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W])
-            ) {
-              if (iMoveY == 0 && !finishedMobPlacement){
-                iMoveY = 1;
-                mobs[currentUnitNumber].mtxLocal.translateY(1); //do mobs[x] for the according unit in the rooster. mobs[2].mtxLocal... for 3rd created unit
-            }
-          }
-      
-            if ( //After pressing space or enter the unit is placed and cant be moved anymore -> jump to next mob
-              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ENTER, ƒ.KEYBOARD_CODE.SPACE])
-            ) {
-                //finishedMobPlacement = true;
-                if (iLimitSpaceToOne == 0){
-                  iLimitSpaceToOne = 1;
-                  currentUnitNumber++;
-                  iMoveX = 0;           //Setze imoves zurück damit neue unit wieder verschoben werden kann
-                  iMoveXMinus = 0;
-                  iMoveY = 0;
-                  iMoveYMinus = 0;
-                  if(currentUnitNumber){ //useless, yet.
-      
-                  }
-              }
-            }
-      */
-            /*
-                  if (
-                    (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
-                    (this.mtxLocal.translation.x + 0.025) % 1 < 0.05 &&
-                    (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
-                    (this.mtxLocal.translation.x + 0.025) % 1 < 0.05
-                  ) {
-                    const possiblePaths: ƒ.Node[] = [];
-            
-                    // get possible paths
-                    for (const path of _paths) {
-                      if (
-                        path.mtxLocal.translation.equals(this.mtxLocal.translation, 1.05) &&
-                        !path.mtxLocal.translation.equals(this.mtxLocal.translation)
-                      ) {
-                        const isEvenPath =
-                          (path.mtxLocal.translation.y + path.mtxLocal.translation.x) % 2 === 0;
-            
-                        const isEvenLocal =
-                          (Math.round(this.mtxLocal.translation.y) + Math.round(this.mtxLocal.translation.x)) %
-                            2 ===
-                          0;
-            
-                        if (isEvenPath !== isEvenLocal) {
-                          possiblePaths.push(path);
-                        }
-                      }
-                    }
-            
-                    // lower probability for going back to same path
-                    const index = possiblePaths.findIndex((p) => p.mtxLocal.translation.equals(this.lastPath));
-            
-                    if (possiblePaths.length !== 1 && index !== -1) {
-                      const pathsCopy = possiblePaths.slice();
-                      pathsCopy.splice(index, 1);
-            
-                    }
-            
-                    const path = possiblePaths[Math.floor(0.2 * possiblePaths.length)];
-            
-                    this.lastPath.set(
-                      Math.round(this.mtxLocal.translation.x),
-                      Math.round(this.mtxLocal.translation.y),
-                      0
-                    );
-            
-                    // set moving direction
-                    if (path) {
-                      if (path.mtxLocal.translation.y > Math.round(this.mtxLocal.translation.y)) {
-                        this.movement.set(0, 1 / 600, 0);
-                      } else if (path.mtxLocal.translation.x > Math.round(this.mtxLocal.translation.x)) {
-                        this.movement.set(1 / 600, 0, 0);
-                      } else if (path.mtxLocal.translation.y < Math.round(this.mtxLocal.translation.y)) {
-                        this.movement.set(0, -1 / 600, 0);
-                      } else if (path.mtxLocal.translation.x < Math.round(this.mtxLocal.translation.x)) {
-                        //this.movement.set(-1 / 600, 0, 0);
-                        this.mtxLocal.translation.x -= 1;
-                      }
-                    }
-                  }
-                  this.mtxLocal.translate(this.movement);
-                
-            */
-            /*if (
-              (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
-              (this.mtxLocal.translation.x + 0.025) % 1 < 0.05 &&
-              (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
-              (this.mtxLocal.translation.x + 0.025) % 1 < 0.05
-            ) {
-              const possiblePaths: ƒ.Node[] = [];
-      
-              // get possible paths
-              for (const path of _paths) {
-                if (
-                  path.mtxLocal.translation.equals(this.mtxLocal.translation, 1.05) &&
-                  !path.mtxLocal.translation.equals(this.mtxLocal.translation)
-                ) {
-                  const isEvenPath =
-                    (path.mtxLocal.translation.y + path.mtxLocal.translation.x) % 2 === 0;
-      
-                  const isEvenLocal =
-                    (Math.round(this.mtxLocal.translation.y) + Math.round(this.mtxLocal.translation.x)) %
-                      2 ===
-                    0;
-      
-                  if (isEvenPath !== isEvenLocal) {
-                    possiblePaths.push(path);
-                  }
-                }
-              }
-      
-              // lower probability for going back to same path
-              const index = possiblePaths.findIndex((p) => p.mtxLocal.translation.equals(this.lastPath));
-      
-              if (possiblePaths.length !== 1 && index !== -1) {
-                const pathsCopy = possiblePaths.slice();
-                pathsCopy.splice(index, 1);
-      
-                possiblePaths.push(...pathsCopy);
-                possiblePaths.push(...pathsCopy.reverse());
-                possiblePaths.push(...pathsCopy);
-                possiblePaths.push(...pathsCopy.reverse());
-                possiblePaths.push(...pathsCopy);
-                possiblePaths.push(...pathsCopy.reverse());
-                possiblePaths.push(...pathsCopy.reverse());
-                possiblePaths.push(...pathsCopy);
-                possiblePaths.push(...pathsCopy.reverse());
-                possiblePaths.push(...pathsCopy);
-                possiblePaths.push(...pathsCopy);
-              }
-      
-              const path = possiblePaths[Math.floor(Math.random() * possiblePaths.length)];
-      
-              this.lastPath.set(
-                Math.round(this.mtxLocal.translation.x),
-                Math.round(this.mtxLocal.translation.y),
-                0
-              );
-      
-              // set moving direction
-              if (path) {
-                if (path.mtxLocal.translation.y > Math.round(this.mtxLocal.translation.y)) {
-                  this.movement.set(0, 1 / 60, 0);
-                } else if (path.mtxLocal.translation.x > Math.round(this.mtxLocal.translation.x)) {
-                  this.movement.set(1 / 60, 0, 0);
-                } else if (path.mtxLocal.translation.y < Math.round(this.mtxLocal.translation.y)) {
-                  this.movement.set(0, -1 / 60, 0);
-                } else if (path.mtxLocal.translation.x < Math.round(this.mtxLocal.translation.x)) {
-                  this.movement.set(-1 / 60, 0, 0);
-                }
-              }
-            }
-            this.mtxLocal.translate(this.movement);*/
         }
     }
     Script.Mob = Mob;
@@ -1726,8 +1402,6 @@ var Script;
     var ƒ = FudgeCore;
     var ƒAid = FudgeAid;
     class Mob2 extends ƒ.Node {
-        //private movement: ƒ.Vector3 = new ƒ.Vector3(0, -1 / 600, 0);
-        //private lastPath: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
         health = Script.healthUnitBig;
         dmg = Script.dmgUnitBig;
         constructor(_name) {
@@ -1757,199 +1431,6 @@ var Script;
         spawn() {
             this.dispatchEvent(new Event("playSpawnSound", { bubbles: true }));
         }
-        //Bevor das hier aufgerufen wird MUSS der Lokale vektor gespeichert werden, da man von diesem aus die Position wechselt.
-        move() {
-            //Press Key for move into direction once
-            /*if (
-              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D,])
-            ) {
-               //Adjust this to max out for one field
-              //if (iMoveX == 0 && !finishedMobPlacement){
-                //iMoveX = 1;
-              //mobs[currentUnitNumber].mtxLocal.translateX(1);
-              //console.log("trying to move right");
-      
-            //}
-            }
-        
-            if (
-              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S])
-            ) {
-              if (iMoveYMinus == 0 && !finishedMobPlacement){
-                iMoveYMinus = 1;
-                mobs[currentUnitNumber].mtxLocal.translateY(-1);
-              }
-            }
-        
-            if (
-              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A])
-            )  {
-              if (iMoveXMinus == 0 && !finishedMobPlacement){
-                iMoveXMinus = 1;
-                mobs[currentUnitNumber].mtxLocal.translateX(-1);
-            }
-            }
-        
-            if (
-              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W])
-            ) {
-              if (iMoveY == 0 && !finishedMobPlacement){
-                iMoveY = 1;
-                mobs[currentUnitNumber].mtxLocal.translateY(1); //do mobs[x] for the according unit in the rooster. mobs[2].mtxLocal... for 3rd created unit
-            }
-          }
-      
-            if ( //After pressing space or enter the unit is placed and cant be moved anymore -> jump to next mob
-              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ENTER, ƒ.KEYBOARD_CODE.SPACE])
-            ) {
-                //finishedMobPlacement = true;
-                if (iLimitSpaceToOne == 0){
-                  iLimitSpaceToOne = 1;
-                  currentUnitNumber++;
-                  iMoveX = 0;           //Setze imoves zurück damit neue unit wieder verschoben werden kann
-                  iMoveXMinus = 0;
-                  iMoveY = 0;
-                  iMoveYMinus = 0;
-                  if(currentUnitNumber){ //useless, yet.
-      
-                  }
-              }
-            }
-      */
-            /*
-                  if (
-                    (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
-                    (this.mtxLocal.translation.x + 0.025) % 1 < 0.05 &&
-                    (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
-                    (this.mtxLocal.translation.x + 0.025) % 1 < 0.05
-                  ) {
-                    const possiblePaths: ƒ.Node[] = [];
-            
-                    // get possible paths
-                    for (const path of _paths) {
-                      if (
-                        path.mtxLocal.translation.equals(this.mtxLocal.translation, 1.05) &&
-                        !path.mtxLocal.translation.equals(this.mtxLocal.translation)
-                      ) {
-                        const isEvenPath =
-                          (path.mtxLocal.translation.y + path.mtxLocal.translation.x) % 2 === 0;
-            
-                        const isEvenLocal =
-                          (Math.round(this.mtxLocal.translation.y) + Math.round(this.mtxLocal.translation.x)) %
-                            2 ===
-                          0;
-            
-                        if (isEvenPath !== isEvenLocal) {
-                          possiblePaths.push(path);
-                        }
-                      }
-                    }
-            
-                    // lower probability for going back to same path
-                    const index = possiblePaths.findIndex((p) => p.mtxLocal.translation.equals(this.lastPath));
-            
-                    if (possiblePaths.length !== 1 && index !== -1) {
-                      const pathsCopy = possiblePaths.slice();
-                      pathsCopy.splice(index, 1);
-            
-                    }
-            
-                    const path = possiblePaths[Math.floor(0.2 * possiblePaths.length)];
-            
-                    this.lastPath.set(
-                      Math.round(this.mtxLocal.translation.x),
-                      Math.round(this.mtxLocal.translation.y),
-                      0
-                    );
-            
-                    // set moving direction
-                    if (path) {
-                      if (path.mtxLocal.translation.y > Math.round(this.mtxLocal.translation.y)) {
-                        this.movement.set(0, 1 / 600, 0);
-                      } else if (path.mtxLocal.translation.x > Math.round(this.mtxLocal.translation.x)) {
-                        this.movement.set(1 / 600, 0, 0);
-                      } else if (path.mtxLocal.translation.y < Math.round(this.mtxLocal.translation.y)) {
-                        this.movement.set(0, -1 / 600, 0);
-                      } else if (path.mtxLocal.translation.x < Math.round(this.mtxLocal.translation.x)) {
-                        //this.movement.set(-1 / 600, 0, 0);
-                        this.mtxLocal.translation.x -= 1;
-                      }
-                    }
-                  }
-                  this.mtxLocal.translate(this.movement);
-                
-            */
-            /*if (
-              (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
-              (this.mtxLocal.translation.x + 0.025) % 1 < 0.05 &&
-              (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
-              (this.mtxLocal.translation.x + 0.025) % 1 < 0.05
-            ) {
-              const possiblePaths: ƒ.Node[] = [];
-      
-              // get possible paths
-              for (const path of _paths) {
-                if (
-                  path.mtxLocal.translation.equals(this.mtxLocal.translation, 1.05) &&
-                  !path.mtxLocal.translation.equals(this.mtxLocal.translation)
-                ) {
-                  const isEvenPath =
-                    (path.mtxLocal.translation.y + path.mtxLocal.translation.x) % 2 === 0;
-      
-                  const isEvenLocal =
-                    (Math.round(this.mtxLocal.translation.y) + Math.round(this.mtxLocal.translation.x)) %
-                      2 ===
-                    0;
-      
-                  if (isEvenPath !== isEvenLocal) {
-                    possiblePaths.push(path);
-                  }
-                }
-              }
-      
-              // lower probability for going back to same path
-              const index = possiblePaths.findIndex((p) => p.mtxLocal.translation.equals(this.lastPath));
-      
-              if (possiblePaths.length !== 1 && index !== -1) {
-                const pathsCopy = possiblePaths.slice();
-                pathsCopy.splice(index, 1);
-      
-                possiblePaths.push(...pathsCopy);
-                possiblePaths.push(...pathsCopy.reverse());
-                possiblePaths.push(...pathsCopy);
-                possiblePaths.push(...pathsCopy.reverse());
-                possiblePaths.push(...pathsCopy);
-                possiblePaths.push(...pathsCopy.reverse());
-                possiblePaths.push(...pathsCopy.reverse());
-                possiblePaths.push(...pathsCopy);
-                possiblePaths.push(...pathsCopy.reverse());
-                possiblePaths.push(...pathsCopy);
-                possiblePaths.push(...pathsCopy);
-              }
-      
-              const path = possiblePaths[Math.floor(Math.random() * possiblePaths.length)];
-      
-              this.lastPath.set(
-                Math.round(this.mtxLocal.translation.x),
-                Math.round(this.mtxLocal.translation.y),
-                0
-              );
-      
-              // set moving direction
-              if (path) {
-                if (path.mtxLocal.translation.y > Math.round(this.mtxLocal.translation.y)) {
-                  this.movement.set(0, 1 / 60, 0);
-                } else if (path.mtxLocal.translation.x > Math.round(this.mtxLocal.translation.x)) {
-                  this.movement.set(1 / 60, 0, 0);
-                } else if (path.mtxLocal.translation.y < Math.round(this.mtxLocal.translation.y)) {
-                  this.movement.set(0, -1 / 60, 0);
-                } else if (path.mtxLocal.translation.x < Math.round(this.mtxLocal.translation.x)) {
-                  this.movement.set(-1 / 60, 0, 0);
-                }
-              }
-            }
-            this.mtxLocal.translate(this.movement);*/
-        }
     }
     Script.Mob2 = Mob2;
 })(Script || (Script = {}));
@@ -1958,8 +1439,6 @@ var Script;
     var ƒ = FudgeCore;
     var ƒAid = FudgeAid;
     class Mob2P2 extends ƒ.Node {
-        //private movement: ƒ.Vector3 = new ƒ.Vector3(0, -1 / 600, 0);
-        //private lastPath: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
         health = Script.healthUnitBig;
         dmg = Script.dmgUnitBig;
         constructor(_name) {
@@ -1988,199 +1467,6 @@ var Script;
         }
         spawn() {
             this.dispatchEvent(new Event("playSpawnSound", { bubbles: true }));
-        }
-        //Bevor das hier aufgerufen wird MUSS der Lokale vektor gespeichert werden, da man von diesem aus die Position wechselt.
-        move() {
-            //Press Key for move into direction once
-            /*if (
-              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D,])
-            ) {
-               //Adjust this to max out for one field
-              //if (iMoveX == 0 && !finishedMobPlacement){
-                //iMoveX = 1;
-              //mobs[currentUnitNumber].mtxLocal.translateX(1);
-              //console.log("trying to move right");
-      
-            //}
-            }
-        
-            if (
-              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S])
-            ) {
-              if (iMoveYMinus == 0 && !finishedMobPlacement){
-                iMoveYMinus = 1;
-                mobs[currentUnitNumber].mtxLocal.translateY(-1);
-              }
-            }
-        
-            if (
-              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A])
-            )  {
-              if (iMoveXMinus == 0 && !finishedMobPlacement){
-                iMoveXMinus = 1;
-                mobs[currentUnitNumber].mtxLocal.translateX(-1);
-            }
-            }
-        
-            if (
-              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W])
-            ) {
-              if (iMoveY == 0 && !finishedMobPlacement){
-                iMoveY = 1;
-                mobs[currentUnitNumber].mtxLocal.translateY(1); //do mobs[x] for the according unit in the rooster. mobs[2].mtxLocal... for 3rd created unit
-            }
-          }
-      
-            if ( //After pressing space or enter the unit is placed and cant be moved anymore -> jump to next mob
-              ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ENTER, ƒ.KEYBOARD_CODE.SPACE])
-            ) {
-                //finishedMobPlacement = true;
-                if (iLimitSpaceToOne == 0){
-                  iLimitSpaceToOne = 1;
-                  currentUnitNumber++;
-                  iMoveX = 0;           //Setze imoves zurück damit neue unit wieder verschoben werden kann
-                  iMoveXMinus = 0;
-                  iMoveY = 0;
-                  iMoveYMinus = 0;
-                  if(currentUnitNumber){ //useless, yet.
-      
-                  }
-              }
-            }
-      */
-            /*
-                  if (
-                    (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
-                    (this.mtxLocal.translation.x + 0.025) % 1 < 0.05 &&
-                    (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
-                    (this.mtxLocal.translation.x + 0.025) % 1 < 0.05
-                  ) {
-                    const possiblePaths: ƒ.Node[] = [];
-            
-                    // get possible paths
-                    for (const path of _paths) {
-                      if (
-                        path.mtxLocal.translation.equals(this.mtxLocal.translation, 1.05) &&
-                        !path.mtxLocal.translation.equals(this.mtxLocal.translation)
-                      ) {
-                        const isEvenPath =
-                          (path.mtxLocal.translation.y + path.mtxLocal.translation.x) % 2 === 0;
-            
-                        const isEvenLocal =
-                          (Math.round(this.mtxLocal.translation.y) + Math.round(this.mtxLocal.translation.x)) %
-                            2 ===
-                          0;
-            
-                        if (isEvenPath !== isEvenLocal) {
-                          possiblePaths.push(path);
-                        }
-                      }
-                    }
-            
-                    // lower probability for going back to same path
-                    const index = possiblePaths.findIndex((p) => p.mtxLocal.translation.equals(this.lastPath));
-            
-                    if (possiblePaths.length !== 1 && index !== -1) {
-                      const pathsCopy = possiblePaths.slice();
-                      pathsCopy.splice(index, 1);
-            
-                    }
-            
-                    const path = possiblePaths[Math.floor(0.2 * possiblePaths.length)];
-            
-                    this.lastPath.set(
-                      Math.round(this.mtxLocal.translation.x),
-                      Math.round(this.mtxLocal.translation.y),
-                      0
-                    );
-            
-                    // set moving direction
-                    if (path) {
-                      if (path.mtxLocal.translation.y > Math.round(this.mtxLocal.translation.y)) {
-                        this.movement.set(0, 1 / 600, 0);
-                      } else if (path.mtxLocal.translation.x > Math.round(this.mtxLocal.translation.x)) {
-                        this.movement.set(1 / 600, 0, 0);
-                      } else if (path.mtxLocal.translation.y < Math.round(this.mtxLocal.translation.y)) {
-                        this.movement.set(0, -1 / 600, 0);
-                      } else if (path.mtxLocal.translation.x < Math.round(this.mtxLocal.translation.x)) {
-                        //this.movement.set(-1 / 600, 0, 0);
-                        this.mtxLocal.translation.x -= 1;
-                      }
-                    }
-                  }
-                  this.mtxLocal.translate(this.movement);
-                
-            */
-            /*if (
-              (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
-              (this.mtxLocal.translation.x + 0.025) % 1 < 0.05 &&
-              (this.mtxLocal.translation.y + 0.025) % 1 < 0.05 &&
-              (this.mtxLocal.translation.x + 0.025) % 1 < 0.05
-            ) {
-              const possiblePaths: ƒ.Node[] = [];
-      
-              // get possible paths
-              for (const path of _paths) {
-                if (
-                  path.mtxLocal.translation.equals(this.mtxLocal.translation, 1.05) &&
-                  !path.mtxLocal.translation.equals(this.mtxLocal.translation)
-                ) {
-                  const isEvenPath =
-                    (path.mtxLocal.translation.y + path.mtxLocal.translation.x) % 2 === 0;
-      
-                  const isEvenLocal =
-                    (Math.round(this.mtxLocal.translation.y) + Math.round(this.mtxLocal.translation.x)) %
-                      2 ===
-                    0;
-      
-                  if (isEvenPath !== isEvenLocal) {
-                    possiblePaths.push(path);
-                  }
-                }
-              }
-      
-              // lower probability for going back to same path
-              const index = possiblePaths.findIndex((p) => p.mtxLocal.translation.equals(this.lastPath));
-      
-              if (possiblePaths.length !== 1 && index !== -1) {
-                const pathsCopy = possiblePaths.slice();
-                pathsCopy.splice(index, 1);
-      
-                possiblePaths.push(...pathsCopy);
-                possiblePaths.push(...pathsCopy.reverse());
-                possiblePaths.push(...pathsCopy);
-                possiblePaths.push(...pathsCopy.reverse());
-                possiblePaths.push(...pathsCopy);
-                possiblePaths.push(...pathsCopy.reverse());
-                possiblePaths.push(...pathsCopy.reverse());
-                possiblePaths.push(...pathsCopy);
-                possiblePaths.push(...pathsCopy.reverse());
-                possiblePaths.push(...pathsCopy);
-                possiblePaths.push(...pathsCopy);
-              }
-      
-              const path = possiblePaths[Math.floor(Math.random() * possiblePaths.length)];
-      
-              this.lastPath.set(
-                Math.round(this.mtxLocal.translation.x),
-                Math.round(this.mtxLocal.translation.y),
-                0
-              );
-      
-              // set moving direction
-              if (path) {
-                if (path.mtxLocal.translation.y > Math.round(this.mtxLocal.translation.y)) {
-                  this.movement.set(0, 1 / 60, 0);
-                } else if (path.mtxLocal.translation.x > Math.round(this.mtxLocal.translation.x)) {
-                  this.movement.set(1 / 60, 0, 0);
-                } else if (path.mtxLocal.translation.y < Math.round(this.mtxLocal.translation.y)) {
-                  this.movement.set(0, -1 / 60, 0);
-                } else if (path.mtxLocal.translation.x < Math.round(this.mtxLocal.translation.x)) {
-                  this.movement.set(-1 / 60, 0, 0);
-                }
-              }
-            }
-            this.mtxLocal.translate(this.movement);*/
         }
     }
     Script.Mob2P2 = Mob2P2;
@@ -2417,56 +1703,4 @@ var Script;
     }
     Script.MobP2 = MobP2;
 })(Script || (Script = {}));
-/*namespace Script {
-    import ƒ = FudgeCore;
-    import ƒAid = FudgeAid;
-  
-    export class ObserverMob extends ƒ.Node {
-      //private movement: ƒ.Vector3 = new ƒ.Vector3(0, -1 / 600, 0);
-      //private lastPath: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
-  
-      private health: number = healthUnitSmall;
-      private dmg: number = dmgUnitSmall;
-      
-  
-      constructor(_name: string) {
-        super(_name);
-  
-        const mesh: ƒ.MeshSphere = new ƒ.MeshSphere();
-        const material: ƒ.Material = new ƒ.Material(
-          "MaterialMobP2",
-          ƒ.ShaderLit,
-          new ƒ.CoatColored()
-        );
-  
-        const cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
-        const cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(mesh);
-        const cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(material);
-        cmpMaterial.clrPrimary = ƒ.Color.CSS("red");
-  
-        this.addComponent(cmpTransform);
-        this.addComponent(cmpMesh);
-        this.addComponent(cmpMaterial);
-  
-        // sprites
-        const sprite: ƒAid.NodeSprite = new ƒAid.NodeSprite("Sprite");
-        sprite.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
-        sprite.setAnimation(<ƒAid.SpriteSheetAnimation>animations["mobP2"]);
-        sprite.setFrameDirection(1);
-        sprite.mtxLocal.translateZ(0.1);
-        sprite.mtxLocal.translateY(0.1);
-        sprite.framerate = 8;
-        sprite.mtxLocal.scale(new ƒ.Vector3(1, 1, 1));
-  
-  
-        this.addChild(sprite);
-        this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
-  
-        this.dispatchEvent(new Event("playSpawnSound", {bubbles: true}));
-      }
-
-
-
-    }
-}*/ 
 //# sourceMappingURL=Script.js.map
