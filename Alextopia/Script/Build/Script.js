@@ -53,7 +53,7 @@ var Script;
     var ƒ = FudgeCore;
     var ƒUi = FudgeUserInterface;
     class GameState extends ƒ.Mutable {
-        battery = 1;
+        roundTimer = 1;
         constructor() {
             super();
             const domVui = document.querySelector("div#vui");
@@ -342,7 +342,7 @@ var Script;
         //mobsAny.map((g) => g.move()); //g.move(paths));
         //mobsP2Any.map((g) => g.move()); //g.move(paths));
         //mobsP2Any.map((g) => g.move()); //g.move(paths));
-        gameState.battery -= config["drain"];
+        gameState.roundTimer -= config["drain"];
         Script.viewport.draw();
         if (addMobLimitCounter == 0) {
             document.getElementById("--plusmob").setAttribute('disabled', "");

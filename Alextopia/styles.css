@@ -75,8 +75,7 @@ h1 {
     font-family: 'Franklin Gothic light', 'Arial Narrow', Arial, sans-serif;
 }
 
-#battery{
-    
+#roundTimer{
     bottom: 10px;
     padding: 10px;
     position: absolute;

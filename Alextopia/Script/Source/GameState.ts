@@ -3,7 +3,7 @@ namespace Script { //Accidently did a classic VUI, so this Gamestate mutable is 
     import ƒUi = FudgeUserInterface;
   
     export class GameState extends ƒ.Mutable {
-      public battery: number = 1;
+      public roundTimer: number = 1;
   
       public constructor() {
         super();
