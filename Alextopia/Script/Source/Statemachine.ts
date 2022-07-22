@@ -143,7 +143,7 @@ namespace Script {
                     break;
                 case ƒ.EVENT.NODE_DESERIALIZED:
                     this.cmpBody = this.node.getComponent(ƒ.ComponentRigidbody);
-                    this.cmpMaterial = this.node.getComponent(ƒ.ComponentMaterial);
+                    this.cmpMaterial = this.node.getComponent(ƒ.ComponentMaterial); //cmpMaterial is used here, why does it say its not used?!
                     this.cmpTransform = this.node.getComponent(ƒ.ComponentTransform);
                     this.cmpBody.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
                         if (_event.cmpRigidbody.node.name == "runner")
@@ -168,9 +168,9 @@ namespace Script {
             this.deltaTime = this.deltaTime = ƒ.Loop.timeFrameReal / 1000;
         }
 
-        private static sin = (x: number): number => {
-            return Math.sin(Math.PI * x) * 0.3;
-        }
+        //private static sin = (x: number): number => {
+        //    return Math.sin(Math.PI * x) * 0.3;
+        //}
 
         private static sinHorizontal = (x: number): number => {
             return Math.sin(1 * x) * 2;

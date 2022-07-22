@@ -80,7 +80,6 @@ declare namespace Script {
         private static transitWin;
         private hndEvent;
         private update;
-        private static sin;
         private static sinHorizontal;
     }
     export {};
