@@ -11,6 +11,7 @@ namespace Script {
 
   export let viewport: ƒ.Viewport;
   let sounds: ƒ.ComponentAudio[]; //outdated? i need it for later
+  let gameState: GameState;
 
   let water: ƒ.Node[];    //Blocks that cant be set foot on with normal units - Beinhaltet jeden Wasserblock in einem Array gespeichert
   export let paths: ƒ.Node[];    //Building/Land are, every unit can walk on these - beinhaltet jeden begehbaren block in einem Array gespeichert
@@ -1005,10 +1006,7 @@ namespace Script {
             document.getElementById("--" + (iCounter2 + 1) + "FillerP2").style.display = null;
             for (let iLength = 2; iLength < 9; iLength++) {
               if (document.getElementById("--" + (iCounter2 + iLength) + "Filler").style.display === 'none') {
-                console.log("iLength: " + iLength);
-                console.log(document.getElementById("--" + (iCounter2 + iLength) + "img2").style.display)
                 if (!(document.getElementById("--" + (iCounter2 + iLength) + "img2").style.display)) {
-                  console.log("iLength22: " + iLength);
                   document.getElementById("--" + (iCounter2 + iLength) + "img2").style.display = 'none';
                   document.getElementById("--" + (iCounter2 + iLength) + "Filler").style.display = null;
                   document.getElementById("--" + (iCounter2 + (iLength - 1)) + "img2").style.display = null;
@@ -1070,10 +1068,7 @@ namespace Script {
             document.getElementById("--" + (iCounter3 + 1) + "Filler").style.display = null;
             for (let iLength = 2; iLength < 9; iLength++) {
               if (document.getElementById("--" + (iCounter3 + iLength) + "Filler").style.display === 'none') {
-                console.log("iLength: " + iLength);
-                console.log(document.getElementById("--" + (iCounter3 + iLength) + "img1").style.display)
                 if (!(document.getElementById("--" + (iCounter3 + iLength) + "img1").style.display)) {
-                  console.log("iLength22: " + iLength);
                   document.getElementById("--" + (iCounter3 + iLength) + "img1").style.display = 'none';
                   document.getElementById("--" + (iCounter3 + iLength) + "Filler").style.display = null;
                   document.getElementById("--" + (iCounter3 + (iLength - 1)) + "img1").style.display = null;

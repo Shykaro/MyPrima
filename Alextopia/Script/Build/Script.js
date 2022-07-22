@@ -51,11 +51,27 @@ var Script;
 var Script;
 (function (Script) {
     var ƒ = FudgeCore;
+    var ƒUi = FudgeUserInterface;
+    class GameState extends ƒ.Mutable {
+        battery = 1;
+        constructor() {
+            super();
+            const domVui = document.querySelector("div#vui");
+            console.log("Vui-Controller", new ƒUi.Controller(this, domVui));
+        }
+        reduceMutator(_mutator) { }
+    }
+    Script.GameState = GameState;
+})(Script || (Script = {}));
+var Script;
+(function (Script) {
+    var ƒ = FudgeCore;
     ƒ.Debug.info("Main Program Template running!");
     let dialog;
     window.addEventListener("load", init);
     document.addEventListener("interactiveViewportStarted", start); //HAD TO MAKE THIS UNKNOWN BECAUSE START IS NOW ASYNC
     let sounds; //outdated? i need it for later
+    let gameState;
     let water; //Blocks that cant be set foot on with normal units - Beinhaltet jeden Wasserblock in einem Array gespeichert
     let cat;
     let catThrow;
@@ -928,10 +944,7 @@ var Script;
                         document.getElementById("--" + (iCounter2 + 1) + "FillerP2").style.display = null;
                         for (let iLength = 2; iLength < 9; iLength++) {
                             if (document.getElementById("--" + (iCounter2 + iLength) + "Filler").style.display === 'none') {
-                                console.log("iLength: " + iLength);
-                                console.log(document.getElementById("--" + (iCounter2 + iLength) + "img2").style.display);
                                 if (!(document.getElementById("--" + (iCounter2 + iLength) + "img2").style.display)) {
-                                    console.log("iLength22: " + iLength);
                                     document.getElementById("--" + (iCounter2 + iLength) + "img2").style.display = 'none';
                                     document.getElementById("--" + (iCounter2 + iLength) + "Filler").style.display = null;
                                     document.getElementById("--" + (iCounter2 + (iLength - 1)) + "img2").style.display = null;
@@ -993,10 +1006,7 @@ var Script;
                         document.getElementById("--" + (iCounter3 + 1) + "Filler").style.display = null;
                         for (let iLength = 2; iLength < 9; iLength++) {
                             if (document.getElementById("--" + (iCounter3 + iLength) + "Filler").style.display === 'none') {
-                                console.log("iLength: " + iLength);
-                                console.log(document.getElementById("--" + (iCounter3 + iLength) + "img1").style.display);
                                 if (!(document.getElementById("--" + (iCounter3 + iLength) + "img1").style.display)) {
-                                    console.log("iLength22: " + iLength);
                                     document.getElementById("--" + (iCounter3 + iLength) + "img1").style.display = 'none';
                                     document.getElementById("--" + (iCounter3 + iLength) + "Filler").style.display = null;
                                     document.getElementById("--" + (iCounter3 + (iLength - 1)) + "img1").style.display = null;
