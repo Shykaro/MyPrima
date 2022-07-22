@@ -1049,7 +1049,6 @@ namespace Script {
             graph.removeChild(mobsP2Any[iCounter2]);
             spliceRemoved = mobsP2Any.splice(iCounter2, 1);
             if(iCounter2 === 0){
-              console.log("iCOunter2 = 0 bitch");
               hasFirstUnitBeenKilledP1 = true;
             };
             console.log(spliceRemoved);
@@ -1115,7 +1114,6 @@ namespace Script {
             graph.removeChild(mobsAny[iCounter3]);
             spliceRemoved = mobsAny.splice(iCounter3, 1);
             if(iCounter3 === 0){
-              console.log("iCOunter3 = 0 bitchP2");
               hasFirstUnitBeenKilledP2 = true;
             };
             console.log(spliceRemoved);
