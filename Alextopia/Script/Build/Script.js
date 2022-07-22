@@ -122,7 +122,7 @@ var Script;
     Script.iMoveX = 0; //outdated? yes
     Script.iMoveXMinus = 0;
     //------------ TO-DO'S -------------------------------------------------------------------
-    // Bugfixing
+    // Bugfixing (Known: first unit of enemy gets beaten, UI doesnt refresh current units, man sollte keine 10te unit kaufen können,  REST SIEHE CHAT KAY)
     // VUI anpassen
     // Email schreiben
     // Startup menü verändern -> controlls beinhalten
@@ -470,7 +470,7 @@ var Script;
                 if (currentPhase === 2) {
                     if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
                         handleEndOfCityProcedure(Script.currentUnitNumberP2, 1); //Wechselt zu zweitem angegebenen Parameter, aka current player wechselt nun zu 1
-                        handleNPCAction();
+                        //handleNPCAction();
                         //ENDING OF PLAYER 2 PHASE 2
                         return;
                     }
@@ -676,7 +676,7 @@ var Script;
     // ------------- Creating Mobs, both player ---------------------------------------------------
     function creatingMob(whichUnit, graph, city, cityP2) {
         if (whichUnit === 1) {
-            if ((mobsAny.length + mobsAny.length) != 9) {
+            if ((mobsAny.length) < 9) {
                 if (addMobLimitCounter > 0) {
                     if (gold >= Script.Balance.costOfMobs[0].cost) {
                         gold -= Script.Balance.costOfMobs[0].cost;
@@ -709,7 +709,7 @@ var Script;
             }
         }
         if (whichUnit === 2) {
-            if ((mobsAny.length + mobsAny.length) != 9) {
+            if ((mobsAny.length) < 9) {
                 if (addMobLimitCounter > 0) {
                     if (gold >= Script.Balance.costOfMobs[1].cost) {
                         gold -= Script.Balance.costOfMobs[1].cost;
@@ -741,7 +741,7 @@ var Script;
             }
         }
         if (whichUnit === 3) {
-            if ((mobsP2Any.length + mobsP2Any.length) != 9) {
+            if (mobsP2Any.length < 9) {
                 if (addMobLimitCounterP2 > 0) {
                     if (goldP2 >= Script.Balance.costOfMobs[0].cost) {
                         goldP2 -= Script.Balance.costOfMobs[0].cost;
@@ -774,7 +774,7 @@ var Script;
             }
         }
         if (whichUnit === 4) {
-            if ((mobsP2Any.length + mobsP2Any.length) != 9) {
+            if (mobsP2Any.length < 9) {
                 if (addMobLimitCounterP2 > 0) {
                     if (goldP2 >= Script.Balance.costOfMobs[1].cost) {
                         goldP2 -= Script.Balance.costOfMobs[1].cost;
@@ -848,6 +848,8 @@ var Script;
             document.getElementById("--goldInput").setAttribute('value', gold.toString());
             document.getElementById("--gold").style.display = null;
             document.getElementById("--goldP2").style.display = 'none';
+            document.getElementById("anz_mine").style.display = null;
+            document.getElementById("anz_minep2").style.display = 'none';
         }
         else {
             if (roundsPlayed > 1) { //Fixes a bug, i dont know why p2 gets one tick more than P1 so iam reducing one turn for P2
@@ -860,6 +862,8 @@ var Script;
             document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
             document.getElementById("--goldP2").style.display = null;
             document.getElementById("--gold").style.display = 'none';
+            document.getElementById("anz_minep2").style.display = null;
+            document.getElementById("anz_mine").style.display = 'none';
         }
         document.getElementById("--unitdiv1" + playerPlaceHolder2).style.borderColor = "red";
         document.getElementById("--unitdiv" + (currentUnitNumb + 1) + "" + playerPlaceHolder).style.borderColor = "#048836";
@@ -882,7 +886,7 @@ var Script;
                 document.getElementById("--goldInput").setAttribute('value', gold.toString());
                 anzMine++;
                 Script.throwBoolean = true;
-                document.querySelector("#anz_mine").setAttribute('value', anzMine.toString());
+                document.getElementById("anz_mine").setAttribute('value', anzMine.toString());
             }
         }
         if (Script.currentplayer === 2) {
@@ -891,7 +895,7 @@ var Script;
                 document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
                 anzMineP2++;
                 Script.throwBoolean = true;
-                document.querySelector("#anz_minep2").setAttribute('value', anzMineP2.toString());
+                document.getElementById("anz_minep2").setAttribute('value', anzMineP2.toString());
             }
         }
     }
@@ -987,8 +991,6 @@ var Script;
     function hndPlaySpawnSound() {
         sounds[2].play(true);
     }
-    function handleNPCAction() {
-    }
     function initAnim(_graph) {
         //let animseq: ƒ.AnimationSequence = new ƒ.AnimationSequence(); //Up and down movement
         //animseq.addKey(new ƒ.AnimationKey(0, 0));
@@ -996,17 +998,19 @@ var Script;
         //animseq.addKey(new ƒ.AnimationKey(4000, 0));
         let animseq2 = new ƒ.AnimationSequence(); //Rotation
         animseq2.addKey(new ƒ.AnimationKey(0, 0));
-        animseq2.addKey(new ƒ.AnimationKey(2000, 45));
-        animseq2.addKey(new ƒ.AnimationKey(4000, 90));
+        animseq2.addKey(new ƒ.AnimationKey(2000, 90));
+        animseq2.addKey(new ƒ.AnimationKey(4000, 180));
+        animseq2.addKey(new ƒ.AnimationKey(6000, 270));
+        animseq2.addKey(new ƒ.AnimationKey(8000, 360));
         let animStructure = {
             components: {
                 ComponentTransform: [
                     {
                         "ƒ.ComponentTransform": {
                             mtxLocal: {
-                                translation: {
+                                //translation: {
                                 //z: animseq,
-                                },
+                                //},
                                 rotation: {
                                     z: animseq2,
                                 },
@@ -1321,11 +1325,17 @@ var Script;
     class City extends ƒ.Node {
         constructor(_name) {
             super(_name);
-            const mtrCity = new ƒ.Material("City", ƒ.ShaderLit, new ƒ.CoatColored(ƒ.Color.CSS("#90d4ed")));
+            let cityTexture = new ƒ.TextureImage();
+            cityTexture.load("Assets/CityP1v2.png");
+            //cityTexture.scale(new ƒ.Vector3(0.5, 0.5, 0.01));
+            let cityTextureCoat = new ƒ.CoatTextured(undefined, cityTexture);
+            //cityTextureCoat.scale(new ƒ.Vector3(0.5, 0.5, 0.01));
+            const mtrCity = new ƒ.Material("City", ƒ.ShaderLitTextured, cityTextureCoat);
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
             this.addComponent(new ƒ.ComponentMaterial(mtrCity));
             this.addComponent(new ƒ.ComponentTransform());
-            this.mtxLocal.scale(new ƒ.Vector3(0.5, 0.5, 0.01));
+            this.mtxLocal.translateZ(0.09);
+            this.mtxLocal.scale(new ƒ.Vector3(0.5, 0.5, 0.0001));
         }
     }
     Script.City = City;
@@ -1336,11 +1346,16 @@ var Script;
     class CityP2 extends ƒ.Node {
         constructor(_name) {
             super(_name);
-            const mtrCityP2 = new ƒ.Material("CityP2", ƒ.ShaderLit, new ƒ.CoatColored(ƒ.Color.CSS("#ff6961")));
+            let cityTexture = new ƒ.TextureImage();
+            cityTexture.load("Assets/CityP2v2.png");
+            //cityTexture.scale(new ƒ.Vector3(0.5, 0.5, 0.01));
+            let cityTextureCoat = new ƒ.CoatTextured(undefined, cityTexture);
+            const mtrCityP2 = new ƒ.Material("CityP2", ƒ.ShaderLitTextured, cityTextureCoat);
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
             this.addComponent(new ƒ.ComponentMaterial(mtrCityP2));
             this.addComponent(new ƒ.ComponentTransform());
-            this.mtxLocal.scale(new ƒ.Vector3(0.5, 0.5, 0.01));
+            this.mtxLocal.translateZ(0.09);
+            this.mtxLocal.scale(new ƒ.Vector3(0.5, 0.5, 0.0001));
         }
     }
     Script.CityP2 = CityP2;

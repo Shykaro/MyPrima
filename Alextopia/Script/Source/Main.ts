@@ -105,7 +105,7 @@ namespace Script {
   export let iMoveXMinus: number = 0; 
 
   //------------ TO-DO'S -------------------------------------------------------------------
-  // Bugfixing
+  // Bugfixing (Known: first unit of enemy gets beaten, UI doesnt refresh current units, man sollte keine 10te unit kaufen können,  REST SIEHE CHAT KAY)
   // VUI anpassen
   // Email schreiben
   // Startup menü verändern -> controlls beinhalten
@@ -252,6 +252,7 @@ namespace Script {
 
     //cityNode.push(city2);
     //cityNodeP2.push(city2P2);
+
 
     //Positions of starting Cities
     paths[15].addChild(city);
@@ -522,7 +523,7 @@ namespace Script {
         if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
           handleEndOfCityProcedure(currentUnitNumberP2, 1); //Wechselt zu zweitem angegebenen Parameter, aka current player wechselt nun zu 1
 
-          handleNPCAction();
+          //handleNPCAction();
           //ENDING OF PLAYER 2 PHASE 2
           return;
         }
@@ -760,7 +761,7 @@ function handleUiPlayerswap(): void { //Handles player 1 and 2 UI changes when s
 // ------------- Creating Mobs, both player ---------------------------------------------------
 function creatingMob(whichUnit: number, graph: ƒ.Node, city: City, cityP2: City): void {  //1=mobs, 2=mobs2, 3=mobsP2, 4=mobs2P2 für "whichUnit" ---- Benötigt graph, city und cityP2 da diese nicht Global sein können.
   if (whichUnit === 1) {
-    if ((mobsAny.length + mobsAny.length) != 9) {
+    if ((mobsAny.length) < 9) {
       if (addMobLimitCounter > 0) {
         if (gold >= Balance.costOfMobs[0].cost) {
           gold -= Balance.costOfMobs[0].cost;
@@ -789,7 +790,7 @@ function creatingMob(whichUnit: number, graph: ƒ.Node, city: City, cityP2: City
     }
   }
   if (whichUnit === 2) {
-    if ((mobsAny.length + mobsAny.length) != 9) {
+    if ((mobsAny.length) < 9) {
       if (addMobLimitCounter > 0) {
         if (gold >= Balance.costOfMobs[1].cost) {
           gold -= Balance.costOfMobs[1].cost;
@@ -817,7 +818,7 @@ function creatingMob(whichUnit: number, graph: ƒ.Node, city: City, cityP2: City
     }
   }
   if (whichUnit === 3) {
-    if ((mobsP2Any.length + mobsP2Any.length) != 9) {
+    if (mobsP2Any.length < 9) {
       if (addMobLimitCounterP2 > 0) {
         if (goldP2 >= Balance.costOfMobs[0].cost) {
           goldP2 -= Balance.costOfMobs[0].cost;
@@ -846,7 +847,7 @@ function creatingMob(whichUnit: number, graph: ƒ.Node, city: City, cityP2: City
     }
   }
   if (whichUnit === 4) {
-    if ((mobsP2Any.length + mobsP2Any.length) != 9) {
+    if (mobsP2Any.length < 9) {
       if (addMobLimitCounterP2 > 0) {
         if (goldP2 >= Balance.costOfMobs[1].cost) {
           goldP2 -= Balance.costOfMobs[1].cost;
@@ -921,6 +922,8 @@ function handleEndOfCityProcedure(currentUnitNumb: number, setPlayer: number) {
     document.getElementById("--goldInput").setAttribute('value', gold.toString());
     document.getElementById("--gold").style.display = null;
     document.getElementById("--goldP2").style.display = 'none';
+    document.getElementById("anz_mine").style.display = null;
+    document.getElementById("anz_minep2").style.display = 'none';
   }
   else {
     if (roundsPlayed > 1) { //Fixes a bug, i dont know why p2 gets one tick more than P1 so iam reducing one turn for P2
@@ -932,6 +935,8 @@ function handleEndOfCityProcedure(currentUnitNumb: number, setPlayer: number) {
     document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
     document.getElementById("--goldP2").style.display = null;
     document.getElementById("--gold").style.display = 'none';
+    document.getElementById("anz_minep2").style.display = null;
+    document.getElementById("anz_mine").style.display = 'none';
   }
   document.getElementById("--unitdiv1" + playerPlaceHolder2).style.borderColor = "red";
   document.getElementById("--unitdiv" + (currentUnitNumb + 1) + "" + playerPlaceHolder).style.borderColor = "#048836";
@@ -942,6 +947,7 @@ function handleEndOfCityProcedure(currentUnitNumb: number, setPlayer: number) {
   document.getElementById("--addMob" + playerPlaceHolder).style.display = 'none';
   document.getElementById("--addBuildings" + playerPlaceHolder).style.display = 'none';
   document.getElementById("--infoBuildings" + playerPlaceHolder).style.display = 'none';
+  
   //document.querySelector("#anz_mine")
   handleUiPlayerswap();
   document.getElementById("--headingInfo").setAttribute('value', turnPhaseOne);
@@ -956,7 +962,7 @@ function creatingBuildings() { //Handles all Buildings, needs additional paramet
       document.getElementById("--goldInput").setAttribute('value', gold.toString());
       anzMine++;
       throwBoolean = true;
-      document.querySelector("#anz_mine").setAttribute('value', anzMine.toString());
+      document.getElementById("anz_mine").setAttribute('value', anzMine.toString());
     }
   }
   if (currentplayer === 2) {
@@ -965,7 +971,7 @@ function creatingBuildings() { //Handles all Buildings, needs additional paramet
       document.getElementById("--goldInputP2").setAttribute('value', goldP2.toString());
       anzMineP2++;
       throwBoolean = true;
-      document.querySelector("#anz_minep2").setAttribute('value', anzMineP2.toString());
+      document.getElementById("anz_minep2").setAttribute('value', anzMineP2.toString());
     }
   }
 }
@@ -1067,9 +1073,6 @@ function hndPlaySpawnSound() { //Yes iam kind of an useless event, but an event 
   sounds[2].play(true);
 }
 
-function handleNPCAction() { //What does the NPC units
-
-}
 function initAnim(_graph: ƒ.Node): void {
   //let animseq: ƒ.AnimationSequence = new ƒ.AnimationSequence(); //Up and down movement
   //animseq.addKey(new ƒ.AnimationKey(0, 0));
@@ -1078,8 +1081,10 @@ function initAnim(_graph: ƒ.Node): void {
 
   let animseq2: ƒ.AnimationSequence = new ƒ.AnimationSequence();  //Rotation
   animseq2.addKey(new ƒ.AnimationKey(0, 0));
-  animseq2.addKey(new ƒ.AnimationKey(2000, 45));
-  animseq2.addKey(new ƒ.AnimationKey(4000, 90));
+  animseq2.addKey(new ƒ.AnimationKey(2000, 90));
+  animseq2.addKey(new ƒ.AnimationKey(4000, 180));
+  animseq2.addKey(new ƒ.AnimationKey(6000, 270));
+  animseq2.addKey(new ƒ.AnimationKey(8000, 360));
 
   let animStructure: ƒ.AnimationStructure = {
     components: {
@@ -1087,9 +1092,9 @@ function initAnim(_graph: ƒ.Node): void {
         {
           "ƒ.ComponentTransform": {
             mtxLocal: {
-              translation: {
+              //translation: {
                 //z: animseq,
-              },
+              //},
               rotation: {
                 z: animseq2,
               },

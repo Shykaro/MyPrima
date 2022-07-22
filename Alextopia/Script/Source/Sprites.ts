@@ -31,8 +31,6 @@ namespace Script {
 
   function generateSprites(_spritesheet: ƒ.CoatTextured, _spriteSheetCAT: ƒ.CoatTextured, _spriteSheetCATThrow: ƒ.CoatTextured, _spriteSheetCATWin: ƒ.CoatTextured): void {
 
-
-
     // ------------------------ Mobs p1 --------------------------------
     const mob: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("mob", _spritesheet);
     mob.generateByGrid(
