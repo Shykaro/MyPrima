@@ -47,13 +47,13 @@ A copy of the catalogue of criteria above, the right column replaced with very b
 | 4 |	Scriptcomponents|	I have a scriptcomponent Coin which is there to add to the aesthetic. Coin itself is mostly useless but scriptcomponents are definitly a good way to address node interaction, just not for my game. |
 | 5 |	Extend		|	Scriptcomponent has been extended from FUDGECore, easiest way to handle that so it was indeed useful. |
 | 6 |	Sound		|	Listener and Sounds played are on the same coordinate so there is no stereo, just mono. I have added placing sounds, building sounds and fighting sounds. |
-| 7 |	VUI		|	The VUI shows the player info on Scores, what to do, which units are on the field, as well as which unit is currently being moved. On the right is an appearing VUI instrument which lets the player build and show general info in the city-phase of the turn. |
+| 7 |	VUI		|	The VUI shows the player info on Scores, what to do, which units are on the field, as well as which unit is currently being moved. On the right is an appearing VUI instrument which lets the player build and show general info in the city-phase of the turn. Also added a last second mutable roundtimer since I didnt know it was required.  |
 | 8 |	Event-System	|	Every unit has a playSpawnSound dispatch.event attached to trigger a Spawn sound in the Main.ts. This was not really useful because it couldve been done by just implementing the sound. Yet again could've been helpful on a greater scale.  |
-| 9 |	External Data	|	Game is loading a Balancesheet.json from Assets and also saves Scores in browser storage. Json load is definitly useful if it's done on a greater scale -> more different Units, more Stats... |
+| 9 |	External Data	|	Game is loading a Balancesheet.json from Assets and also saves Scores in browser storage. Json load is definitly useful if it's done on a greater scale -> more different Units, more Stats... VUI also uses a config.json. |
 | A |	Light (INCLUDED) 		|	Most of the game uses Shaderlit to not be dependent on light. (It's a 2D game, light can't really be used) I made a coin machine out of it though, so now i have a spotlight point at the Coin which includes falling coins when the game is Over. Spotlight is needed because the coins need to look like metal via gouraudShader, which is not possible with shaderlit. (1) |
 | B |	Physics (INCLUDED)		|	Added falling rigidbody coins as Coinmachine aesthetic for the game end. They collide with the machine, the Customcomponentscript Coin and each other. (1) |
 | C |	Net		|	- |
 | D |	State Machines (INCLUDED)	|	Added a ComponentStateMachine which additionally interacts visibly with the game by being IDLE, THROWing when something is built and jumps of joy when the game has ended. (1) |
-| E |	Animation (INCLUDED) 	|	I used Sprites to animate all Units, the different tiles on the Grid as well as the ComponentStateMachine on top of the game. Also added a little animation for the cities to rotate with. (2) |
+| E |	Animation (INCLUDED) 	|	I used Sprites to animate all Units, the different tiles on the Grid as well as the ComponentStateMachine on top of the game. Also added a little FudgeCore animation for the cities to rotate with. (2) |
 
 Combined these are 14 Points.
