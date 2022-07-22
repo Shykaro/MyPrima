@@ -357,6 +357,7 @@ namespace Script {
     //mobsAny.map((g) => g.move()); //g.move(paths));
     //mobsP2Any.map((g) => g.move()); //g.move(paths));
     //mobsP2Any.map((g) => g.move()); //g.move(paths));
+    gameState.battery -= <number>config["drain"];
 
     viewport.draw();
 

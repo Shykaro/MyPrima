@@ -49,6 +49,14 @@ canvas.fullscreen {
     visibility: hidden;
 }
 
+#battery{
+    
+    bottom: 10px;
+    padding: 10px;
+    position: absolute;
+    background-color: aliceblue;
+}
+
 .--boxleftdown {
     bottom: 10px;
     padding: 10px;

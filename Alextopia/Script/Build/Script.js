@@ -342,6 +342,7 @@ var Script;
         //mobsAny.map((g) => g.move()); //g.move(paths));
         //mobsP2Any.map((g) => g.move()); //g.move(paths));
         //mobsP2Any.map((g) => g.move()); //g.move(paths));
+        gameState.battery -= config["drain"];
         Script.viewport.draw();
         if (addMobLimitCounter == 0) {
             document.getElementById("--plusmob").setAttribute('disabled', "");
