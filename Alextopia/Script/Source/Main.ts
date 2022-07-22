@@ -111,11 +111,14 @@ namespace Script {
   export let iMoveX: number = 0;            //outdated? yes
   export let iMoveXMinus: number = 0;
 
+  let hasFirstUnitBeenKilledP1: boolean = false;
+  let hasFirstUnitBeenKilledP2: boolean = false;
+
   //------------ TO-DO'S -------------------------------------------------------------------
-  // Bugfixing (Known: first unit of enemy gets beaten, UI doesnt refresh current units, man sollte keine 10te unit kaufen können,  REST SIEHE CHAT KAY)
-  // VUI anpassen
-  // Email schreiben
-  // Startup menü verändern -> controlls beinhalten
+  // Bugfixing (Known: first unit of enemy gets beaten, UI doesnt refresh current units, man sollte keine 10te unit kaufen können) DONE, DONE, DONE
+  // VUI anpassen DONE
+  // Email schreiben DONE
+  // Startup menü verändern -> controlls beinhalten DONE
   // 
   // ++ DONE adding all the requirements is more important
   // ++ DONE Eventsystem angucken, kp wie das funktioniert -> Das wird Jirka mögen
@@ -131,10 +134,10 @@ namespace Script {
   // ++ DONE but maybe needs rework ++ Graphics, like terrain and Units
   // -- CANCELED Implement light to use as viewing distance, dont know how this works -> did spotlight instead
   // -- CANCELED work on Networking this gon be fun, should try this -> aint working
-  // -- CANCELED at least for Abgabe, will das immernoch danach machen: Random Map generator -> yea fuck that
+  // -- CANCELED at least for Abgabe canceled, will das immernoch danach machen: "Random Map generator -> yea fuck that"
   //------------ TO-DO'S End ---------------------------------------------------------------
 
-  //------------ Notizen -------------------------------------------------------------------
+  //------------ Notizen ------------------------------------------------------------------- FOR FUTURE
   // BUGFIX: wenn erste einheit des Arrays getötet wird rutscht es nicht nach wenn der andere Spieler dran ist.
   // Do random maps as external data save and load. -> needs random maps and that takes too much time, maybe at the end
   // Definitly should do an VUI update Function instead mentioning everything every time...
@@ -419,8 +422,11 @@ namespace Script {
       if (currentplayer === 1) {
         //if (mobsAny.length > 0)
         if (currentPhase === 1) { //&& mobsAny.length > 0) {
-
           if (mobsAny.length > 0) {
+            if(hasFirstUnitBeenKilledP2){ //Fixes first unit kill bug
+              getPossibleLimitReachedCheck();
+              hasFirstUnitBeenKilledP2 = false;
+            }
             //console.log(mobs[currentUnitNumber].mtxLocal + " and " + currentUnitNumber);
 
 
@@ -428,6 +434,8 @@ namespace Script {
               //currentMobPosition = new ƒ.Vector3(mobs[currentUnitNumber].mtxLocal.translation.x, mobs[currentUnitNumber].mtxLocal.translation.y, 0);
 
               if (checkIfMoveMob("x")) {
+
+
                 mobsAny[currentUnitNumber].mtxLocal.translateX(1);
                 //console.log("trying to move right");
 
@@ -469,6 +477,7 @@ namespace Script {
                 unitInteraction(graph); //UNIT INTERACTION HERE
                 //currentPhase = 2;
                 logInUnit(); //also end of turn 1 procedure if its not the last unit.
+                //logInUnitP2();
                 }
               }
               return;
@@ -477,7 +486,6 @@ namespace Script {
           else {
             handleCityTurnPart(); //WEIRD INTERACTION
             currentPhase = 2;
-            console.log("HandleCityTurnPart wird ausgeführt!");
             return;
           }
         }
@@ -486,6 +494,7 @@ namespace Script {
 
 
             handleEndOfCityProcedure(currentUnitNumber, 2); //Wechselt zu zweitem angegebenen Parameter, aka current player wechselt nun zu 2
+            gameState.roundTimer = 1;
             //ENDING OF PLAYER 1 PHASE 2
             return;
           }
@@ -494,7 +503,12 @@ namespace Script {
 
       if (currentplayer === 2) {
         if (currentPhase === 1) { //&& mobsP2Any.length > 0) {
+          
           if (mobsP2Any.length > 0) {
+            if(hasFirstUnitBeenKilledP1){ //Fixes first unit kill bug
+              getPossibleLimitReachedCheckP2();
+              hasFirstUnitBeenKilledP1 = false;
+            }
             if (name === 'd' || name === 'ArrowRight') {
               if (checkIfMoveMobP2("x")) {
                 mobsP2Any[currentUnitNumberP2].mtxLocal.translateX(1);
@@ -532,6 +546,7 @@ namespace Script {
                 //currentPhase = 2;
                 unitInteraction(graph); //UNIT INTERACTION HERE
                 logInUnitP2() //also end of turn procedure if its not the last unit.
+                //logInUnit();
               }
               }
 
@@ -544,14 +559,13 @@ namespace Script {
             //
             handleCityTurnPartP2()
             currentPhase = 2;
-            console.log("HandleCityTurnPart wird ausgeführt!");
             return;
           }
         }
         if (currentPhase === 2) {
           if (name === 'Space' || name === 'Enter') { //Space doesnt work for some reason.
             handleEndOfCityProcedure(currentUnitNumberP2, 1); //Wechselt zu zweitem angegebenen Parameter, aka current player wechselt nun zu 1
-
+            gameState.roundTimer = 1;
             //handleNPCAction();
             //ENDING OF PLAYER 2 PHASE 2
             return;
@@ -689,11 +703,7 @@ namespace Script {
       //document.getElementById("--unitdiv1P2").style.borderColor = "red";
       document.getElementById("--unitdiv" + (currentUnitNumber + 1)).style.borderColor = "#048836";
       currentUnitNumber = 0;
-      possibleLimitReachedCheckX.set(mobsAny[currentUnitNumber].mtxLocal.translation.x + 1, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckY.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y + 1, 0);
-      possibleLimitReachedCheckXMinus.set(mobsAny[currentUnitNumber].mtxLocal.translation.x - 1, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckYMinus.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y - 1, 0);
-      possibleLimitReachedCheckStay.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
+      getPossibleLimitReachedCheck();
       //handleUiPlayerswap();
 
       console.log("turnplayer is now: " + currentplayer);
@@ -703,11 +713,8 @@ namespace Script {
     }
     else {
       currentUnitNumber++;
-      possibleLimitReachedCheckX.set(mobsAny[currentUnitNumber].mtxLocal.translation.x + 1, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckY.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y + 1, 0);
-      possibleLimitReachedCheckXMinus.set(mobsAny[currentUnitNumber].mtxLocal.translation.x - 1, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckYMinus.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y - 1, 0);
-      possibleLimitReachedCheckStay.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
+      getPossibleLimitReachedCheck();
+      
       document.getElementById("--unitdiv" + (currentUnitNumber + 1)).style.borderColor = "red"; //--unitdiv1P2 für spieler 2
       document.getElementById("--unitdiv" + currentUnitNumber).style.borderColor = "#048836";
       //console.log(currentUnitNumber + " setze diese zahl auf grün");
@@ -733,11 +740,7 @@ namespace Script {
       document.getElementById("--unitdiv" + (currentUnitNumberP2 + 1) + "P2").style.borderColor = "#048836";
       //console.log("LRCStay before Unit count: " + possibleLimitReachedCheckStayP2);
       currentUnitNumberP2 = 0;
-      possibleLimitReachedCheckXP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x + 1, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckYP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y + 1, 0);
-      possibleLimitReachedCheckXMinusP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x - 1, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckYMinusP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y - 1, 0);
-      possibleLimitReachedCheckStayP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
+      getPossibleLimitReachedCheckP2();
       //console.log("LRCStay after Unit count: " + possibleLimitReachedCheckStayP2);
 
       //handleUiPlayerswap();
@@ -749,11 +752,8 @@ namespace Script {
     else {
       //console.log("LRCStay before Unit count: " + possibleLimitReachedCheckStayP2);
       currentUnitNumberP2++;
-      possibleLimitReachedCheckXP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x + 1, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckYP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y + 1, 0);
-      possibleLimitReachedCheckXMinusP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x - 1, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
-      possibleLimitReachedCheckYMinusP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y - 1, 0);
-      possibleLimitReachedCheckStayP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
+      getPossibleLimitReachedCheckP2();
+      
       //console.log("LRCStay after Unit count: " + possibleLimitReachedCheckStayP2);
       document.getElementById("--unitdiv" + (currentUnitNumberP2 + 1) + "P2").style.borderColor = "red"; //--unitdiv1P2 für spieler 2
       document.getElementById("--unitdiv" + currentUnitNumberP2 + "P2").style.borderColor = "#048836";
@@ -761,6 +761,25 @@ namespace Script {
     }
   }
   // ------------- Handle END TURN abteil END für Spieler 2 ---------------------------------------------------
+
+  function getPossibleLimitReachedCheck(){
+    possibleLimitReachedCheckX.set(mobsAny[currentUnitNumber].mtxLocal.translation.x + 1, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
+    possibleLimitReachedCheckY.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y + 1, 0);
+    possibleLimitReachedCheckXMinus.set(mobsAny[currentUnitNumber].mtxLocal.translation.x - 1, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
+    possibleLimitReachedCheckYMinus.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y - 1, 0);
+    possibleLimitReachedCheckStay.set(mobsAny[currentUnitNumber].mtxLocal.translation.x, mobsAny[currentUnitNumber].mtxLocal.translation.y, 0);
+    return;
+  }
+
+
+  function getPossibleLimitReachedCheckP2() {
+    possibleLimitReachedCheckXP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x + 1, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
+    possibleLimitReachedCheckYP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y + 1, 0);
+    possibleLimitReachedCheckXMinusP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x - 1, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
+    possibleLimitReachedCheckYMinusP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y - 1, 0);
+    possibleLimitReachedCheckStayP2.set(mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x, mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y, 0);
+    return;
+  }
 
   function handleUiPlayerswap(): void { //Handles player 1 and 2 UI changes when swapping.
     //console.log(currentplayer + "<- current player -> should be 1 and also gold for p1: " + gold + " p2 gold: " + goldP2);
@@ -1029,6 +1048,10 @@ namespace Script {
             //removeChild(mobsAny[iCounter3]);
             graph.removeChild(mobsP2Any[iCounter2]);
             spliceRemoved = mobsP2Any.splice(iCounter2, 1);
+            if(iCounter2 === 0){
+              console.log("iCOunter2 = 0 bitch");
+              hasFirstUnitBeenKilledP1 = true;
+            };
             console.log(spliceRemoved);
             console.log(mobsP2Any);
             delete spliceRemoved[0];
@@ -1091,6 +1114,10 @@ namespace Script {
             //removeChild(mobsAny[iCounter3]);
             graph.removeChild(mobsAny[iCounter3]);
             spliceRemoved = mobsAny.splice(iCounter3, 1);
+            if(iCounter3 === 0){
+              console.log("iCOunter3 = 0 bitchP2");
+              hasFirstUnitBeenKilledP2 = true;
+            };
             console.log(spliceRemoved);
             console.log(mobsAny);
             delete spliceRemoved[0];
