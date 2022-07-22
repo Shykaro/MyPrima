@@ -31,25 +31,10 @@ namespace Script {
             if (ƒ.Project.mode == ƒ.MODE.EDITOR)
                 return;
 
-            //const cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
-            //const cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
             // Listen to this component being added to or removed from a node
             this.addEventListener(ƒ.EVENT.COMPONENT_ADD, this.hndEvent);
             this.addEventListener(ƒ.EVENT.COMPONENT_REMOVE, this.hndEvent);
             this.addEventListener(ƒ.EVENT.NODE_DESERIALIZED, this.hndEvent);
-
-            /*const sprite: ƒAid.NodeSprite = new ƒAid.NodeSprite("Sprite");
-            sprite.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
-            sprite.setAnimation(<ƒAid.SpriteSheetAnimation>animations["mob"]);
-            sprite.setFrameDirection(1);
-            sprite.mtxLocal.translateZ(0.1);
-            sprite.mtxLocal.translateY(0.1);
-            sprite.framerate = 8;
-            sprite.mtxLocal.scale(new ƒ.Vector3(0.5, 0.5, 1));*/
-
-
-            //this.addChild(sprite);
-            //this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
         }
 
         public static get(): ƒAid.StateMachineInstructions<JOB> {
@@ -120,10 +105,13 @@ namespace Script {
 
         }
         private static async actWin(_machine: StateMachine): Promise<void> {
-            catPH.activate(false);
             catWinPH.activate(true);
+            catPH.activate(false);
             wonBoolean = false;
-            StateMachine.actDefault(_machine);
+            /*setTimeout(() => {
+                StateMachine.actDefault(_machine);
+                _machine.transit(JOB.IDLE);
+            }, 5000);*/
         }
 
         private static transitWin(_machine: StateMachine): void {
@@ -145,7 +133,7 @@ namespace Script {
                     this.cmpBody = this.node.getComponent(ƒ.ComponentRigidbody);
                     this.cmpMaterial = this.node.getComponent(ƒ.ComponentMaterial); //cmpMaterial is used here, why does it say its not used?!
                     this.cmpTransform = this.node.getComponent(ƒ.ComponentTransform);
-                    this.cmpBody.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
+                    /*this.cmpBody.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
                         if (_event.cmpRigidbody.node.name == "runner")
                             this.transit(JOB.WIN);
                     });
@@ -159,7 +147,7 @@ namespace Script {
                         if (this.stateCurrent == JOB.THROW)
                             this.transit(JOB.IDLE);
                     });
-                    break;
+                    break;*/
             }
         }
 

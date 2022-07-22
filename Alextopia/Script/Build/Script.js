@@ -72,6 +72,7 @@ var Script;
     document.addEventListener("interactiveViewportStarted", start); //HAD TO MAKE THIS UNKNOWN BECAUSE START IS NOW ASYNC
     let sounds; //outdated? i need it for later
     let gameState;
+    let config;
     let water; //Blocks that cant be set foot on with normal units - Beinhaltet jeden Wasserblock in einem Array gespeichert
     let cat;
     let catThrow;
@@ -99,7 +100,8 @@ var Script;
     Script.healthUnitBig = 20;
     Script.dmgUnitSmall = 5;
     Script.dmgUnitBig = 10;
-    let turnsNeededForCapture = 5; //Turns needed to capture the enemy city with a troop ontop of it. -> currently the wincondition (WATCH OUT THAT ENEMY CANT PRODUCE UNITS WHILE A UNIT STANDS ON THIS FIELD)
+    let turnsNeededForCaptureP1 = 5; //Turns needed to capture the enemy city with a troop ontop of it. -> currently the wincondition (WATCH OUT THAT ENEMY CANT PRODUCE UNITS WHILE A UNIT STANDS ON THIS FIELD)
+    let turnsNeededForCaptureP2 = 5; //Turns needed to capture the enemy city with a troop ontop of it. -> currently the wincondition (WATCH OUT THAT ENEMY CANT PRODUCE UNITS WHILE A UNIT STANDS ON THIS FIELD)
     let mobBuyLimit = 1; //Adjust this number if players should be able to buy more than 1 unit per turn.
     //Balancing Field End ############################################################################
     let score = 0 - costMob; //Needs adjust for free first unit
@@ -211,6 +213,10 @@ var Script;
         Script.viewport = _event.detail;
         Script.viewport.camera.mtxPivot.translate(new ƒ.Vector3(5, 2.5, 15));
         Script.viewport.camera.mtxPivot.rotateY(180);
+        gameState = new Script.GameState();
+        let response = await fetch("config.json");
+        config = await response.json();
+        console.log(config);
         //FudgeAid.Viewport.expandCameraToInteractiveOrbit(viewport);
         const graph = Script.viewport.getBranch();
         await loadJSON(); //gets balance adjustements.
@@ -275,25 +281,25 @@ var Script;
         }
         ;
         //Admin  Menu -------------------------------------------------------------------- ->>>>> Repurposed with -- to normal city troop adding!!
-        document.getElementById("--plusmob").addEventListener("click", (event) => {
+        document.getElementById("--plusmob").addEventListener("click", () => {
             creatingMob(1, graph, city, cityP2);
         });
-        document.getElementById("--plusmob2").addEventListener("click", (event) => {
+        document.getElementById("--plusmob2").addEventListener("click", () => {
             creatingMob(2, graph, city, cityP2);
         });
-        document.getElementById("--plusmobP2").addEventListener("click", (event) => {
+        document.getElementById("--plusmobP2").addEventListener("click", () => {
             creatingMob(3, graph, city, cityP2);
         });
-        document.getElementById("--plusmob2P2").addEventListener("click", (event) => {
+        document.getElementById("--plusmob2P2").addEventListener("click", () => {
             creatingMob(4, graph, city, cityP2);
         });
-        document.getElementById("--plusMine").addEventListener("click", (event) => {
+        document.getElementById("--plusMine").addEventListener("click", () => {
             creatingBuildings();
         });
-        document.getElementById("--plusMineP2").addEventListener("click", (event) => {
+        document.getElementById("--plusMineP2").addEventListener("click", () => {
             creatingBuildings();
         });
-        document.getElementById("changePlayer").addEventListener("click", (event) => {
+        document.getElementById("changePlayer").addEventListener("click", () => {
             if (Script.currentplayer === 1) {
                 Script.currentplayer = 2;
             }
@@ -962,9 +968,9 @@ var Script;
                     }
                 }
             }
-            if (mobsAny[Script.currentUnitNumber].mtxLocal.translation.equals(Script.cityNodeP2[0].mtxWorld.translation)) { // CITY INTERACTION P1
-                turnsNeededForCapture--;
-                if (turnsNeededForCapture < 1) {
+            if (mobsAny[Script.currentUnitNumber].mtxLocal.translation.x === Script.cityNodeP2[0].mtxWorld.translation.x && mobsAny[Script.currentUnitNumber].mtxLocal.translation.y === Script.cityNodeP2[0].mtxWorld.translation.y) { // CITY INTERACTION P1
+                turnsNeededForCaptureP1--;
+                if (turnsNeededForCaptureP1 < 1) {
                     //alert("City of P2 has been captured!");
                     let spliceRemoved = [];
                     graph.removeChild(Script.cityNodeP2[Script.cityNodeP2.length - 1]);
@@ -1024,9 +1030,9 @@ var Script;
                     }
                 }
             }
-            if (mobsP2Any[Script.currentUnitNumberP2].mtxLocal.translation.equals(Script.cityNode[0].mtxWorld.translation)) { // CITY INTERACTION P2
-                turnsNeededForCapture--;
-                if (turnsNeededForCapture < 1) { //THIS DOESNT WORK IF THE CAPTURED CITIES ARE RANDOM!!
+            if (mobsP2Any[Script.currentUnitNumberP2].mtxLocal.translation.y === Script.cityNode[0].mtxWorld.translation.y && mobsP2Any[Script.currentUnitNumberP2].mtxLocal.translation.x === Script.cityNode[0].mtxWorld.translation.x) { // CITY INTERACTION P2
+                turnsNeededForCaptureP2--;
+                if (turnsNeededForCaptureP2 < 1) { //THIS DOESNT WORK IF THE CAPTURED CITIES ARE RANDOM!!
                     //alert("City of P1 has been captured!");
                     let spliceRemoved = [];
                     graph.removeChild(Script.cityNode[Script.cityNode.length - 1]);
@@ -1234,22 +1240,10 @@ var Script;
             // Don't start when running in editor
             if (ƒ.Project.mode == ƒ.MODE.EDITOR)
                 return;
-            //const cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
-            //const cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
             // Listen to this component being added to or removed from a node
             this.addEventListener("componentAdd" /* ƒ.EVENT.COMPONENT_ADD */, this.hndEvent);
             this.addEventListener("componentRemove" /* ƒ.EVENT.COMPONENT_REMOVE */, this.hndEvent);
             this.addEventListener("nodeDeserialized" /* ƒ.EVENT.NODE_DESERIALIZED */, this.hndEvent);
-            /*const sprite: ƒAid.NodeSprite = new ƒAid.NodeSprite("Sprite");
-            sprite.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
-            sprite.setAnimation(<ƒAid.SpriteSheetAnimation>animations["mob"]);
-            sprite.setFrameDirection(1);
-            sprite.mtxLocal.translateZ(0.1);
-            sprite.mtxLocal.translateY(0.1);
-            sprite.framerate = 8;
-            sprite.mtxLocal.scale(new ƒ.Vector3(0.5, 0.5, 1));*/
-            //this.addChild(sprite);
-            //this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
         }
         static get() {
             let setup = new ƒAid.StateMachineInstructions();
@@ -1314,10 +1308,13 @@ var Script;
             }, 1000);
         }
         static async actWin(_machine) {
-            Script.catPH.activate(false);
             Script.catWinPH.activate(true);
+            Script.catPH.activate(false);
             Script.wonBoolean = false;
-            StateMachine.actDefault(_machine);
+            /*setTimeout(() => {
+                StateMachine.actDefault(_machine);
+                _machine.transit(JOB.IDLE);
+            }, 5000);*/
         }
         static transitWin(_machine) {
         }
@@ -1337,21 +1334,21 @@ var Script;
                     this.cmpBody = this.node.getComponent(ƒ.ComponentRigidbody);
                     this.cmpMaterial = this.node.getComponent(ƒ.ComponentMaterial); //cmpMaterial is used here, why does it say its not used?!
                     this.cmpTransform = this.node.getComponent(ƒ.ComponentTransform);
-                    this.cmpBody.addEventListener("TriggerEnteredCollision" /* ƒ.EVENT_PHYSICS.TRIGGER_ENTER */, (_event) => {
-                        if (_event.cmpRigidbody.node.name == "runner")
-                            this.transit(JOB.WIN);
-                    });
-                    let trigger = this.node.getChildren()[0].getComponent(ƒ.ComponentRigidbody);
-                    trigger.addEventListener("TriggerEnteredCollision" /* ƒ.EVENT_PHYSICS.TRIGGER_ENTER */, (_event) => {
-                        //console.log("TriggerEnter", _event.cmpRigidbody.node.name);
-                        if (_event.cmpRigidbody.node.name == "runner" && this.stateCurrent != JOB.WIN)
-                            this.transit(JOB.THROW);
-                    });
-                    trigger.addEventListener("TriggerLeftCollision" /* ƒ.EVENT_PHYSICS.TRIGGER_EXIT */, (_event) => {
-                        if (this.stateCurrent == JOB.THROW)
-                            this.transit(JOB.IDLE);
-                    });
-                    break;
+                /*this.cmpBody.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
+                    if (_event.cmpRigidbody.node.name == "runner")
+                        this.transit(JOB.WIN);
+                });
+                let trigger: ƒ.ComponentRigidbody = this.node.getChildren()[0].getComponent(ƒ.ComponentRigidbody);
+                trigger.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
+                    //console.log("TriggerEnter", _event.cmpRigidbody.node.name);
+                    if (_event.cmpRigidbody.node.name == "runner" && this.stateCurrent != JOB.WIN)
+                        this.transit(JOB.THROW);
+                });
+                trigger.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_EXIT, (_event: ƒ.EventPhysics) => {
+                    if (this.stateCurrent == JOB.THROW)
+                        this.transit(JOB.IDLE);
+                });
+                break;*/
             }
         };
         update = (_event) => {

@@ -1,6 +1,10 @@
 namespace Script {
   import ƒ = FudgeCore;
 
+  interface Config {
+    [key: string]: number | string | Config;
+  }
+
   ƒ.Debug.info("Main Program Template running!");
 
   let dialog: HTMLDialogElement;
@@ -12,6 +16,7 @@ namespace Script {
   export let viewport: ƒ.Viewport;
   let sounds: ƒ.ComponentAudio[]; //outdated? i need it for later
   let gameState: GameState;
+  let config: Config;
 
   let water: ƒ.Node[];    //Blocks that cant be set foot on with normal units - Beinhaltet jeden Wasserblock in einem Array gespeichert
   export let paths: ƒ.Node[];    //Building/Land are, every unit can walk on these - beinhaltet jeden begehbaren block in einem Array gespeichert
@@ -57,7 +62,8 @@ namespace Script {
   export let dmgUnitSmall: number = 5;
   export let dmgUnitBig: number = 10;
 
-  let turnsNeededForCapture: number = 5; //Turns needed to capture the enemy city with a troop ontop of it. -> currently the wincondition (WATCH OUT THAT ENEMY CANT PRODUCE UNITS WHILE A UNIT STANDS ON THIS FIELD)
+  let turnsNeededForCaptureP1: number = 5; //Turns needed to capture the enemy city with a troop ontop of it. -> currently the wincondition (WATCH OUT THAT ENEMY CANT PRODUCE UNITS WHILE A UNIT STANDS ON THIS FIELD)
+  let turnsNeededForCaptureP2: number = 5; //Turns needed to capture the enemy city with a troop ontop of it. -> currently the wincondition (WATCH OUT THAT ENEMY CANT PRODUCE UNITS WHILE A UNIT STANDS ON THIS FIELD)
 
   let mobBuyLimit: number = 1;  //Adjust this number if players should be able to buy more than 1 unit per turn.
   //Balancing Field End ############################################################################
@@ -190,8 +196,12 @@ namespace Script {
   async function start(_event: CustomEvent) { //Was beim Start initialisiert werden soll
     viewport = _event.detail;
     viewport.camera.mtxPivot.translate(new ƒ.Vector3(5, 2.5, 15));
-    viewport.camera.mtxPivot.rotateY(180);
+    viewport.camera.mtxPivot.rotateY(180)
 
+    gameState = new GameState();
+    let response: Response = await fetch("config.json");
+    config = await response.json();
+    console.log(config);
     //FudgeAid.Viewport.expandCameraToInteractiveOrbit(viewport);
 
     const graph: ƒ.Node = viewport.getBranch();
@@ -273,26 +283,26 @@ namespace Script {
     };
 
     //Admin  Menu -------------------------------------------------------------------- ->>>>> Repurposed with -- to normal city troop adding!!
-    document.getElementById("--plusmob").addEventListener("click", (event) => {
+    document.getElementById("--plusmob").addEventListener("click", () => {
       creatingMob(1, graph, city, cityP2);
     })
-    document.getElementById("--plusmob2").addEventListener("click", (event) => {
+    document.getElementById("--plusmob2").addEventListener("click", () => {
       creatingMob(2, graph, city, cityP2);
     })
-    document.getElementById("--plusmobP2").addEventListener("click", (event) => {
+    document.getElementById("--plusmobP2").addEventListener("click", () => {
       creatingMob(3, graph, city, cityP2);
     })
-    document.getElementById("--plusmob2P2").addEventListener("click", (event) => {
+    document.getElementById("--plusmob2P2").addEventListener("click", () => {
       creatingMob(4, graph, city, cityP2);
     })
-    document.getElementById("--plusMine").addEventListener("click", (event) => {
+    document.getElementById("--plusMine").addEventListener("click", () => {
       creatingBuildings();
     })
-    document.getElementById("--plusMineP2").addEventListener("click", (event) => {
+    document.getElementById("--plusMineP2").addEventListener("click", () => {
       creatingBuildings();
     })
 
-    document.getElementById("changePlayer").addEventListener("click", (event) => {
+    document.getElementById("changePlayer").addEventListener("click", () => {
       if (currentplayer === 1) {
         currentplayer = 2;
       }
@@ -1023,9 +1033,9 @@ namespace Script {
           }
         }
       }
-      if (mobsAny[currentUnitNumber].mtxLocal.translation.equals(cityNodeP2[0].mtxWorld.translation)) { // CITY INTERACTION P1
-        turnsNeededForCapture--;
-        if (turnsNeededForCapture < 1) {
+      if (mobsAny[currentUnitNumber].mtxLocal.translation.x === cityNodeP2[0].mtxWorld.translation.x && mobsAny[currentUnitNumber].mtxLocal.translation.y === cityNodeP2[0].mtxWorld.translation.y) { // CITY INTERACTION P1
+        turnsNeededForCaptureP1--;
+        if (turnsNeededForCaptureP1 < 1) {
           //alert("City of P2 has been captured!");
           let spliceRemoved: any[] = [];
           graph.removeChild(cityNodeP2[cityNodeP2.length - 1]);
@@ -1086,9 +1096,9 @@ namespace Script {
         }
       }
 
-      if (mobsP2Any[currentUnitNumberP2].mtxLocal.translation.equals(cityNode[0].mtxWorld.translation)) { // CITY INTERACTION P2
-        turnsNeededForCapture--;
-        if (turnsNeededForCapture < 1) { //THIS DOESNT WORK IF THE CAPTURED CITIES ARE RANDOM!!
+      if (mobsP2Any[currentUnitNumberP2].mtxLocal.translation.y === cityNode[0].mtxWorld.translation.y && mobsP2Any[currentUnitNumberP2].mtxLocal.translation.x === cityNode[0].mtxWorld.translation.x) { // CITY INTERACTION P2
+        turnsNeededForCaptureP2--;
+        if (turnsNeededForCaptureP2 < 1) { //THIS DOESNT WORK IF THE CAPTURED CITIES ARE RANDOM!!
           //alert("City of P1 has been captured!");
           let spliceRemoved: any[] = [];
           graph.removeChild(cityNode[cityNode.length - 1]);
