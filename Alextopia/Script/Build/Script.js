@@ -270,7 +270,7 @@ var Script;
         //cityNodeP2.push(city2P2);
         //Positions of starting Cities
         Script.paths[15].addChild(city);
-        Script.paths[16].addChild(cityP2); //34
+        Script.paths[34].addChild(cityP2); //16
         //console.log(graph.getChildrenByName("Grid")[0].getChildrenByName("Path")[0].getChild(15).getChildrenByName("City")[0]); //adjust x from getChild(x) to paths[x].addChild(city) and CityP2!! 
         //paths[1].addChild(city2);
         //paths[2].addChild(city2P2);
@@ -973,7 +973,6 @@ var Script;
                         graph.removeChild(mobsP2Any[iCounter2]);
                         spliceRemoved = mobsP2Any.splice(iCounter2, 1);
                         if (iCounter2 === 0) {
-                            console.log("iCOunter2 = 0 bitch");
                             hasFirstUnitBeenKilledP1 = true;
                         }
                         ;
@@ -1040,7 +1039,6 @@ var Script;
                         graph.removeChild(mobsAny[iCounter3]);
                         spliceRemoved = mobsAny.splice(iCounter3, 1);
                         if (iCounter3 === 0) {
-                            console.log("iCOunter3 = 0 bitchP2");
                             hasFirstUnitBeenKilledP2 = true;
                         }
                         ;
@@ -1126,7 +1124,7 @@ var Script;
         let cmpAnimator = new ƒ.ComponentAnimator(animation, ƒ.ANIMATION_PLAYMODE.LOOP, ƒ.ANIMATION_PLAYBACK.TIMEBASED_CONTINOUS);
         let cmpAnimator2 = new ƒ.ComponentAnimator(animation, ƒ.ANIMATION_PLAYMODE.LOOP, ƒ.ANIMATION_PLAYBACK.TIMEBASED_CONTINOUS);
         _graph.getChildrenByName("Grid")[0].getChildrenByName("Path")[0].getChild(15).getChildrenByName("City")[0].addComponent(cmpAnimator); //adjust x from getChild(x) to paths[x].addChild(city) and CityP2!! 
-        _graph.getChildrenByName("Grid")[0].getChildrenByName("Path")[0].getChild(16).getChildrenByName("CityP2")[0].addComponent(cmpAnimator2);
+        _graph.getChildrenByName("Grid")[0].getChildrenByName("Path")[0].getChild(34).getChildrenByName("CityP2")[0].addComponent(cmpAnimator2);
         cmpAnimator.activate(true);
     }
 })(Script || (Script = {}));

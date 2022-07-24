@@ -270,7 +270,7 @@ namespace Script {
 
     //Positions of starting Cities
     paths[15].addChild(city);
-    paths[16].addChild(cityP2); //34
+    paths[34].addChild(cityP2); //16
 
     //console.log(graph.getChildrenByName("Grid")[0].getChildrenByName("Path")[0].getChild(15).getChildrenByName("City")[0]); //adjust x from getChild(x) to paths[x].addChild(city) and CityP2!! 
 
@@ -1215,7 +1215,7 @@ namespace Script {
 
 
     _graph.getChildrenByName("Grid")[0].getChildrenByName("Path")[0].getChild(15).getChildrenByName("City")[0].addComponent(cmpAnimator); //adjust x from getChild(x) to paths[x].addChild(city) and CityP2!! 
-    _graph.getChildrenByName("Grid")[0].getChildrenByName("Path")[0].getChild(16).getChildrenByName("CityP2")[0].addComponent(cmpAnimator2);
+    _graph.getChildrenByName("Grid")[0].getChildrenByName("Path")[0].getChild(34).getChildrenByName("CityP2")[0].addComponent(cmpAnimator2);
 
     cmpAnimator.activate(true);
   }
